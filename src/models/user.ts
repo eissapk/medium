@@ -10,6 +10,9 @@ const userSchema = new Schema(
 		bio: { type: String, default: null },
 		socialLinks: [String],
 		articles: [{ type: Schema.Types.ObjectId, ref: "Article" }],
+		likes: [{ type: Schema.Types.ObjectId, ref: "Article" }],
+		followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+		following: [{ type: Schema.Types.ObjectId, ref: "User" }],
 	},
 	{ timestamps: true }
 );
