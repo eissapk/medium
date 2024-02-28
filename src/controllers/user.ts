@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import { createToken, validator } from "../utils";
 import mongoose from "mongoose";
 
-// todo: add brute force attack protection , e.g. counter of failed login max 3 times and then block the user and force him to change password
 export const loginUser = async (req, res) => {
 	const { email, password } = req.body;
 	if (!email || !password) return res.status(400).json({ error: true, message: "Password or Email is not present!" });
@@ -11,6 +10,7 @@ export const loginUser = async (req, res) => {
 	try {
 		const user = await User.findOne({ email });
 		if (!user) {
+			// todo: add brute force attack protection , e.g. counter of failed login max 3 times and then block the user and force him to change password
 			return res.status(400).json({ error: true, message: "Invalid login credentials" });
 		}
 
@@ -54,8 +54,9 @@ export const signupUser = async (req, res) => {
 	}
 };
 export const getAllUsers = async (req, res) => {
+	// const { start, end } = req.body; // todo
 	try {
-		const users = await User.find({}); // todo: add limit or query by range e.g. start, end
+		const users = await User.find({});
 		res.status(200).json({ success: true, data: users });
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
@@ -70,6 +71,60 @@ export const getUser = async (req, res) => {
 		const user = await User.findById(id);
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 		res.status(200).json({ success: true, data: user });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
+};
+
+export const followUser = async (req, res) => {
+	const { id: currentUserId, user: foreignUserId } = req.params;
+	if (!mongoose.Types.ObjectId.isValid(currentUserId)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+	if (!mongoose.Types.ObjectId.isValid(foreignUserId)) return res.status(404).json({ error: true, message: "Foreign User doesn't exist!" });
+
+	try {
+		const currentUser = await User.findById(currentUserId);
+		if (!currentUser) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+
+		const foreignUser = await User.findById(foreignUserId);
+		if (!foreignUser) return res.status(404).json({ error: true, message: "Foreign User doesn't exist!" });
+
+		// check if current user is already following foreign user
+		if (currentUser.following.includes(foreignUserId)) return res.status(200).json({ success: true, message: "user is being followed already!" });
+
+		// add to following
+		await User.findOneAndUpdate({ _id: currentUserId }, { following: [...currentUser.following, foreignUserId] });
+
+		// add to followers
+		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: [...foreignUser.followers, currentUserId] });
+
+		res.status(200).json({ success: true, message: `User: ${currentUserId}, followed: ${foreignUserId}` });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
+};
+
+export const unFollowUser = async (req, res) => {
+	const { id: currentUserId, user: foreignUserId } = req.params;
+	if (!mongoose.Types.ObjectId.isValid(currentUserId)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+	if (!mongoose.Types.ObjectId.isValid(foreignUserId)) return res.status(404).json({ error: true, message: "Foreign User doesn't exist!" });
+
+	try {
+		const currentUser = await User.findById(currentUserId);
+		if (!currentUser) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+
+		const foreignUser = await User.findById(foreignUserId);
+		if (!foreignUser) return res.status(404).json({ error: true, message: "Foreign User doesn't exist!" });
+
+		// check if current user is already following foreign user
+		if (!currentUser.following.includes(foreignUserId)) return res.status(200).json({ success: true, message: "user is not being followed already!" });
+
+		// remove from following
+		await User.findOneAndUpdate({ _id: currentUserId }, { following: currentUser.following.filter(item => item.toString() != foreignUserId.toString()) });
+
+		// remove from followers
+		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: foreignUser.followers.filter(item => item.toString() != currentUserId.toString()) });
+
+		res.status(200).json({ success: true, message: `User: ${currentUserId}, unfollowed: ${foreignUserId}` });
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
 	}
