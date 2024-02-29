@@ -1,4 +1,5 @@
 import { useRouteError } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Error() {
 	const err = useRouteError();
@@ -14,10 +15,14 @@ function Error() {
 	}
 
 	return (
-		<>
+		<div className="text-center">
 			<h1>{title}</h1>
 			<p>{message}</p>
-		</>
+
+			<Link to="/" className="bg-main">
+				Back to home page
+			</Link>
+		</div>
 	);
 }
 

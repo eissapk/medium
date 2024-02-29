@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* @media (min-width: 500px) {
+	:root {
+		font-size: 2rem;
+	}
+} */
