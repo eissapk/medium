@@ -2,15 +2,15 @@ import Header from "../components/Header";
 import LatestArticles from "../components/LatestArticles";
 import Feeds from "../components/Feeds";
 import Footer from "../components/Footer";
+import { useAuthContext } from "../hooks/useAuthContext";
 
-// todo: handle loggedin state with context and useReducer or use redux
-const logged = true;
 function Home() {
+	const { state } = useAuthContext();
 	return (
 		<>
-			{!logged && <Header />}
-			{!logged && <LatestArticles />}
-			{logged && <Feeds />}
+			{!state.user && <Header />}
+			{!state.user && <LatestArticles />}
+			{state.user && <Feeds />}
 			<Footer />
 		</>
 	);

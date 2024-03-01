@@ -1,7 +1,13 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-const logged = true;
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useLogout } from "../hooks/useLogout";
+
 function Nav() {
+	const navigate = useNavigate();
+	const { state } = useAuthContext();
+	const { logout } = useLogout();
+
 	const { pathname } = useLocation();
 	useEffect(() => {
 		if (pathname === "/new-story") {
@@ -14,9 +20,14 @@ function Nav() {
 	const [isShown, setIsShown] = useState(false);
 	const [isNewStoryRoute, setIsNewStoryRoute] = useState(false);
 
+	const handleLogout = () => {
+		logout();
+		navigate("/");
+	};
+
 	return (
 		<>
-			{!logged && (
+			{!state.user && (
 				<nav className=" bg-main">
 					<Link to="/">logo</Link>
 
@@ -32,7 +43,7 @@ function Nav() {
 					</ul>
 				</nav>
 			)}
-			{logged && (
+			{state.user && (
 				<nav className=" bg-main">
 					<ul className=" flex gap-x-2">
 						<li>
@@ -52,7 +63,7 @@ function Nav() {
 
 						{isNewStoryRoute && <button>Publish</button>}
 						<li className="relative">
-							<img src="" alt="avatar" onClick={() => setIsShown(!isShown)} />
+							<img src={state.user.avatar || `/api/assets/images/profile-pic.png`} alt="avatar" onClick={() => setIsShown(!isShown)} className="w-5" />
 							{isShown && (
 								<ul className="absolute top-6 right-0 bg-white border-line rounded">
 									<li>
@@ -61,9 +72,9 @@ function Nav() {
 									<li>
 										<Link to="/me/settings">settings</Link>
 									</li>
-									<button type="button" className="text-start" onClick={() => console.log("sign out")}>
-										<span>Sign out</span>
-										<span className="block text-xs">ei.....@gmail.com</span>
+									<button type="button" className="text-start" onClick={handleLogout}>
+										<span className=" pointer-events-none">Sign out</span>
+										<span className="block text-xs pointer-events-none">{state.user.email}</span>
 									</button>
 								</ul>
 							)}
