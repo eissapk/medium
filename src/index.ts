@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path";
 import morgan from "morgan";
 import { connectDB } from "./utils/mongo";
 import { logger } from "./utils";
@@ -19,6 +20,9 @@ app.use(cors({ origin: isDev ? `http://localhost:${PORT}` : DOMAIN, credentials:
 
 // routes
 app.use(require("./routes").Router);
+
+// static files
+app.use("/api/assets/images", express.static(path.resolve(__dirname, "./assets/images")));
 
 // db
 connectDB();

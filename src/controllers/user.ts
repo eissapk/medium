@@ -21,7 +21,26 @@ export const loginUser = async (req, res) => {
 
 		const token = createToken(user.id);
 		// todo add a cookie
-		res.status(200).json({ success: true, message: "logged-in successfuly", token, email });
+
+		res.status(200).json({
+			success: true,
+			message: "logged-in successfuly",
+			data: {
+				token,
+				user: {
+					email,
+					id: user.id,
+					avatar: user.avatar,
+					name: user.name,
+					title: user.title,
+					bio: user.bio,
+					socialLinks: user.socialLinks,
+					articles: user.articles.length,
+					followers: user.followers.length,
+					following: user.following.length,
+				},
+			},
+		});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
 	}
@@ -48,7 +67,25 @@ export const signupUser = async (req, res) => {
 		const token = createToken(user.id);
 
 		// todo add a cookie
-		res.status(200).json({ success: true, message: "signed up successfuly", token, email });
+		res.status(200).json({
+			success: true,
+			message: "signed up successfuly",
+			data: {
+				token,
+				user: {
+					email,
+					id: user.id,
+					avatar: user.avatar,
+					name: user.name,
+					title: user.title,
+					bio: user.bio,
+					socialLinks: user.socialLinks,
+					articles: user.articles.length,
+					followers: user.followers.length,
+					following: user.following.length,
+				},
+			},
+		});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
 	}
