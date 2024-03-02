@@ -3,40 +3,41 @@ export default {
 	content: ["./src/**/*.{js,jsx,ts,tsx}"],
 	theme: {
 		screens: {
+			xsm: "320px",
 			sm: "640px",
-			// => @media (min-width: 640px) { ... }
 			md: "768px",
-			// => @media (min-width: 768px) { ... }
 			lg: "1024px",
-			// => @media (min-width: 1024px) { ... }
 			xl: "1280px",
-			// => @media (min-width: 1280px) { ... }
 			"2xl": "1536px",
-			// => @media (min-width: 1536px) { ... }
-
-			// "2xl": { max: "1535px" },
-			// // => @media (max-width: 1535px) { ... }
-
-			// xl: { max: "1279px" },
-			// // => @media (max-width: 1279px) { ... }
-
-			// lg: { max: "1023px" },
-			// // => @media (max-width: 1023px) { ... }
-
-			// md: { max: "767px" },
-			// // => @media (max-width: 767px) { ... }
-
-			// sm: { max: "639px" },
-			// // => @media (max-width: 639px) { ... }
 		},
 		extend: {
 			colors: {
-				main: "#00AB6C",
-				text: "#292929",
-				date: "#757575",
-				desc: "#777777",
-				line: "#E5E5E5",
 				yellow: "#ffc017",
+				green: "#1a8917",
+				main: "#242424",
+				text: {
+					dark: "#242424",
+					light: "#6B6B6B",
+				},
+				black: {
+					100: "#242424",
+					200: "#191919",
+					900: "#000000",
+				},
+				border: {
+					dark: "#242424",
+					light: "#f2f2f2",
+				},
+				input: "#f9f9f9",
+			},
+			fontFamily: {
+				main: ["sohne", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
+				title: ["gt-super", "Georgia", "Cambria", "Times New Roman", "Times", "serif"], // e.g. home page heading
+				desc: ["source-serif-pro", "Georgia", "Cambria", "Times New Roman", "Times", "serif"], // article descriptions
+				code: ["source-code-pro", "Menlo", "Monaco", "Courier New", "Courier", "monospace"], // code blocks in articles
+			},
+			boxShadow: {
+				menu: "rgba(0, 0, 0, 0.05) 0px 0px 4px, rgba(0, 0, 0, 0.15) 0px 2px 8px",
 			},
 		},
 	},
