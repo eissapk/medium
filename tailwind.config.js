@@ -16,8 +16,8 @@ export default {
 				green: "#1a8917",
 				main: "#242424",
 				text: {
-					dark: "#242424",
 					light: "#6B6B6B",
+					dark: "#242424",
 				},
 				black: {
 					100: "#242424",
@@ -25,8 +25,8 @@ export default {
 					900: "#000000",
 				},
 				border: {
-					dark: "#242424",
 					light: "#f2f2f2",
+					dark: "#242424",
 				},
 				input: "#f9f9f9",
 			},

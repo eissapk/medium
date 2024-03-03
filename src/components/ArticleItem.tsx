@@ -1,3 +1,4 @@
+import { getLocalTime } from "../utils";
 type ARTICLE = {
 	_id: string;
 	title: string;
@@ -14,10 +15,6 @@ type USER = {
 };
 
 function ArticleItem({ article, user, isMe }: { article: ARTICLE; user: USER; isMe?: boolean }) {
-	function getLocalTime(date) {
-		const t = new Date(date).toString();
-		return `${t.split(" ")[1]} ${t.split(" ")[2]}, ${t.split(" ")[3]}`;
-	}
 	return (
 		<article>
 			{!isMe && (

@@ -21,23 +21,11 @@ const dummyArray = [
 		article,
 		user,
 	},
-	{
-		article,
-		user,
-	},
-	{
-		article,
-		user,
-	},
-	{
-		article,
-		user,
-	},
 ];
 
 function Profile() {
 	return (
-		<div className="grid grid-cols-1 py-5 mt-5 gap-y-10">
+		<div className="grid grid-cols-1 gap-y-10">
 			{dummyArray.map((item, index) => (
 				<ArticleItem key={index} article={item.article} user={item.user} isMe={true} />
 			))}
