@@ -29,7 +29,7 @@ export const loginUser = async (req, res) => {
 				token,
 				user: {
 					email,
-					id: user.id,
+					_id: user._id,
 					avatar: user.avatar,
 					name: user.name,
 					title: user.title,
@@ -75,7 +75,7 @@ export const signupUser = async (req, res) => {
 				token,
 				user: {
 					email,
-					id: user.id,
+					_id: user._id,
 					avatar: user.avatar,
 					name: user.name,
 					title: user.title,
