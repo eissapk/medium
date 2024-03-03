@@ -38,6 +38,7 @@ export const loginUser = async (req, res) => {
 					articles: user.articles.length,
 					followers: user.followers.length,
 					following: user.following.length,
+					createdAt: user.createdAt,
 				},
 			},
 		});
@@ -83,6 +84,7 @@ export const signupUser = async (req, res) => {
 					articles: user.articles.length,
 					followers: user.followers.length,
 					following: user.following.length,
+					createdAt: user.createdAt,
 				},
 			},
 		});
