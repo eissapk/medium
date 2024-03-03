@@ -1,33 +1,53 @@
+import ArticleItem from "./ArticleItem";
+
+const article = {
+	_id: "65def0994a411947d2eb72e0",
+	title: "Works in Progress: The Long Journey to Doing Good Better",
+	thumbnail: "https://miro.medium.com/v2/resize:fit:1000/1*22QnF5qnl4TLN9b6TpYkHA.png",
+	content: "The more I learn, the more I realize how much I don’t know. — Albert Einstein",
+	readTime: 5,
+	createdAt: "2024-02-28T08:36:41.731Z",
+};
+const user = {
+	_id: "65deef664a411947d2eb72b7",
+	avatar: "https://miro.medium.com/v2/resize:fill:44:44/1*pUa4O3SR1XTWUtUMhnrQUw.jpeg",
+	name: "Dustin Moskovitz",
+};
+const dummyArray = [
+	{
+		article,
+		user,
+	},
+	{
+		article,
+		user,
+	},
+	{
+		article,
+		user,
+	},
+	{
+		article,
+		user,
+	},
+	{
+		article,
+		user,
+	},
+];
+
 function Feeds() {
 	return (
-		<div>
-			<ul>
-				<li>
-					<a href="/link-to-user-profile" className="flex gap-x-2 bg-slate-500">
-						<img src="" alt="avatar" />
-						<span>author name</span>
-						<span> . </span>
-						<span>Feb 27,2024</span>
-					</a>
+		<div className="px-4 py-4 mb-4">
+			<div className="mx-auto max-w-max">
+				<h1 className="inline-block pb-4 mt-6 text-sm border-b text-text-light border-border-light pe-2">Latest from people you follow</h1>
 
-					<a href="/link-to-article" className=" bg-slate-400">
-						<div className="inline-block">
-							<h1>article title</h1>
-							<p>article description...</p>
-						</div>
-						<div className="inline-block bg-main">
-							<img src="" alt="article thumbnail" />
-						</div>
-					</a>
-
-					<div className=" bg-slate-300 flex gap-x-2">
-						<span className="category bg-slate-950 text-white p-1 rounded text-sm">Javascript</span>
-						<span>6 min read</span>
-						<span>. </span>
-						<span>bookmark</span>
-					</div>
-				</li>
-			</ul>
+				<div className="grid grid-cols-1 py-5 mt-5 gap-y-10 gap-x-20 md:grid-cols-2">
+					{dummyArray.map((item, index) => (
+						<ArticleItem key={index} article={item.article} user={item.user} />
+					))}
+				</div>
+			</div>
 		</div>
 	);
 }

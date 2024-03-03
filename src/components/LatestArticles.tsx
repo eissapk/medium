@@ -1,92 +1,54 @@
+import ArticleItem from "./ArticleItem";
+const article = {
+	_id: "65def0994a411947d2eb72e0",
+	title: "Works in Progress: The Long Journey to Doing Good Better",
+	thumbnail: "https://miro.medium.com/v2/resize:fit:1000/1*22QnF5qnl4TLN9b6TpYkHA.png",
+	content: "The more I learn, the more I realize how much I don’t know. — Albert Einstein",
+	readTime: 5,
+	createdAt: "2024-02-28T08:36:41.731Z",
+};
+const user = {
+	_id: "65deef664a411947d2eb72b7",
+	avatar: "https://miro.medium.com/v2/resize:fill:44:44/1*pUa4O3SR1XTWUtUMhnrQUw.jpeg",
+	name: "Dustin Moskovitz",
+};
+const dummyArray = [
+	{
+		article,
+		user,
+	},
+	{
+		article,
+		user,
+	},
+	{
+		article,
+		user,
+	},
+	{
+		article,
+		user,
+	},
+	{
+		article,
+		user,
+	},
+];
 function LatestArticles() {
 	return (
-		<div className="px-6 py-4">
-			{/* <h1 className="mb-5">
-				<span>icon</span> Latest on Medium
-			</h1> */}
+		<>
+			<div className="px-4 py-4 mb-4">
+				<div className="mx-auto max-w-max">
+					<h1 className="font-medium text-text-dark">Latest on Medium</h1>
 
-			<ul className="grid grid-cols-2">
-				<li>
-					{/* <div>01</div> */}
-					<div>
-						<a href="/link-to-user-profile" className="block">
-							<img src="" alt="author avatar" className="inline m-1" />
-							<span>author name</span>
-						</a>
-						<a href="/link-to-article">article title</a>
-						<p>
-							<span>Feb 27,2024 . 6 min read</span>
-						</p>
+					<div className="grid grid-cols-1 py-5 mt-5 gap-y-10 gap-x-20 md:grid-cols-2">
+						{dummyArray.map((item, index) => (
+							<ArticleItem key={index} article={item.article} user={item.user} />
+						))}
 					</div>
-				</li>
-
-				{/* <li>
-					<div>02</div>
-					<div>
-						<a href="/link-to-user-profile" className="block">
-							<img src="" alt="author avatar" className="inline m-1" />
-							<span>author name</span>
-						</a>
-						<a href="/link-to-article">article title</a>
-						<p>
-							<span>Feb 27,2024 . 6 min read</span>
-						</p>
-					</div>
-				</li>
-				<li>
-					<div>03</div>
-					<div>
-						<a href="/link-to-user-profile" className="block">
-							<img src="" alt="author avatar" className="inline m-1" />
-							<span>author name</span>
-						</a>
-						<a href="/link-to-article">article title</a>
-						<p>
-							<span>Feb 27,2024 . 6 min read</span>
-						</p>
-					</div>
-				</li>
-				<li>
-					<div>04</div>
-					<div>
-						<a href="/link-to-user-profile" className="block">
-							<img src="" alt="author avatar" className="inline m-1" />
-							<span>author name</span>
-						</a>
-						<a href="/link-to-article">article title</a>
-						<p>
-							<span>Feb 27,2024 . 6 min read</span>
-						</p>
-					</div>
-				</li>
-				<li>
-					<div>05</div>
-					<div>
-						<a href="/link-to-user-profile" className="block">
-							<img src="" alt="author avatar" className="inline m-1" />
-							<span>author name</span>
-						</a>
-						<a href="/link-to-article">article title</a>
-						<p>
-							<span>Feb 27,2024 . 6 min read</span>
-						</p>
-					</div>
-				</li>
-				<li>
-					<div>06</div>
-					<div>
-						<a href="/link-to-user-profile" className="block">
-							<img src="" alt="author avatar" className="inline m-1" />
-							<span>author name</span>
-						</a>
-						<a href="/link-to-article">article title</a>
-						<p>
-							<span>Feb 27,2024 . 6 min read</span>
-						</p>
-					</div>
-				</li> */}
-			</ul>
-		</div>
+				</div>
+			</div>
+		</>
 	);
 }
 

@@ -9,7 +9,6 @@ function Home() {
 	return (
 		<>
 			{!state.user && <Header />}
-			{/* continue to latest articles and feeds */}
 			{!state.user && <LatestArticles />}
 			{state.user && <Feeds />}
 			<Footer />

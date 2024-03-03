@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Logo } from "../assets/icons";
 const NonUserNav = () => {
 	return (
-		<nav className="flex flex-col justify-between p-6 sm:flex-row lg:px-0 gap-y-5">
+		<nav className="flex flex-col justify-between py-6 sm:flex-row gap-y-5">
 			<Link to="/">
 				<Logo className="h-6" />
 			</Link>

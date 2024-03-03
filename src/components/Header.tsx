@@ -3,8 +3,8 @@ import { Logo } from "../assets/animation";
 
 function Header() {
 	return (
-		<header className="relative px-6 py-24 text-center border-b md:text-start bg-yellow border-border-dark">
-			<div className="max-w-5xl mx-auto">
+		<header className="relative px-4 py-24 text-center border-b sm:text-start bg-yellow border-border-dark">
+			<div className="mx-auto max-w-max">
 				<h1 className="font-title mb-8 text-[4.3rem] md:text-[5.3rem] lg:text-[6.5rem]">Stay curious.</h1>
 				<p className="text-[1.5rem] mb-12 ">
 					Discover stories, thinking, and expertise <br /> from writers on any topic.

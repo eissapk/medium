@@ -1,6 +1,6 @@
 function Footer() {
 	return (
-		<footer className="flex justify-center pt-4 mt-4 border-t border-border-light">
+		<footer className="flex justify-center py-4 mt-4 border-t border-border-light">
 			<ul className="flex justify-center gap-x-5 text-text">
 				<li>
 					<a href="/about" className="text-sm text-text-light">
