@@ -7,13 +7,14 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
-import ProfileLayout from "./pages/ProfileLayout";
+import ProfileLayout, { loader as ProfileLoader } from "./pages/ProfileLayout";
 import Profile from "./pages/Profile";
 import About from "./pages/About";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 
 import Settings from "./pages/Settings";
+import Article from "./pages/Article";
 import NewStory from "./pages/NewStory";
 
 const router = createBrowserRouter([
@@ -26,8 +27,9 @@ const router = createBrowserRouter([
 			{ path: "login", element: <Login /> },
 			{ path: "signup", element: <Signup /> },
 			{
-				path: "me",
+				path: ":userId",
 				element: <ProfileLayout />,
+				loader: ProfileLoader,
 				children: [
 					{ index: true, element: <Profile /> },
 					{ path: "about", element: <About /> },
@@ -35,7 +37,8 @@ const router = createBrowserRouter([
 					{ path: "following", element: <Following /> },
 				],
 			},
-			{ path: "/me/settings", element: <Settings /> }, // todo: add it inside profileLayout
+			{ path: ":userId/settings", element: <Settings /> },
+			{ path: ":userId/:articleId", element: <Article /> },
 			{ path: "/new-story", element: <NewStory /> },
 		],
 	},

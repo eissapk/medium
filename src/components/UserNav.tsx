@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { Profile, Edit, LogoMini, Search } from "../assets/icons";
 import { useAuthContext } from "../hooks/useAuthContext";
 
+const user = JSON.parse(localStorage.getItem("user") as string) || null;
+
 function UserNav() {
 	const navigate = useNavigate();
 	const { state } = useAuthContext();
@@ -74,7 +76,7 @@ function UserNav() {
 					<div className="absolute right-0 bg-white rounded top-[calc(100%+0.5em)] border-line shadow-menu text-sm min-w-60 py-2">
 						<ul>
 							<li>
-								<Link to="/me" className="flex items-center px-6 py-2 gap-x-4 group/profile">
+								<Link to={"/" + user._id} className="flex items-center px-6 py-2 gap-x-4 group/profile">
 									<Profile className="w-6 h-6 transition-all text-text-light group-hover/profile:text-text-dark" />
 									<span className="text-sm transition-all text-text-light group-hover/profile:text-text-dark">Profile</span>
 								</Link>
@@ -83,7 +85,7 @@ function UserNav() {
 						<hr className="h-[1px] pt-2 bg-transparent border-t-border-light" />
 						<ul>
 							<li>
-								<Link to="/me/settings" className="flex items-center px-6 py-2 gap-x-4 group/profile">
+								<Link to={"/" + user._id + "/settings"} className="flex items-center px-6 py-2 gap-x-4 group/profile">
 									<span className="text-sm transition-all text-text-light group-hover/profile:text-text-dark">Settings</span>
 								</Link>
 							</li>

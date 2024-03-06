@@ -13,6 +13,7 @@ function Signup() {
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [errorPasswordMatch, setErrorPasswordMatch] = useState(false);
 
+	const errorElement = (text, className = "") => <div className={`p-2.5 bg-red border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`}>{text}</div>;
 	useEffect(() => {
 		if (state.user) navigate("/");
 	}, [state.user, navigate]);
@@ -22,36 +23,44 @@ function Signup() {
 		await signup(email, password);
 	}
 	return (
-		<div className="text-center">
-			<h1>Join Medium</h1>
+		<main className="flex justify-center">
+			<div>
+				<h1 className="mt-5 mb-10 text-3xl text-center font-title text-black-200">Join Medium.</h1>
 
-			<form onSubmit={handleSubmit}>
-				<div className="m-2">
-					<label>Your email</label>
-					<input className=" outline-dashed outline-1 ml-1" autoFocus type="email" value={email} onChange={e => setEmail(e.target.value)} />
-				</div>
-				<div className="m-2">
-					<label>Your password</label>
-					<input className=" outline-dashed outline-1 ml-1" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-				</div>
-				<div className="m-2">
-					<label>Confirm password</label>
-					<input className=" outline-dashed outline-1 ml-1" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
-				</div>
+				<form onSubmit={handleSubmit}>
+					<div className="mb-2">
+						<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Your email</label>
+						<input className="px-1 mx-4 transition-all border rounded-sm border-border-light" autoFocus type="email" value={email} onChange={e => setEmail(e.target.value)} />
+					</div>
+					<div className="mb-2">
+						<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Your password</label>
+						<input className="px-1 mx-4 transition-all border rounded-sm border-border-light" type="password" value={password} onChange={e => setPassword(e.target.value)} />
+					</div>
+					<div className="mb-4">
+						<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Confirm password</label>
+						<input className="px-1 mx-4 transition-all border rounded-sm border-border-light" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+					</div>
 
-				{errorPasswordMatch && <div className="p-[10px] bg-[#ffefef] border border-error rounded-[4px] text-error my-5 mx-0 h-fit text-center">Password does not match</div>}
-				<button className={cx("bg-main", { "opacity-50": isLoading })} disabled={isLoading} type="submit">
-					Sign up
-				</button>
-			</form>
-			{error && <div className="p-[10px] bg-[#ffefef] border border-error rounded-[4px] text-error my-5 mx-0 h-fit text-center">{error}</div>}
-			<p>
-				Already have an account?
-				<Link to="/login" className="bg-main">
-					Sign in
-				</Link>
-			</p>
-		</div>
+					<button
+						className={cx("px-6 py-2 mx-auto block text-sm text-green transition-all rounded-full opacity-80 hover:opacity-100 border-green border font-medium", { "opacity-50": isLoading })}
+						disabled={isLoading}
+						type="submit">
+						Sign up
+					</button>
+				</form>
+
+				{error && errorElement(error)}
+				<br />
+				{errorPasswordMatch && errorElement("Password does not match")}
+
+				<p className="text-center text-text-light">
+					<span className="me-2">Already have an account?</span>
+					<Link to="/login" className="font-medium text-green ">
+						Sign in
+					</Link>
+				</p>
+			</div>
+		</main>
 	);
 }
 
