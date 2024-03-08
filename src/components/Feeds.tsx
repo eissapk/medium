@@ -1,4 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import ArticleItem from "./ArticleItem";
+import { useEffect } from "react";
 
 const article = {
 	_id: "65def0994a411947d2eb72e0",
@@ -8,28 +10,13 @@ const article = {
 	readTime: 5,
 	createdAt: "2024-02-28T08:36:41.731Z",
 };
-const user = {
-	_id: "65deef664a411947d2eb72b7",
-	avatar: "https://miro.medium.com/v2/resize:fill:44:44/1*pUa4O3SR1XTWUtUMhnrQUw.jpeg",
-	name: "Dustin Moskovitz",
-};
+// const user = {
+// 	_id: "65deef664a411947d2eb72b7",
+// 	avatar: "https://miro.medium.com/v2/resize:fill:44:44/1*pUa4O3SR1XTWUtUMhnrQUw.jpeg",
+// 	name: "Dustin Moskovitz",
+// };
+const user = JSON.parse(localStorage.getItem("user") as string) || {};
 const dummyArray = [
-	{
-		article,
-		user,
-	},
-	{
-		article,
-		user,
-	},
-	{
-		article,
-		user,
-	},
-	{
-		article,
-		user,
-	},
 	{
 		article,
 		user,
@@ -37,6 +24,26 @@ const dummyArray = [
 ];
 
 function Feeds() {
+	const {
+		data: feeds,
+		isLoading,
+		error,
+		isError,
+	} = useQuery({
+		queryKey: ["feeds", user._id],
+		queryFn: ({ signal }) => fetchFeeds({ id: user._id, signal }),
+	});
+
+	useEffect(() => {
+		console.log(feeds);
+	}, [feeds]);
+
+	if (isError) {
+		const err = new Error(error.message);
+		err.code = error.code;
+		throw err;
+	}
+
 	return (
 		<div className="px-4 py-4 mb-4">
 			<div className="mx-auto max-w-max">
@@ -53,3 +60,18 @@ function Feeds() {
 }
 
 export default Feeds;
+
+async function fetchFeeds({ id, signal }) {
+	const response = await fetch(`/api/article/feeds/user/${id}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
+	const data = await response.json();
+
+	if (data.error) {
+		const error = new Error(data.message);
+		error.code = response.status;
+		throw error;
+	}
+
+	console.log("fetchFeeds:", data);
+
+	return data;
+}

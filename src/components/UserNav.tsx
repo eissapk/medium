@@ -4,6 +4,7 @@ import { useLogout } from "../hooks/useLogout";
 import { Link } from "react-router-dom";
 import { Profile, Edit, LogoMini, Search } from "../assets/icons";
 import { useAuthContext } from "../hooks/useAuthContext";
+import profilePic from "../assets/profile-pic.webp";
 
 const user = JSON.parse(localStorage.getItem("user") as string) || null;
 
@@ -60,7 +61,7 @@ function UserNav() {
 
 				{isNewStoryRoute && (
 					<li>
-						<button type="button" className=" hover:bg-opacity-90 transition-all text-sm rounded-[1em] px-4 py-1 font-normal text-white bg-green">
+						<button type="submit" form="publishNewStory" className=" hover:bg-opacity-90 transition-all text-sm rounded-[1em] px-4 py-1 font-normal text-white bg-green">
 							Publish
 						</button>
 					</li>
@@ -68,7 +69,7 @@ function UserNav() {
 
 				<li className="flex">
 					<button ref={avatar} type="button" onClick={() => setIsShown(!isShown)} className="cursor-pointer opacity-80 hover:opacity-100">
-						<img src={state.user.avatar || `/api/assets/images/profile-pic.png`} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" />
+						<img src={state.user.avatar || profilePic} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" />
 					</button>
 				</li>
 

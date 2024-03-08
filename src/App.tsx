@@ -1,4 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryCLient } from "./utils";
 
 // pages
 import RootLayout from "./pages/RootLayout";
@@ -7,14 +9,14 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
-import ProfileLayout, { loader as ProfileLoader } from "./pages/ProfileLayout";
-import Profile from "./pages/Profile";
+import ProfileLayout, { loader as ProfileLayoutLoader } from "./pages/ProfileLayout";
+import Profile, { loader as ProfileLoader } from "./pages/Profile";
 import About from "./pages/About";
-import Followers from "./pages/Followers";
+import Followers, { loader as FollowersLoader } from "./pages/Followers";
 import Following from "./pages/Following";
 
 import Settings from "./pages/Settings";
-import Article from "./pages/Article";
+import Article, { loader as ArticleLoader } from "./pages/Article";
 import NewStory from "./pages/NewStory";
 
 const router = createBrowserRouter([
@@ -29,21 +31,25 @@ const router = createBrowserRouter([
 			{
 				path: ":userId",
 				element: <ProfileLayout />,
-				loader: ProfileLoader,
+				loader: ProfileLayoutLoader,
 				children: [
-					{ index: true, element: <Profile /> },
+					{ index: true, element: <Profile />, loader: ProfileLoader },
 					{ path: "about", element: <About /> },
-					{ path: "followers", element: <Followers /> },
+					{ path: "followers", element: <Followers />, loader: FollowersLoader },
 					{ path: "following", element: <Following /> },
 				],
 			},
 			{ path: ":userId/settings", element: <Settings /> },
-			{ path: ":userId/:articleId", element: <Article /> },
+			{ path: ":userId/:articleId", element: <Article />, loader: ArticleLoader },
 			{ path: "/new-story", element: <NewStory /> },
 		],
 	},
 ]);
 
 export default function App() {
-	return <RouterProvider router={router} />;
+	return (
+		<QueryClientProvider client={queryCLient}>
+			<RouterProvider router={router} />
+		</QueryClientProvider>
+	);
 }

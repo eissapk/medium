@@ -19,8 +19,7 @@ export const useSignup = () => {
 			return;
 		}
 
-		// save to local storage -- for auto login
-		localStorage.setItem("token", JSON.stringify(json.data.token));
+		// save to local storage -- for displaying essential stuff like user avatar, etc
 		localStorage.setItem("user", JSON.stringify(json.data.user));
 
 		dispatch({ type: LOGIN, payload: json.data.user });

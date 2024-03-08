@@ -1,9 +1,14 @@
-export function getLocalTime(date, format = "long") {
+import Cookies from "universal-cookie";
+export const cookies = new Cookies();
+import { QueryClient } from "@tanstack/react-query";
+export const queryCLient = new QueryClient();
+
+export function getLocalTime(date: string, format = "long") {
 	const t = new Date(date).toString();
 	if (format === "short") return `${t.split(" ")[1]} ${t.split(" ")[3]}`;
 	return `${t.split(" ")[1]} ${t.split(" ")[2]}, ${t.split(" ")[3]}`;
 }
-export const cap = text => {
+export const cap = (text: string) => {
 	return text
 		.toLowerCase()
 		.split(" ")
@@ -12,3 +17,5 @@ export const cap = text => {
 		})
 		.join(" ");
 };
+
+export const getNameFromEmail = (email: string) => email.split("@")[0];

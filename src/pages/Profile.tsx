@@ -1,36 +1,47 @@
+import { useLoaderData, defer, useOutletContext, Await } from "react-router-dom";
 import ArticleItem from "../components/ArticleItem";
-const article = {
-	_id: "65def0994a411947d2eb72e0",
-	title: "Works in Progress: The Long Journey to Doing Good Better",
-	thumbnail: "https://miro.medium.com/v2/resize:fit:1000/1*22QnF5qnl4TLN9b6TpYkHA.png",
-	content: "The more I learn, the more I realize how much I don’t know. — Albert Einstein",
-	readTime: 5,
-	createdAt: "2024-02-28T08:36:41.731Z",
-};
-const user = {
-	_id: "65deef664a411947d2eb72b7",
-	avatar: "https://miro.medium.com/v2/resize:fill:44:44/1*pUa4O3SR1XTWUtUMhnrQUw.jpeg",
-	name: "Dustin Moskovitz",
-};
-const dummyArray = [
-	{
-		article,
-		user,
-	},
-	{
-		article,
-		user,
-	},
-];
+import { Suspense } from "react";
+import Spinner from "../components/Spinner";
 
 function Profile() {
+	const user = useOutletContext();
+	const { userArticles } = useLoaderData();
+
+	if (!user.articles.length) return <p className="text-center text-text-light">No articles yet</p>;
+
 	return (
-		<div className="grid grid-cols-1 gap-y-10">
-			{dummyArray.map((item, index) => (
-				<ArticleItem key={index} article={item.article} user={item.user} isMe={true} />
-			))}
-		</div>
+		<Suspense fallback={<Spinner isArticle={true} />}>
+			<Await resolve={userArticles}>
+				{json => (
+					<div className="grid grid-cols-1 mb-10 gap-y-10">
+						{json.data.map((item, index) => (
+							<ArticleItem key={index} article={item} user={user} isMe={true} />
+						))}
+					</div>
+				)}
+			</Await>
+		</Suspense>
 	);
 }
 
 export default Profile;
+
+const loadArticles = async id => {
+	const response = await fetch("/api/article/user/" + id, { headers: { "Content-Type": "application/json" } });
+	const data = await response.json();
+
+	if (data.error) {
+		const error = new Error(data.message);
+		error.code = response.status;
+		throw error;
+	}
+
+	await new Promise(r => setTimeout(r, 1000)); // for testing
+
+	return data;
+};
+
+export const loader = async ({ params }: { params: { userId: string } }) => {
+	const { userId } = params;
+	return defer({ userArticles: loadArticles(userId) });
+};

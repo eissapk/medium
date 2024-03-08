@@ -1,15 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { Twitter } from "../assets/icons";
-import { getLocalTime, cap } from "../utils";
+import { getLocalTime, cap, getNameFromEmail } from "../utils";
+import { useEffect, useState } from "react";
 
 const linksArr = [
-	{ url: "/me/followers", label: "Followers", namespace: "followers" },
-	{ url: "/me/following", label: "Following", namespace: "following" },
+	{ url: "/{{userId}}/followers", label: "Followers", namespace: "followers" },
+	{ url: "/{{userId}}/following", label: "Following", namespace: "following" },
 ];
-//  todo: check if iam the user or not (1. iam the user 2. iam not the user and logged in 3. not logged in and not the user)
-const user = JSON.parse(localStorage.getItem("user") as string) || {};
-// user.bio = "Editor of INSURGE intelligence and Return of the Reich";
-// user.socialLinks = [{ url: "https://twitter.com/insurge", namespace: "twitter" }];
 
 function Icon({ name, ...props }) {
 	switch (name) {
@@ -19,6 +16,15 @@ function Icon({ name, ...props }) {
 }
 
 function About() {
+	const user = useOutletContext();
+	// user.bio = "Editor of INSURGE intelligence and Return of the Reich";
+	// user.socialLinks = [{ url: "https://twitter.com/insurge", namespace: "twitter" }];
+	const [links, setLinks] = useState(linksArr);
+
+	useEffect(() => {
+		setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, user._id) })));
+	}, [user]);
+
 	return (
 		<div>
 			{/* bio */}
@@ -26,10 +32,10 @@ function About() {
 
 			{/* following/followers */}
 			<ul className="flex my-6">
-				{linksArr.map((item, index) => (
+				{links.map((item, index) => (
 					<li key={index}>
 						<Link to={item.url} className="text-sm transition-all text-green opacity-80 hover:opacity-100">
-							{user[item.namespace]} {item.label}
+							{user[item.namespace].length} {item.label}
 						</Link>
 						{index == 0 && <span className="mx-4 text-sm text-text-dark">·</span>}
 					</li>
@@ -39,7 +45,7 @@ function About() {
 			{/* social links */}
 			{user.socialLinks.length ? (
 				<ul className="flex gap-x-4">
-					<li className="text-sm text-text-dark">Connect with {cap(user.name || user.email.split("@")[0])}</li>
+					<li className="text-sm text-text-dark">Connect with {cap(user.name || getNameFromEmail(user.email))}</li>
 					{user.socialLinks.map((item, index) => (
 						<li key={index}>
 							<a href={item.url} target="_blank" className="text-black-900">

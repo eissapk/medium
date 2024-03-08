@@ -3,15 +3,37 @@ import { Link } from "react-router-dom";
 
 function Error() {
 	const err = useRouteError();
-	console.log(err);
+
+	// console.log("message:", err.message);
+	// console.log("code:", err.code);
 
 	let title = "An error occurred";
-	let message = "Something went wrong";
+	const message = err.message || "Something went wrong";
 
-	if (err.status === 500) message = err.data.message;
-	if (err.status === 404) {
-		title = "Not found";
-		message = "Could not find resource";
+	switch (err.code) {
+		case 400:
+			title = "Bad request";
+			break;
+		case 401:
+			title = "Unauthorized";
+			break;
+		case 403:
+			title = "Forbidden";
+			break;
+		case 404:
+			title = "Not found";
+			break;
+		case 405:
+			title = "Method not allowed";
+			break;
+		case 500:
+			title = "Internal server error";
+			break;
+		case 501:
+			title = "Method not implemented";
+			break;
+		case 502:
+			title = "Bad gateway";
 	}
 
 	return (

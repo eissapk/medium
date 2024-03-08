@@ -1,3 +1,4 @@
+// todo create end point to get latest articles
 import ArticleItem from "./ArticleItem";
 const article = {
 	_id: "65def0994a411947d2eb72e0",

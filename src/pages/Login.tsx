@@ -45,7 +45,7 @@ function Login() {
 
 				<p className="mt-4 text-center text-text-light">
 					<span className="me-2">No account?</span>
-					<Link to="/login" className="font-medium text-green ">
+					<Link to="/signup" className="font-medium text-green ">
 						Create one
 					</Link>
 				</p>
