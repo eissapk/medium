@@ -19,3 +19,7 @@ export function logger(req, res, next) {
 	console.log(req.path, req.method);
 	next();
 }
+
+export const expiresIn = (period: number) => {
+	return new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * period);
+};

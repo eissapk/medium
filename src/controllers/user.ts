@@ -1,7 +1,17 @@
 import User from "../models/user";
 import bcrypt from "bcryptjs";
-import { createToken, validator } from "../utils";
+import { createToken, expiresIn, validator } from "../utils";
 import mongoose from "mongoose";
+
+const cookieConfig = ({ days = 30, httpOnly = false }: { days?: number; httpOnly?: boolean }) => {
+	return {
+		sameSite: "strict",
+		path: "/",
+		expires: expiresIn(days),
+		httpOnly,
+		secure: true, // cookie created only on https protocols
+	};
+};
 
 export const loginUser = async (req, res) => {
 	const { email, password } = req.body;
@@ -22,26 +32,30 @@ export const loginUser = async (req, res) => {
 		const token = createToken(user.id);
 		// todo add a cookie
 
-		res.status(200).json({
-			success: true,
-			message: "logged-in successfuly",
-			data: {
-				token,
-				user: {
-					email,
-					_id: user._id,
-					avatar: user.avatar,
-					name: user.name,
-					title: user.title,
-					bio: user.bio,
-					socialLinks: user.socialLinks,
-					articles: user.articles.length,
-					followers: user.followers.length,
-					following: user.following.length,
-					createdAt: user.createdAt,
+		res
+			.status(200)
+			.cookie("token", token, cookieConfig({ httpOnly: true }))
+			.cookie("email", email, cookieConfig({}))
+			.cookie("userId", user._id, cookieConfig({}))
+			.json({
+				success: true,
+				message: "logged-in successfuly",
+				data: {
+					user: {
+						email,
+						_id: user._id,
+						avatar: user.avatar,
+						name: user.name,
+						title: user.title,
+						bio: user.bio,
+						socialLinks: user.socialLinks,
+						articles: user.articles.length,
+						followers: user.followers.length,
+						following: user.following.length,
+						createdAt: user.createdAt,
+					},
 				},
-			},
-		});
+			});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
 	}
@@ -67,27 +81,30 @@ export const signupUser = async (req, res) => {
 		const user = await User.create({ email, password: hash });
 		const token = createToken(user.id);
 
-		// todo add a cookie
-		res.status(200).json({
-			success: true,
-			message: "signed up successfuly",
-			data: {
-				token,
-				user: {
-					email,
-					_id: user._id,
-					avatar: user.avatar,
-					name: user.name,
-					title: user.title,
-					bio: user.bio,
-					socialLinks: user.socialLinks,
-					articles: user.articles.length,
-					followers: user.followers.length,
-					following: user.following.length,
-					createdAt: user.createdAt,
+		res
+			.status(200)
+			.cookie("token", token, cookieConfig({ httpOnly: true }))
+			.cookie("email", email, cookieConfig({}))
+			.cookie("userId", user._id, cookieConfig({}))
+			.json({
+				success: true,
+				message: "signed up successfuly",
+				data: {
+					user: {
+						email,
+						_id: user._id,
+						avatar: user.avatar,
+						name: user.name,
+						title: user.title,
+						bio: user.bio,
+						socialLinks: user.socialLinks,
+						articles: user.articles.length,
+						followers: user.followers.length,
+						following: user.following.length,
+						createdAt: user.createdAt,
+					},
 				},
-			},
-		});
+			});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
 	}
