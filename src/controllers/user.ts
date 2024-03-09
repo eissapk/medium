@@ -21,7 +21,7 @@ export const loginUser = async (req, res) => {
 		const user = await User.findOne({ email });
 		if (!user) {
 			// todo: add brute force attack protection , e.g. counter of failed login max 3 times and then block the user and force him to change password
-			return res.status(400).json({ error: true, message: "Invalid login credentials" });
+			return res.status(400).json({ error: true, message: "User doesn't exist!" }); // it should be invalid login credentials for fooling hackers
 		}
 
 		const match = await bcrypt.compare(password, user.password);
@@ -109,6 +109,7 @@ export const signupUser = async (req, res) => {
 		res.status(400).json({ error: true, message: err.message });
 	}
 };
+
 export const getAllUsers = async (req, res) => {
 	// const { start, end } = req.body; // todo
 	try {
@@ -181,6 +182,38 @@ export const unFollowUser = async (req, res) => {
 		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: foreignUser.followers.filter(item => item.toString() != currentUserId.toString()) });
 
 		res.status(200).json({ success: true, message: `User: ${currentUserId}, unfollowed: ${foreignUserId}` });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
+};
+
+export const getUserFollowers = async (req, res) => {
+	const { id } = req.params;
+	if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+
+	try {
+		const user = await User.findById(id);
+		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+
+		const followers = await User.find({ _id: { $in: user.followers } }).sort({ createdAt: -1 });
+
+		res.status(200).json({ success: true, data: followers });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
+};
+
+export const getUserFollowing = async (req, res) => {
+	const { id } = req.params;
+	if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+
+	try {
+		const user = await User.findById(id);
+		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+
+		const following = await User.find({ _id: { $in: user.following } }).sort({ createdAt: -1 });
+
+		res.status(200).json({ success: true, data: following });
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
 	}

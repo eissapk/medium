@@ -47,10 +47,17 @@ export const getUserFeeds = async (req, res) => {
 		const user = await User.findById(id);
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 
-		const userFollowing = user.following;
-		const articles = await Article.find({ ownedBy: { $in: userFollowing } }).sort({ createdAt: -1 }); // todo: add limit
+		const articles = await Article.find({ ownedBy: { $in: user.following } }).sort({ createdAt: -1 }); // todo: add limit
+		const users = await User.find({ _id: { $in: user.following } });
 
-		res.status(200).json({ success: true, data: articles || [] });
+		// bind user info to his own articles
+		const modifiedArticles = articles.map((articleItem: any) => {
+			const matchedUser = users.find(userItem => userItem._id.toString() == articleItem.ownedBy.toString());
+			if (matchedUser) return { ...articleItem.toJSON(), user: matchedUser };
+			return articleItem;
+		});
+
+		res.status(200).json({ success: true, data: modifiedArticles });
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
 	}
