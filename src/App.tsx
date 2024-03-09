@@ -12,7 +12,7 @@ import Signup from "./pages/Signup";
 import ProfileLayout, { loader as ProfileLayoutLoader } from "./pages/ProfileLayout";
 import Profile, { loader as ProfileLoader } from "./pages/Profile";
 import About from "./pages/About";
-import Followers, { loader as FollowersLoader } from "./pages/Followers";
+import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 
 import Settings from "./pages/Settings";
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <Profile />, loader: ProfileLoader },
 					{ path: "about", element: <About /> },
-					{ path: "followers", element: <Followers />, loader: FollowersLoader },
+					{ path: "followers", element: <Followers /> },
 					{ path: "following", element: <Following /> },
 				],
 			},

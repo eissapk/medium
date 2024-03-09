@@ -21,10 +21,10 @@ const AuthContextProvier = ({ children }) => {
 
 	// make user auto login
 	useEffect(() => {
-		// it's being set by server (httpOnly)
-		const email = cookies.get("email");
-		const userId = cookies.get("userId");
-		if (email && userId) {
+		const email = cookies.get("email"); // set by server (httpOnly)
+		const userId = cookies.get("userId"); // set by server (httpOnly)
+		const user = localStorage.getItem("user");
+		if (user && email && userId) {
 			dispatch({ type: LOGIN, payload: { email, userId } });
 		}
 	}, []);

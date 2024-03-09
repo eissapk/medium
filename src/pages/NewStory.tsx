@@ -1,5 +1,6 @@
+// todo add thumnail and editor
 import { useState } from "react";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { cookies } from "../utils";
 function NewStory() {
 	const navigate = useNavigate();

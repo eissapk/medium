@@ -1,44 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import ArticleItem from "./ArticleItem";
-import { useEffect } from "react";
-
-const article = {
-	_id: "65def0994a411947d2eb72e0",
-	title: "Works in Progress: The Long Journey to Doing Good Better",
-	thumbnail: "https://miro.medium.com/v2/resize:fit:1000/1*22QnF5qnl4TLN9b6TpYkHA.png",
-	content: "The more I learn, the more I realize how much I don’t know. — Albert Einstein",
-	readTime: 5,
-	createdAt: "2024-02-28T08:36:41.731Z",
-};
-// const user = {
-// 	_id: "65deef664a411947d2eb72b7",
-// 	avatar: "https://miro.medium.com/v2/resize:fill:44:44/1*pUa4O3SR1XTWUtUMhnrQUw.jpeg",
-// 	name: "Dustin Moskovitz",
-// };
-const user = JSON.parse(localStorage.getItem("user") as string) || {};
-const dummyArray = [
-	{
-		article,
-		user,
-	},
-];
+import Spinner from "./Spinner";
+// import { useLogout } from "../hooks/useLogout";
 
 function Feeds() {
+	const user = JSON.parse(localStorage.getItem("user") as string) || {};
+	// const { logout } = useLogout();
+
 	const {
 		data: feeds,
-		isLoading,
+		isPending,
 		error,
 		isError,
 	} = useQuery({
 		queryKey: ["feeds", user._id],
 		queryFn: ({ signal }) => fetchFeeds({ id: user._id, signal }),
+		staleTime: 10000, // prevernt redundant fetching
 	});
 
-	useEffect(() => {
-		console.log(feeds);
-	}, [feeds]);
-
 	if (isError) {
+		// logout(); // fix a bug temporary
 		const err = new Error(error.message);
 		err.code = error.code;
 		throw err;
@@ -47,12 +28,20 @@ function Feeds() {
 	return (
 		<div className="px-4 py-4 mb-4">
 			<div className="mx-auto max-w-max">
-				<h1 className="inline-block pb-4 mt-6 text-sm border-b text-text-light border-border-light pe-2">Latest from people you follow</h1>
+				<h1 className="inline-block pb-4 mt-6 font-medium text-sm border-b text-text-dark border-border-light pe-4">Latest from people you follow</h1>
 
 				<div className="grid grid-cols-1 py-5 mt-5 gap-y-10 gap-x-20 md:grid-cols-2">
-					{dummyArray.map((item, index) => (
-						<ArticleItem key={index} article={item.article} user={item.user} />
-					))}
+					{isPending && (
+						<>
+							<Spinner isArticle={true} />
+							<Spinner isArticle={true} />
+							<Spinner isArticle={true} />
+							<Spinner isArticle={true} />
+						</>
+					)}
+					{!isPending && !isError && !feeds.data.length && <p className="text-xs text-center text-text-light col-span-2">No feeds yet</p>}
+					{/* todo: need to bind user data in feeds response to each object in the array (email, name, avatar) */}
+					{!isPending && !isError && feeds.data.map((item, index) => <ArticleItem key={index} article={item} user={item.user} />)}
 				</div>
 			</div>
 		</div>
@@ -65,13 +54,12 @@ async function fetchFeeds({ id, signal }) {
 	const response = await fetch(`/api/article/feeds/user/${id}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
 	const data = await response.json();
 
+	await new Promise(r => setTimeout(r, 500)); // for testing
 	if (data.error) {
 		const error = new Error(data.message);
 		error.code = response.status;
 		throw error;
 	}
-
-	console.log("fetchFeeds:", data);
 
 	return data;
 }

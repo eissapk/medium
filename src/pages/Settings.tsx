@@ -1,3 +1,4 @@
+// handle this and it's endpoints -- vip to add profile picture
 function Settings() {
 	function showModal() {
 		console.log("showModal form");

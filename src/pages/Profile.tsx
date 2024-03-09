@@ -7,7 +7,7 @@ function Profile() {
 	const user = useOutletContext();
 	const { userArticles } = useLoaderData();
 
-	if (!user.articles.length) return <p className="text-center text-text-light">No articles yet</p>;
+	if (!user.articles.length) return <p className="text-xs text-center text-text-light">No articles yet</p>;
 
 	return (
 		<Suspense fallback={<Spinner isArticle={true} />}>
@@ -36,7 +36,7 @@ const loadArticles = async id => {
 		throw error;
 	}
 
-	await new Promise(r => setTimeout(r, 1000)); // for testing
+	await new Promise(r => setTimeout(r, 500)); // for testing
 
 	return data;
 };

@@ -2,10 +2,12 @@ const Spinner = ({
 	isArticle = false,
 	isAvatar = false,
 	isLine = false,
+	isUser = false,
 	className,
 	children,
 }: {
 	isArticle?: boolean;
+	isUser?: boolean;
 	isAvatar?: boolean;
 	isLine?: boolean;
 	className?: string;
@@ -19,6 +21,27 @@ const Spinner = ({
 						<div className="w-20 h-20 mb-4 rounded-full bg-slate-200"></div>
 						<div className="flex-1 py-1 !m-0 space-y-6">
 							<div className="h-2 rounded bg-slate-200"></div>
+							<div className="space-y-3">
+								<div className="grid grid-cols-3 gap-4">
+									<div className="h-2 col-span-2 rounded bg-slate-200"></div>
+									<div className="h-2 col-span-1 rounded bg-slate-200"></div>
+								</div>
+								<div className="h-2 rounded bg-slate-200"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{children}
+			</>
+		);
+	}
+	if (isUser) {
+		return (
+			<>
+				<div className={`w-full rounded-md ${className}`}>
+					<div className="flex items-center space-x-4 animate-pulse">
+						<div className="w-12 h-12 rounded-full me-4 bg-slate-200"></div>
+						<div className="flex-1 py-1 !m-0 space-y-6">
 							<div className="space-y-3">
 								<div className="grid grid-cols-3 gap-4">
 									<div className="h-2 col-span-2 rounded bg-slate-200"></div>

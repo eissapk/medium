@@ -1,6 +1,7 @@
-import { Outlet, Link, NavLink, defer, Await, useLoaderData } from "react-router-dom";
-import { cap, getNameFromEmail } from "../utils";
+import { Outlet, Link, NavLink, defer, Await, useLoaderData, useParams, useLocation } from "react-router-dom";
+import { cap, getNameFromEmail, cookies } from "../utils";
 import { Suspense, useEffect, useState } from "react";
+import FollowButton from "../components/FollowButton";
 import Spinner from "../components/Spinner";
 import profilePic from "../assets/profile-pic.webp";
 
@@ -18,13 +19,16 @@ function activeRoute({ isActive }) {
 const userNameClasses = "text-[2.6rem] text-black-200 font-medium";
 
 function ProfileLayout() {
+	const { userId } = useParams();
+	const location = useLocation();
 	const { userData } = useLoaderData();
 	const [links, setLinks] = useState(linksArr);
+	const loggedInUserId = cookies.get("userId");
 
 	useEffect(() => {
 		// update links based on current fetched user
 		userData.then(json => setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, json.data._id) }))));
-	}, [userData]);
+	}, [userData, userId]);
 
 	return (
 		<main className="px-4">
@@ -43,10 +47,7 @@ function ProfileLayout() {
 									{user => (
 										<>
 											<h1 className={userNameClasses}>{cap(user.data?.name || getNameFromEmail(user.data?.email))}</h1>
-											{/* todo: handle it later */}
-											<button type="button" className="flex px-4 py-2 mt-5 text-sm transition-all border rounded-full md:hidden opacity-80 hover:opacity-100 text-green border-green">
-												Following
-											</button>
+											<FollowButton className="md:hidden" relatedUser={user.data} loggedInUserId={loggedInUserId} profileId={userId} profileUrl={location.pathname} />
 										</>
 									)}
 								</Await>
@@ -91,10 +92,7 @@ function ProfileLayout() {
 									{/* title */}
 									{user.data?.title && <p className="mt-3 text-sm text-text-light">{user.data?.title}</p>}
 									{/* cta */}
-									{/* todo: handle it later */}
-									<button type="button" className="flex px-4 py-2 mt-5 text-sm transition-all border rounded-full opacity-80 hover:opacity-100 text-green border-green">
-										Following
-									</button>
+									<FollowButton className="mt-2" relatedUser={user.data} loggedInUserId={loggedInUserId} profileId={userId} profileUrl={location.pathname} />
 								</>
 							)}
 						</Await>
@@ -118,7 +116,6 @@ const loadUser = async id => {
 	}
 
 	await new Promise(r => setTimeout(r, 500)); // for testing
-	console.log("loadUsers:", data);
 
 	return data;
 };

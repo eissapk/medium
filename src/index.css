@@ -52,6 +52,7 @@
 :root {
 }
 
+#root,
 body {
 	@apply bg-white font-main text-main min-h-[100vh];
 }

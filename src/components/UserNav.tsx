@@ -6,9 +6,8 @@ import { Profile, Edit, LogoMini, Search } from "../assets/icons";
 import { useAuthContext } from "../hooks/useAuthContext";
 import profilePic from "../assets/profile-pic.webp";
 
-const user = JSON.parse(localStorage.getItem("user") as string) || null;
-
 function UserNav() {
+	const user = JSON.parse(localStorage.getItem("user") as string) || {};
 	const navigate = useNavigate();
 	const { state } = useAuthContext();
 	const { logout } = useLogout();
@@ -31,7 +30,7 @@ function UserNav() {
 
 	const handleLogout = () => {
 		logout();
-		navigate("/");
+		setTimeout(() => navigate("/"), 200);
 	};
 	return (
 		<nav className="flex flex-col items-center justify-between py-2 bg-white gap-y-5 sm:flex-row">
@@ -74,7 +73,7 @@ function UserNav() {
 				</li>
 
 				{isShown && (
-					<div className="absolute right-0 bg-white rounded top-[calc(100%+0.5em)] border-line shadow-menu text-sm min-w-60 py-2">
+					<div className="absolute right-0 bg-white rounded top-[calc(100%+0.5em)] border-line shadow-menu text-sm min-w-60 py-2 z-[1]">
 						<ul>
 							<li>
 								<Link to={"/" + user._id} className="flex items-center px-6 py-2 gap-x-4 group/profile">
