@@ -40,21 +40,7 @@ export const loginUser = async (req, res) => {
 			.json({
 				success: true,
 				message: "logged-in successfuly",
-				data: {
-					user: {
-						email,
-						_id: user._id,
-						avatar: user.avatar,
-						name: user.name,
-						title: user.title,
-						bio: user.bio,
-						socialLinks: user.socialLinks,
-						articles: user.articles.length,
-						followers: user.followers.length,
-						following: user.following.length,
-						createdAt: user.createdAt,
-					},
-				},
+				data: { user: { ...user.toJSON(), password: null } },
 			});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
@@ -89,21 +75,7 @@ export const signupUser = async (req, res) => {
 			.json({
 				success: true,
 				message: "signed up successfuly",
-				data: {
-					user: {
-						email,
-						_id: user._id,
-						avatar: user.avatar,
-						name: user.name,
-						title: user.title,
-						bio: user.bio,
-						socialLinks: user.socialLinks,
-						articles: user.articles.length,
-						followers: user.followers.length,
-						following: user.following.length,
-						createdAt: user.createdAt,
-					},
-				},
+				data: { user: { ...user.toJSON(), password: null } },
 			});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
