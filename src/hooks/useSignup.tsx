@@ -19,9 +19,7 @@ export const useSignup = () => {
 			return;
 		}
 
-		// save to local storage -- for displaying essential stuff like user avatar, etc
-		localStorage.setItem("user", JSON.stringify(json.data.user));
-
+		// no need to save user email or id as it's set by server (httpOnly, cookies)
 		dispatch({ type: LOGIN, payload: json.data.user });
 
 		setIsLoading(false);

@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import Spinner from "../components/Spinner";
 
 function Followers() {
-	const user = useOutletContext();
+	const { user } = useOutletContext();
 	const {
 		isPending,
 		error,
@@ -21,7 +21,7 @@ function Followers() {
 	});
 
 	useEffect(() => {
-		console.log(user._id);
+		// console.log(user._id);
 
 		if (user.followers.length) refetch(); // fetch only if there are followers
 	}, [user, refetch]);
@@ -49,9 +49,9 @@ function Followers() {
 								</a>
 								{/* todo: check if user id is in followers array of current logged in user or not to show follow/unfollow button */}
 
-								<button type="button" className="flex px-4 py-2 text-sm text-white transition-all rounded-full opacity-80 hover:opacity-100 bg-green">
+								{/* <button type="button" className="flex px-4 py-2 text-sm text-white transition-all rounded-full opacity-80 hover:opacity-100 bg-green">
 									Follow
-								</button>
+								</button> */}
 							</li>
 						))}
 				</ul>
@@ -72,7 +72,7 @@ const loadFollowers = async ({ userId, signal }: { userId: string; signal: Abort
 	}
 
 	await new Promise(r => setTimeout(r, 500)); // for testing
-	console.log("loadFollowers:", json);
+	// console.log("loadFollowers:", json);
 
 	return json;
 };

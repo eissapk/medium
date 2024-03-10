@@ -9,7 +9,7 @@ import FollowButton from "../components/FollowButton";
 
 function Following() {
 	const location = useLocation();
-	const user = useOutletContext();
+	const { user } = useOutletContext();
 	const {
 		isPending,
 		error,
@@ -49,7 +49,7 @@ function Following() {
 									<span className="font-medium text-text-dark ps-2">{cap(item.name || getNameFromEmail(item.email))}</span>
 								</a>
 
-								<FollowButton relatedUser={item} loggedInUserId={loggedInUserId} profileId={user._id} profileUrl={location.pathname} />
+								{/* <FollowButton relatedUser={item} loggedInUserId={loggedInUserId} profileId={user._id} profileUrl={location.pathname} /> */}
 							</li>
 						))}
 				</ul>
@@ -70,7 +70,7 @@ const loadFollowing = async ({ userId, signal }: { userId: string; signal: Abort
 	}
 
 	await new Promise(r => setTimeout(r, 500)); // for testing
-	console.log("loadFollowing:", json);
+	// console.log("loadFollowing:", json);
 
 	return json;
 };

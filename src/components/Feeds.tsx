@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import ArticleItem from "./ArticleItem";
 import Spinner from "./Spinner";
-// import { useLogout } from "../hooks/useLogout";
+import { cookies } from "../utils";
+import { useLogout } from "../hooks/useLogout";
 
 function Feeds() {
-	const user = JSON.parse(localStorage.getItem("user") as string) || {};
-	// const { logout } = useLogout();
+	const { logout } = useLogout();
+	const userId = cookies.get("userId");
+	if (!userId) logout();
 
 	const {
 		data: feeds,
@@ -13,14 +15,14 @@ function Feeds() {
 		error,
 		isError,
 	} = useQuery({
-		queryKey: ["feeds", user._id],
-		queryFn: ({ signal }) => fetchFeeds({ id: user._id, signal }),
+		queryKey: ["feeds", userId],
+		queryFn: ({ signal }) => fetchFeeds({ userId, signal }),
 		staleTime: 10000, // prevernt redundant fetching
 	});
 
 	if (isError) {
 		// logout(); // fix a bug temporary
-		const err = new Error(error.message);
+		const err: { code: number; message: string } = new Error(error.message);
 		err.code = error.code;
 		throw err;
 	}
@@ -40,8 +42,7 @@ function Feeds() {
 						</>
 					)}
 					{!isPending && !isError && !feeds.data.length && <p className="text-xs text-center text-text-light col-span-2">No feeds yet</p>}
-					{/* todo: need to bind user data in feeds response to each object in the array (email, name, avatar) */}
-					{!isPending && !isError && feeds.data.map((item, index) => <ArticleItem key={index} article={item} user={item.user} />)}
+					{!isPending && !isError && feeds.data.map((item: object, index: number) => <ArticleItem key={index} article={item} />)}
 				</div>
 			</div>
 		</div>
@@ -50,13 +51,13 @@ function Feeds() {
 
 export default Feeds;
 
-async function fetchFeeds({ id, signal }) {
-	const response = await fetch(`/api/article/feeds/user/${id}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
+async function fetchFeeds({ userId, signal }: { userId: string; signal: AbortSignal }) {
+	const response = await fetch(`/api/article/feeds/user/${userId}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
 	const data = await response.json();
 
 	await new Promise(r => setTimeout(r, 500)); // for testing
 	if (data.error) {
-		const error = new Error(data.message);
+		const error: { code: number; message: string } = new Error(data.message);
 		error.code = response.status;
 		throw error;
 	}

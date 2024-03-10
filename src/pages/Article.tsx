@@ -30,7 +30,7 @@ const loadArticle = async (userId, articleId) => {
 		error.code = response.status;
 		throw error;
 	}
-	console.log("loadArticle:", data);
+	// console.log("loadArticle:", data);
 	return data;
 };
 export const loader = async ({ params }: { params: { userId: string; articleId: string } }) => {

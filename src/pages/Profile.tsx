@@ -4,7 +4,8 @@ import { Suspense } from "react";
 import Spinner from "../components/Spinner";
 
 function Profile() {
-	const user = useOutletContext();
+	const { user } = useOutletContext();
+
 	const { userArticles } = useLoaderData();
 
 	if (!user.articles.length) return <p className="text-xs text-center text-text-light">No articles yet</p>;
@@ -15,7 +16,7 @@ function Profile() {
 				{json => (
 					<div className="grid grid-cols-1 mb-10 gap-y-10">
 						{json.data.map((item, index) => (
-							<ArticleItem key={index} article={item} user={user} isMe={true} />
+							<ArticleItem key={index} article={{ ...item, user }} isMe={true} />
 						))}
 					</div>
 				)}
@@ -31,7 +32,7 @@ const loadArticles = async id => {
 	const data = await response.json();
 
 	if (data.error) {
-		const error = new Error(data.message);
+		const error: { code: number; message: string } = new Error(data.message);
 		error.code = response.status;
 		throw error;
 	}

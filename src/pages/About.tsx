@@ -16,7 +16,7 @@ function Icon({ name, ...props }) {
 }
 
 function About() {
-	const user = useOutletContext();
+	const { user } = useOutletContext();
 	// user.bio = "Editor of INSURGE intelligence and Return of the Reich";
 	// user.socialLinks = [{ url: "https://twitter.com/insurge", namespace: "twitter" }];
 	const [links, setLinks] = useState(linksArr);

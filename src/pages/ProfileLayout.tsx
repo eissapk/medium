@@ -23,12 +23,19 @@ function ProfileLayout() {
 	const location = useLocation();
 	const { userData } = useLoaderData();
 	const [links, setLinks] = useState(linksArr);
-	const loggedInUserId = cookies.get("userId");
+	const [followersCounter, setFollowersCounter] = useState(0);
 
 	useEffect(() => {
 		// update links based on current fetched user
-		userData.then(json => setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, json.data._id) }))));
+		userData.then(json => setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, json.user._id) }))));
 	}, [userData, userId]);
+
+	// todo: check best way to add follow/unfollow button and update followers in real time with db
+	function followersCounterHandler({ increase }: { increase: boolean }) {
+		console.log("followersCounter:", increase);
+		if (increase) setFollowersCounter(1);
+		else setFollowersCounter(0);
+	}
 
 	return (
 		<main className="px-4">
@@ -36,7 +43,7 @@ function ProfileLayout() {
 				{/* left side */}
 				<div className="pt-10">
 					<div className="pb-8">
-						<div className="flex justify-between">
+						<div className="flex justify-between items-center">
 							<Suspense
 								fallback={
 									<Spinner className="w-[50%]" isLine={true}>
@@ -44,10 +51,10 @@ function ProfileLayout() {
 									</Spinner>
 								}>
 								<Await resolve={userData}>
-									{user => (
+									{({ user, loggedUser }) => (
 										<>
-											<h1 className={userNameClasses}>{cap(user.data?.name || getNameFromEmail(user.data?.email))}</h1>
-											<FollowButton className="md:hidden" relatedUser={user.data} loggedInUserId={loggedInUserId} profileId={userId} profileUrl={location.pathname} />
+											<h1 className={userNameClasses}>{cap(user.name || getNameFromEmail(user.email))}</h1>
+											<FollowButton onClick={followersCounterHandler} className="md:hidden" relatedUser={user} loggedUser={loggedUser} profileId={userId} profileUrl={location.pathname} />
 										</>
 									)}
 								</Await>
@@ -67,7 +74,7 @@ function ProfileLayout() {
 
 					<div>
 						<Suspense fallback={<Spinner isArticle={true} />}>
-							<Await resolve={userData}>{user => <Outlet context={user.data} />}</Await>
+							<Await resolve={userData}>{({ user }) => <Outlet context={{ user }} />}</Await>
 						</Suspense>
 					</div>
 				</div>
@@ -76,23 +83,23 @@ function ProfileLayout() {
 				<div className="hidden pt-10 ps-10 border-s border-border-light md:block">
 					<Suspense fallback={<Spinner isAvatar={true} />}>
 						<Await resolve={userData}>
-							{user => (
+							{({ user, loggedUser }) => (
 								<>
 									{/* avatar */}
 									<div className="flex flex-col mb-4">
-										<img src={user.data?.avatar || profilePic} alt="avatar" className="w-20 rounded-full" />
+										<img src={user?.avatar || profilePic} alt="avatar" className="w-20 rounded-full" />
 									</div>
 
 									{/* name */}
-									<p className="mb-1 font-medium text-text-dark">{cap(user.data?.name || getNameFromEmail(user.data?.email))}</p>
+									<p className="mb-1 font-medium text-text-dark">{cap(user?.name || getNameFromEmail(user?.email))}</p>
 									{/* followers */}
-									<Link to={"/" + user.data?._id + "/followers"} className="transition-all text-text-light hover:text-black-200">
-										{user.data.followers.length} Followers
+									<Link to={"/" + user?._id + "/followers"} className="transition-all text-text-light hover:text-black-200">
+										{user.followers.length + followersCounter} Followers
 									</Link>
 									{/* title */}
-									{user.data?.title && <p className="mt-3 text-sm text-text-light">{user.data?.title}</p>}
+									{user?.title && <p className="mt-3 text-sm text-text-light">{user?.title}</p>}
 									{/* cta */}
-									<FollowButton className="mt-2" relatedUser={user.data} loggedInUserId={loggedInUserId} profileId={userId} profileUrl={location.pathname} />
+									<FollowButton onClick={followersCounterHandler} className="mt-2" relatedUser={user} loggedUser={loggedUser} profileId={userId} profileUrl={location.pathname} />
 								</>
 							)}
 						</Await>
@@ -105,22 +112,41 @@ function ProfileLayout() {
 
 export default ProfileLayout;
 
-const loadUser = async id => {
+const loadUser = async (id: string) => {
 	const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
-	const data = await response.json();
+	const json = await response.json();
 
-	if (data.error) {
-		const error = new Error(data.message);
+	if (json.error) {
+		const error: { code: number; message: string } = new Error(json.message);
 		error.code = response.status;
 		throw error;
 	}
-
 	await new Promise(r => setTimeout(r, 500)); // for testing
+	// console.log("loadUser:", json);
+	return json.data;
+};
 
-	return data;
+const loadLoggedUser = async (id: string) => {
+	const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
+	const json = await response.json();
+	if (json.error) {
+		const error: { code: number; message: string } = new Error(json.message);
+		error.code = response.status;
+		throw error;
+	}
+	await new Promise(r => setTimeout(r, 500)); // for testing
+	// console.log("loadLoggedUser", json);
+	return json.data;
+};
+
+const loadUsers = async ({ userId, loggedUserId }: { userId: string; loggedUserId: string }) => {
+	const loggedUser = await loadLoggedUser(loggedUserId);
+	const user = await loadUser(userId);
+	return { loggedUser, user };
 };
 
 export const loader = async ({ params }: { params: { userId: string } }) => {
 	const { userId } = params;
-	return defer({ userData: loadUser(userId) });
+	const loggedUserId = cookies.get("userId");
+	return defer({ userData: loadUsers({ userId, loggedUserId }) });
 };

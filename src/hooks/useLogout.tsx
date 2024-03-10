@@ -10,7 +10,6 @@ export const useLogout = () => {
 	const logout = () => {
 		cookies.remove("email");
 		cookies.remove("userId");
-		localStorage.removeItem("user");
 		setTimeout(() => navigate("/"), 200);
 
 		// memory

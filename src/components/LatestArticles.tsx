@@ -44,7 +44,7 @@ function LatestArticles() {
 
 					<div className="grid grid-cols-1 py-5 mt-5 gap-y-10 gap-x-20 md:grid-cols-2">
 						{dummyArray.map((item, index) => (
-							<ArticleItem key={index} article={item.article} user={item.user} />
+							<ArticleItem key={index} article={{ ...item.article, user: item.user }} />
 						))}
 					</div>
 				</div>

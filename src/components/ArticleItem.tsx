@@ -9,21 +9,20 @@ type ARTICLE = {
 	readTime: number;
 	createdAt: string;
 	ownedBy: string;
+	user: {
+		avatar: string;
+		name: string;
+		email: string;
+	};
 };
 
-type USER = {
-	avatar: string;
-	name: string;
-	email: string;
-};
-
-function ArticleItem({ article, user, isMe }: { article: ARTICLE; user: USER; isMe?: boolean }) {
+function ArticleItem({ article, isMe }: { article: ARTICLE; isMe?: boolean }) {
 	return (
 		<article>
 			{!isMe && (
 				<a href={`/${article.ownedBy}`} className="inline-flex items-center mb-2 gap-x-2">
-					<img className="h-6 rounded-full" src={user?.avatar || profilePic} alt="Author avatar" />
-					<span className="text-sm font-medium">{user?.name || getNameFromEmail(user?.email)}</span>
+					<img className="h-6 rounded-full" src={article.user?.avatar || profilePic} alt="Author avatar" />
+					<span className="text-sm font-medium">{article.user?.name || getNameFromEmail(article.user?.email)}</span>
 				</a>
 			)}
 
