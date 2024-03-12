@@ -1,30 +1,41 @@
-import { cap, getNameFromEmail } from "../utils";
+import { cap, cookies, getNameFromEmail } from "../utils";
 import profilePic from "../assets/profile-pic.webp";
-import { useOutletContext } from "react-router-dom";
-import { useEffect } from "react";
+import { useLocation, useOutletContext } from "react-router-dom";
+import { useEffect, useState } from "react";
 import cx from "classnames";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "../components/Spinner";
+import FollowButton from "../components/FollowButton";
 
 function Followers() {
-	const { user } = useOutletContext();
+	const location = useLocation();
+	const [loggedUser, setLoggedUser] = useState(null);
+	const { user, cb } = useOutletContext(); // this is the user of opened profile not the user related to follow button block element, so be careful
 	const {
 		isPending,
 		error,
 		data: followersArr,
 		isError,
-		refetch,
+		// refetch,
 	} = useQuery({
 		queryKey: ["followers", user._id],
 		queryFn: ({ signal }) => loadFollowers({ userId: user._id, signal }),
-		enabled: false,
+		// enabled: false, // for better performance
 	});
 
 	useEffect(() => {
 		// console.log(user._id);
-
-		if (user.followers.length) refetch(); // fetch only if there are followers
-	}, [user, refetch]);
+		async function init() {
+			const loggedUserId = cookies.get("userId");
+			if (loggedUserId) {
+				const loggedUserData = await loadLoggedUser(loggedUserId);
+				setLoggedUser(loggedUserData);
+			}
+			// if (user.followers.length) refetch(); // fetch only if there are followers -- for better performance
+			// refetch(); // for better UX
+		}
+		init();
+	}, [user]);
 
 	if (isError) {
 		const err = new Error(error.message);
@@ -32,26 +43,24 @@ function Followers() {
 		throw err;
 	}
 
+	// this makes a bug by react -- can't update compoennt while rendering another,etc
+	if (followersArr?.length) cb(followersArr); // todo: invoke cb on each fetch of useQuery, currently it needs to fetch twice to get real followers arr
 	return (
 		<div>
-			<h1 className="text-[2.6rem] font-medium text-text-dark mb-5">{user.followers.length} Followers</h1>
+			<h1 className="text-[2.6rem] font-medium text-text-dark mb-5">{followersArr?.length} Followers</h1>
 
 			{!!user.followers.length && (
 				<ul className="flex flex-col gap-y-2">
 					{isPending && <Spinner isUser={true} />}
 					{!isPending &&
 						!isError &&
-						followersArr.data.map((item, index) => (
+						followersArr.map((item, index) => (
 							<li key={item._id} className={cx("flex items-center justify-between", { "mt-5": index })}>
 								<a href={`/${item._id}`} className="flex items-center gap-x-2">
 									<img className="w-12 rounded-[50%]" src={item.avatar || profilePic} alt="avatar" />
 									<span className="font-medium text-text-dark ps-2">{cap(item.name || getNameFromEmail(item.email))}</span>
 								</a>
-								{/* todo: check if user id is in followers array of current logged in user or not to show follow/unfollow button */}
-
-								{/* <button type="button" className="flex px-4 py-2 text-sm text-white transition-all rounded-full opacity-80 hover:opacity-100 bg-green">
-									Follow
-								</button> */}
+								<FollowButton relatedUser={item} loggedUser={loggedUser} profileUrl={location.pathname} />
 							</li>
 						))}
 				</ul>
@@ -74,5 +83,18 @@ const loadFollowers = async ({ userId, signal }: { userId: string; signal: Abort
 	await new Promise(r => setTimeout(r, 500)); // for testing
 	// console.log("loadFollowers:", json);
 
-	return json;
+	return json.data;
+};
+
+const loadLoggedUser = async (id: string) => {
+	const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
+	const json = await response.json();
+	if (json.error) {
+		const error: { code: number; message: string } = new Error(json.message);
+		error.code = response.status;
+		throw error;
+	}
+	await new Promise(r => setTimeout(r, 500)); // for testing
+	// console.log("loadLoggedUser", json);
+	return json.data;
 };

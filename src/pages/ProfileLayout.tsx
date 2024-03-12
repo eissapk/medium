@@ -19,22 +19,25 @@ function activeRoute({ isActive }) {
 const userNameClasses = "text-[2.6rem] text-black-200 font-medium";
 
 function ProfileLayout() {
+	const [followers, setFollowers] = useState(0);
 	const { userId } = useParams();
 	const location = useLocation();
 	const { userData } = useLoaderData();
 	const [links, setLinks] = useState(linksArr);
-	const [followersCounter, setFollowersCounter] = useState(0);
+
+	const cb = arr => setFollowers(arr.length);
 
 	useEffect(() => {
 		// update links based on current fetched user
-		userData.then(json => setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, json.user._id) }))));
+		userData.then(({ user }) => {
+			setFollowers(user.followers.length);
+			setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, user._id) })));
+		});
 	}, [userData, userId]);
 
-	// todo: check best way to add follow/unfollow button and update followers in real time with db
 	function followersCounterHandler({ increase }: { increase: boolean }) {
-		console.log("followersCounter:", increase);
-		if (increase) setFollowersCounter(1);
-		else setFollowersCounter(0);
+		if (increase) setFollowers(followers + 1);
+		else setFollowers(followers - 1);
 	}
 
 	return (
@@ -43,7 +46,7 @@ function ProfileLayout() {
 				{/* left side */}
 				<div className="pt-10">
 					<div className="pb-8">
-						<div className="flex justify-between items-center">
+						<div className="flex items-center justify-between">
 							<Suspense
 								fallback={
 									<Spinner className="w-[50%]" isLine={true}>
@@ -54,7 +57,7 @@ function ProfileLayout() {
 									{({ user, loggedUser }) => (
 										<>
 											<h1 className={userNameClasses}>{cap(user.name || getNameFromEmail(user.email))}</h1>
-											<FollowButton onClick={followersCounterHandler} className="md:hidden" relatedUser={user} loggedUser={loggedUser} profileId={userId} profileUrl={location.pathname} />
+											<FollowButton onClick={followersCounterHandler} className="md:hidden" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
 										</>
 									)}
 								</Await>
@@ -74,7 +77,7 @@ function ProfileLayout() {
 
 					<div>
 						<Suspense fallback={<Spinner isArticle={true} />}>
-							<Await resolve={userData}>{({ user }) => <Outlet context={{ user }} />}</Await>
+							<Await resolve={userData}>{({ user }) => <Outlet context={{ user, cb }} />}</Await>
 						</Suspense>
 					</div>
 				</div>
@@ -94,12 +97,13 @@ function ProfileLayout() {
 									<p className="mb-1 font-medium text-text-dark">{cap(user?.name || getNameFromEmail(user?.email))}</p>
 									{/* followers */}
 									<Link to={"/" + user?._id + "/followers"} className="transition-all text-text-light hover:text-black-200">
-										{user.followers.length + followersCounter} Followers
+										{/* {user.followers.length + followersCounter} Followers */}
+										{followers} Followers
 									</Link>
 									{/* title */}
 									{user?.title && <p className="mt-3 text-sm text-text-light">{user?.title}</p>}
 									{/* cta */}
-									<FollowButton onClick={followersCounterHandler} className="mt-2" relatedUser={user} loggedUser={loggedUser} profileId={userId} profileUrl={location.pathname} />
+									<FollowButton onClick={followersCounterHandler} className="mt-2" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
 								</>
 							)}
 						</Await>
@@ -140,7 +144,7 @@ const loadLoggedUser = async (id: string) => {
 };
 
 const loadUsers = async ({ userId, loggedUserId }: { userId: string; loggedUserId: string }) => {
-	const loggedUser = await loadLoggedUser(loggedUserId);
+	const loggedUser = loggedUserId && (await loadLoggedUser(loggedUserId));
 	const user = await loadUser(userId);
 	return { loggedUser, user };
 };

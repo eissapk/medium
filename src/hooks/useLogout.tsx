@@ -10,7 +10,10 @@ export const useLogout = () => {
 	const logout = () => {
 		cookies.remove("email");
 		cookies.remove("userId");
-		setTimeout(() => navigate("/"), 200);
+		setTimeout(() => {
+			navigate("/");
+			location.reload();
+		}, 200);
 
 		// memory
 		dispatch({ type: LOGOUT });

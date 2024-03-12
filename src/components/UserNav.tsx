@@ -66,8 +66,14 @@ function UserNav() {
 				)}
 
 				<li className="flex">
-					<button ref={avatar} type="button" onClick={() => setIsShown(!isShown)} className="cursor-pointer opacity-80 hover:opacity-100">
-						<img src={state.user.avatar || profilePic} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" />
+					<button ref={avatar} type="button" onClick={() => setIsShown(!isShown)} className="flex border rounded-full cursor-pointer opacity-80 hover:opacity-100 border-text-light ">
+						{/* <button ref={avatar} type="button" onClick={() => setIsShown(!isShown)} className="cursor-pointer opacity-80 hover:opacity-100"> */}
+						{/* <img src={state.user.avatar || profilePic} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" /> */}
+						{state.user.avatar ? (
+							<img src={state.user.avatar} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" />
+						) : (
+							<span className="inline-block w-8 h-8 text-2xl text-center transition-all pointer-events-none text-black-100 ">{state.user.email[0].toUpperCase()}</span>
+						)}
 					</button>
 				</li>
 

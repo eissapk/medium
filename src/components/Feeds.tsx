@@ -21,7 +21,7 @@ function Feeds() {
 	});
 
 	if (isError) {
-		// logout(); // fix a bug temporary
+		logout(); // fix a bug temporary
 		const err: { code: number; message: string } = new Error(error.message);
 		err.code = error.code;
 		throw err;
@@ -30,7 +30,7 @@ function Feeds() {
 	return (
 		<div className="px-4 py-4 mb-4">
 			<div className="mx-auto max-w-max">
-				<h1 className="inline-block pb-4 mt-6 font-medium text-sm border-b text-text-dark border-border-light pe-4">Latest from people you follow</h1>
+				<h1 className="inline-block pb-4 mt-6 text-sm font-medium border-b text-text-dark border-border-light pe-4">Latest from people you follow</h1>
 
 				<div className="grid grid-cols-1 py-5 mt-5 gap-y-10 gap-x-20 md:grid-cols-2">
 					{isPending && (
@@ -41,7 +41,7 @@ function Feeds() {
 							<Spinner isArticle={true} />
 						</>
 					)}
-					{!isPending && !isError && !feeds.data.length && <p className="text-xs text-center text-text-light col-span-2">No feeds yet</p>}
+					{!isPending && !isError && !feeds.data.length && <p className="col-span-2 text-xs text-center text-text-light">No feeds yet</p>}
 					{!isPending && !isError && feeds.data.map((item: object, index: number) => <ArticleItem key={index} article={item} />)}
 				</div>
 			</div>
