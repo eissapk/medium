@@ -25,8 +25,6 @@ function ProfileLayout() {
 	const { userData } = useLoaderData();
 	const [links, setLinks] = useState(linksArr);
 
-	const cb = arr => setFollowers(arr.length);
-
 	useEffect(() => {
 		// update links based on current fetched user
 		userData.then(({ user }) => {
@@ -35,9 +33,11 @@ function ProfileLayout() {
 		});
 	}, [userData, userId]);
 
+	const cb = arr => setFollowers(arr.length); // via outlet context
+	// via button component
 	function followersCounterHandler({ increase }: { increase: boolean }) {
 		if (increase) setFollowers(followers + 1);
-		else setFollowers(followers - 1);
+		else setFollowers(followers - 1 < 0 ? 0 : followers - 1);
 	}
 
 	return (

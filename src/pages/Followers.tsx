@@ -25,7 +25,9 @@ function Followers() {
 
 	useEffect(() => {
 		// console.log(user._id);
+		if (followersArr) cb(followersArr); // todo: invoke cb on each fetch of useQuery, currently it needs to fetch twice to get real followers arr
 		async function init() {
+			// this makes a bug by react -- can't update compoennt while rendering another,etc
 			const loggedUserId = cookies.get("userId");
 			if (loggedUserId) {
 				const loggedUserData = await loadLoggedUser(loggedUserId);
@@ -35,7 +37,7 @@ function Followers() {
 			// refetch(); // for better UX
 		}
 		init();
-	}, [user]);
+	}, [user, followersArr, cb]);
 
 	if (isError) {
 		const err = new Error(error.message);
@@ -43,28 +45,23 @@ function Followers() {
 		throw err;
 	}
 
-	// this makes a bug by react -- can't update compoennt while rendering another,etc
-	if (followersArr?.length) cb(followersArr); // todo: invoke cb on each fetch of useQuery, currently it needs to fetch twice to get real followers arr
 	return (
 		<div>
 			<h1 className="text-[2.6rem] font-medium text-text-dark mb-5">{followersArr?.length} Followers</h1>
 
-			{!!user.followers.length && (
-				<ul className="flex flex-col gap-y-2">
-					{isPending && <Spinner isUser={true} />}
-					{!isPending &&
-						!isError &&
-						followersArr.map((item, index) => (
-							<li key={item._id} className={cx("flex items-center justify-between", { "mt-5": index })}>
-								<a href={`/${item._id}`} className="flex items-center gap-x-2">
-									<img className="w-12 rounded-[50%]" src={item.avatar || profilePic} alt="avatar" />
-									<span className="font-medium text-text-dark ps-2">{cap(item.name || getNameFromEmail(item.email))}</span>
-								</a>
-								<FollowButton relatedUser={item} loggedUser={loggedUser} profileUrl={location.pathname} />
-							</li>
-						))}
-				</ul>
-			)}
+			<ul className="flex flex-col gap-y-2">
+				{isPending && <Spinner isUser={true} />}
+				{!isPending &&
+					followersArr.map((item, index) => (
+						<li key={item._id} className={cx("flex items-center justify-between", { "mt-5": index })}>
+							<a href={`/${item._id}`} className="flex items-center gap-x-2">
+								<img className="w-12 rounded-[50%]" src={item.avatar || profilePic} alt="avatar" />
+								<span className="font-medium text-text-dark ps-2">{cap(item.name || getNameFromEmail(item.email))}</span>
+							</a>
+							<FollowButton relatedUser={item} loggedUser={loggedUser} profileUrl={location.pathname} />
+						</li>
+					))}
+			</ul>
 		</div>
 	);
 }

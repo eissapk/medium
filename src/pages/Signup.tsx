@@ -9,6 +9,7 @@ function Signup() {
 	const { signup, error, isLoading } = useSignup();
 	const { state } = useAuthContext();
 	const [email, setEmail] = useState("");
+	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [errorPasswordMatch, setErrorPasswordMatch] = useState(false);
@@ -20,7 +21,7 @@ function Signup() {
 	async function handleSubmit(e) {
 		e.preventDefault();
 		if (password !== confirmPassword) return setErrorPasswordMatch(true);
-		await signup(email, password);
+		await signup(email, username, password);
 	}
 	return (
 		<main className="flex justify-center">
@@ -31,6 +32,10 @@ function Signup() {
 					<div className="mb-2">
 						<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Your email</label>
 						<input className="px-1 mx-4 transition-all border rounded-sm border-border-light" autoFocus type="email" value={email} onChange={e => setEmail(e.target.value)} />
+					</div>
+					<div className="mb-2">
+						<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Username</label>
+						<input className="px-1 mx-4 transition-all border rounded-sm border-border-light" type="text" value={username} onChange={e => setUsername(e.target.value)} />
 					</div>
 					<div className="mb-2">
 						<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Your password</label>

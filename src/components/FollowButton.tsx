@@ -11,8 +11,9 @@ const FollowButton = ({ className = "", onClick, relatedUser, loggedUser, profil
 	const loggedUserId = cookies.get("userId");
 	const ref = useRef(null);
 
+	// todo: fix why navigating to other tabs like home,about,followers,following affter state of follow button on right-side column (so if it 's unfollow it become the opposite)
 	useEffect(() => {
-		console.log({ ref, relatedUser, loggedUserId, profileUrl, loggedUser });
+		// console.log({ ref, relatedUser, loggedUserId, profileUrl, loggedUser });
 		if (relatedUser.notReady && ref?.current?.previousElementSibling?.href) {
 			relatedUser._id = ref.current.previousElementSibling.href.split("/").pop();
 		}

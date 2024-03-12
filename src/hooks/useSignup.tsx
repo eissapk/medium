@@ -7,11 +7,11 @@ export const useSignup = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const { dispatch } = useAuthContext();
 
-	const signup = async (email, password) => {
+	const signup = async (email, username, password) => {
 		setIsLoading(true);
 		setError(false);
 
-		const response = await fetch("/api/user/signup", { method: "POST", body: JSON.stringify({ email, password }), headers: { "Content-Type": "application/json" } });
+		const response = await fetch("/api/user/signup", { method: "POST", body: JSON.stringify({ email, username, password }), headers: { "Content-Type": "application/json" } });
 		const json = await response.json();
 		if (!response.ok || json.error) {
 			setError(json.message); // response from backend like so e.g.: { error: true, message: "Invalid credentials" }

@@ -9,6 +9,7 @@ export const useLogout = () => {
 
 	const logout = () => {
 		cookies.remove("email");
+		cookies.remove("username");
 		cookies.remove("userId");
 		setTimeout(() => {
 			navigate("/");
