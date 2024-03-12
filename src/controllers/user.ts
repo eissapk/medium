@@ -35,12 +35,13 @@ export const loginUser = async (req, res) => {
 		res
 			.status(200)
 			.cookie("token", token, cookieConfig({ httpOnly: true }))
-			.cookie("email", email, cookieConfig({}))
+			.cookie("email", user.email, cookieConfig({}))
+			.cookie("username", user.username, cookieConfig({}))
 			.cookie("userId", user._id, cookieConfig({}))
 			.json({
 				success: true,
 				message: "logged-in successfuly",
-				data: { user: { ...user.toJSON(), password: null } },
+				data: { user: { ...user.toJSON() } },
 			});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
@@ -48,8 +49,10 @@ export const loginUser = async (req, res) => {
 };
 
 export const signupUser = async (req, res) => {
-	const { email, password } = req.body;
-	if (!email || !password) return res.status(400).json({ error: true, message: "Password or Email is not present!" });
+	const { email, password, username } = req.body;
+	if (!email) return res.status(400).json({ error: true, message: "Email is not present!" });
+	if (!username) return res.status(400).json({ error: true, message: "Username is not present!" });
+	if (!password) return res.status(400).json({ error: true, message: "Password is not present!" });
 
 	if (!validator.isEmail(email)) {
 		return res.status(400).json({ error: true, message: "Email is not valid" });
@@ -59,23 +62,27 @@ export const signupUser = async (req, res) => {
 	}
 
 	try {
-		const exists = await User.findOne({ email });
-		if (exists) return res.status(400).json({ error: true, message: "Email already in use!" });
+		const emailExists = await User.findOne({ email });
+		if (emailExists) return res.status(400).json({ error: true, message: "Email already in use!" });
+
+		const usernameExists = await User.findOne({ username });
+		if (usernameExists) return res.status(400).json({ error: true, message: "Username already in use!" });
 
 		const salt = await bcrypt.genSalt(10);
 		const hash = await bcrypt.hash(password, salt);
-		const user = await User.create({ email, password: hash });
+		const user = await User.create({ email, username, password: hash });
 		const token = createToken(user.id);
 
 		res
 			.status(200)
 			.cookie("token", token, cookieConfig({ httpOnly: true }))
 			.cookie("email", email, cookieConfig({}))
+			.cookie("username", username, cookieConfig({}))
 			.cookie("userId", user._id, cookieConfig({}))
 			.json({
 				success: true,
 				message: "signed up successfuly",
-				data: { user: { ...user.toJSON(), password: null } },
+				data: { user: { ...user.toJSON() } },
 			});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
@@ -95,6 +102,15 @@ export const getAllUsers = async (req, res) => {
 export const getUser = async (req, res) => {
 	const { id } = req.params;
 	if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+
+	// const which = { key: "", value: "" };
+	// if (id) {
+	// 	which.key = "id";
+	// 	which.value = id;
+	// } else if (username) {
+	// 	which.key = "username";
+	// 	which.value = username;
+	// }
 
 	try {
 		const user = await User.findById(id);

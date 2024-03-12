@@ -64,14 +64,15 @@ export const getUserFeeds = async (req, res) => {
 };
 
 export const createArticle = async (req, res) => {
-	const { title, thumbnail, content } = req.body;
-	if (!title || !thumbnail || !content) return res.status(400).json({ error: true, message: "Title, Thumbnail or Content fields are missing!" });
+	const { title, thumbnail, content, readTime } = req.body;
+	if (!title || !thumbnail || !content || !readTime) return res.status(400).json({ error: true, message: "One or these fields are missing: title, content, thumbnail, readTime" });
 
 	const ownedBy = req.user._id.toString(); // binded to req by default via auth module
+	const slug = title.split(" ").join("-"); // todo: clean arabic chars and weired chars too
 
 	try {
 		// bind article to collection
-		const article = await Article.create({ title, thumbnail, content, ownedBy, likes: [] });
+		const article = await Article.create({ title, slug, thumbnail, content, ownedBy, readTime, likes: [] });
 
 		// bind article id to current User
 		const user = await User.findById(ownedBy);

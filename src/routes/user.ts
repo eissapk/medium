@@ -7,6 +7,7 @@ export const router = express.Router();
 router.post("/login", loginUser);
 router.post("/signup", signupUser);
 router.get("/:id", getUser);
+// router.get("/:username", getUser); // todo: add query by username beside id
 router.get("/:id/followers", getUserFollowers);
 router.get("/:id/following", getUserFollowing);
 
