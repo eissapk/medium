@@ -110,6 +110,8 @@ export const followUser = async (req, res) => {
 	if (!mongoose.Types.ObjectId.isValid(currentUserId)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 	if (!mongoose.Types.ObjectId.isValid(foreignUserId)) return res.status(404).json({ error: true, message: "Foreign User doesn't exist!" });
 
+	if (currentUserId == foreignUserId) return res.status(400).json({ error: true, message: "User can't follow himself!" });
+
 	try {
 		const currentUser = await User.findById(currentUserId);
 		if (!currentUser) return res.status(404).json({ error: true, message: "User doesn't exist!" });
