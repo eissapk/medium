@@ -1,6 +1,6 @@
 import cx from "classnames";
 import { cookies } from "../utils";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 type USER = {
 	_id: string;
 	followers: string[];
@@ -9,23 +9,34 @@ type USER = {
 const FollowButton = ({ className = "", onClick, relatedUser, loggedUser, profileUrl }: { relatedUser; loggedUser: USER; profileUrl: string; className?: string; onClick?: () => void }) => {
 	const [type, setType] = useState("");
 	const loggedUserId = cookies.get("userId");
-	const ref = useRef(null);
+	// const ref = useRef(null);
 
 	// todo: fix why navigating to other tabs like home,about,followers,following affter state of follow button on right-side column (so if it 's unfollow it become the opposite)
 	useEffect(() => {
-		// console.log({ ref, relatedUser, loggedUserId, profileUrl, loggedUser });
-		if (relatedUser.notReady && ref?.current?.previousElementSibling?.href) {
-			relatedUser._id = ref.current.previousElementSibling.href.split("/").pop();
-		}
-		if (loggedUser) {
-			if (loggedUser.following.includes(relatedUser._id)) setType("unfollow");
+		console.log({ relatedUser, loggedUserId, profileUrl, loggedUser });
+
+		(function () {
+			const storedLoggedUser = JSON.parse(localStorage.getItem("user")!);
+			if (!storedLoggedUser) localStorage.setItem("user", JSON.stringify(loggedUser));
+		})();
+
+		function init(user: USER) {
+			if (user.following.includes(relatedUser._id)) setType("unfollow");
 			else setType("follow");
 		}
-	}, [ref, loggedUser, relatedUser, loggedUserId, profileUrl]);
+
+		if (loggedUser) {
+			const storedLoggedUser = JSON.parse(localStorage.getItem("user")!);
+			if (storedLoggedUser) {
+				init(storedLoggedUser);
+			} else {
+				init(loggedUser);
+			}
+		}
+	}, [loggedUser, relatedUser, loggedUserId, profileUrl]);
 
 	if (!loggedUserId || !loggedUser) return ""; // non-user can't follow
 	if (relatedUser._id == loggedUser._id) return ""; // can't follow yourself
-	// if (profileUrl.includes(`/${loggedUserId}/following`)) setType("unfollow"); // if it's my profile following section -- makes infinie loop
 
 	const btnClasses = () => {
 		return cx("flex px-4 py-2 text-sm transition-all rounded-full opacity-80 hover:opacity-100", {
@@ -49,18 +60,21 @@ const FollowButton = ({ className = "", onClick, relatedUser, loggedUser, profil
 			error.code = response.status;
 			throw error;
 		}
-		console.log("handleBtn", json);
-		if (type == "follow") {
+		//todo: fetch logged user each outlet switch and compare it with related user id only
+		console.log("handleBtn response:", json);
+		if (json.data.type == "follow") {
+			localStorage.setItem("user", JSON.stringify(json.data.user1));
 			setType("unfollow");
 			if (onClick) onClick({ increase: true });
 		} else {
+			localStorage.setItem("user", JSON.stringify(json.data.user1));
 			setType("follow");
 			if (onClick) onClick({ increase: false });
 		}
 	};
 
 	return (
-		<button ref={ref} onClick={handleBtn} type="button" className={btnClasses()}>
+		<button onClick={handleBtn} type="button" className={btnClasses()}>
 			{type == "follow" ? "Follow" : "Following"}
 		</button>
 	);
