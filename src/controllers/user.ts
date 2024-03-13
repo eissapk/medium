@@ -139,12 +139,24 @@ export const followUser = async (req, res) => {
 		if (currentUser.following.includes(foreignUserId)) return res.status(200).json({ success: true, message: "user is being followed already!" });
 
 		// add to following
-		await User.findOneAndUpdate({ _id: currentUserId }, { following: [...currentUser.following, foreignUserId] });
+		const currentUserNewFollowingArr = [...currentUser.following, foreignUserId];
+		await User.findOneAndUpdate({ _id: currentUserId }, { following: currentUserNewFollowingArr });
 
 		// add to followers
 		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: [...foreignUser.followers, currentUserId] });
 
-		res.status(200).json({ success: true, message: `User: ${currentUserId}, followed: ${foreignUserId}` });
+		res.status(200).json({
+			success: true,
+			message: `User: ${currentUserId}, followed: ${foreignUserId}`,
+			data: {
+				user1: {
+					...currentUser.toJSON(),
+					following: currentUserNewFollowingArr,
+				},
+				type: "follow",
+				user2: foreignUserId,
+			},
+		});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
 	}
@@ -166,12 +178,26 @@ export const unFollowUser = async (req, res) => {
 		if (!currentUser.following.includes(foreignUserId)) return res.status(200).json({ success: true, message: "user is not being followed already!" });
 
 		// remove from following
-		await User.findOneAndUpdate({ _id: currentUserId }, { following: currentUser.following.filter(item => item.toString() != foreignUserId.toString()) });
+
+		const currentUserNewFollowingArr = currentUser.following.filter(item => item.toString() != foreignUserId.toString());
+		await User.findOneAndUpdate({ _id: currentUserId }, { following: currentUserNewFollowingArr });
 
 		// remove from followers
 		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: foreignUser.followers.filter(item => item.toString() != currentUserId.toString()) });
 
-		res.status(200).json({ success: true, message: `User: ${currentUserId}, unfollowed: ${foreignUserId}` });
+		res.status(200).json({
+			success: true,
+			message: `User: ${currentUserId}, unfollowed: ${foreignUserId}`,
+			data: {
+				user1: {
+					...currentUser.toJSON(),
+					following: currentUserNewFollowingArr,
+				},
+
+				type: "unfollow",
+				user2: foreignUserId,
+			},
+		});
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
 	}
