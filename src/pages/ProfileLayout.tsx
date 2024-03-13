@@ -40,6 +40,7 @@ function ProfileLayout() {
 		else setFollowers(followers - 1 < 0 ? 0 : followers - 1);
 	}
 
+	//todo: update followers number better way
 	return (
 		<main className="px-4">
 			<div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] mx-auto max-w-max gap-x-20">
