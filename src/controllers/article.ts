@@ -68,7 +68,11 @@ export const createArticle = async (req, res) => {
 	if (!title || !thumbnail || !content || !readTime) return res.status(400).json({ error: true, message: "One or these fields are missing: title, content, thumbnail, readTime" });
 
 	const ownedBy = req.user._id.toString(); // binded to req by default via auth module
-	const slug = title.split(" ").join("-"); // todo: clean arabic chars and weired chars too
+	const slug = title
+		.replace(/[&\\/\\#,+()$~%.'":*?<>{}]/g, "")
+		.split(" ")
+		.join("-")
+		.toLowerCase(); // todo: test arabic chars with تشكيل
 
 	try {
 		// bind article to collection
