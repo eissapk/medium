@@ -11,7 +11,6 @@ export const useLogout = () => {
 		cookies.remove("email");
 		cookies.remove("username");
 		cookies.remove("userId");
-		localStorage.removeItem("user");
 		setTimeout(() => {
 			navigate("/");
 			location.reload();

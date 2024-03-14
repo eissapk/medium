@@ -20,4 +20,4 @@ export const cap = (text: string) => {
 
 export const getNameFromEmail = (email: string) => email.split("@")[0];
 
-export const getShortArticleDesc = (text: string) => text.split(" ").slice(0, 10).join(" ");
+export const getShortArticleDesc = (text: string) => text.split(" ").slice(0, 10).join(" ").concat("...");

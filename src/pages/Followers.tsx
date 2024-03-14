@@ -6,11 +6,14 @@ import cx from "classnames";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "../components/Spinner";
 import FollowButton from "../components/FollowButton";
+// import { useProfileContext } from "../hooks/useProfileContext";
+// import { SET_CURRENT_PROFILE } from "../utils/types";
 
 function Followers() {
 	const location = useLocation();
 	const [loggedUser, setLoggedUser] = useState(null);
 	const { user, cb } = useOutletContext(); // this is the user of opened profile not the user related to follow button block element, so be careful
+	// const { state, dispatch } = useProfileContext();
 	const {
 		isPending,
 		error,

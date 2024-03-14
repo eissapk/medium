@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import FollowButton from "../components/FollowButton";
 import Spinner from "../components/Spinner";
 import profilePic from "../assets/profile-pic.webp";
+import { useProfileContext } from "../hooks/useProfileContext";
+import { SET_LOGGED_PROFILE, SET_CURRENT_PROFILE } from "../utils/types";
 
 const linksArr = [
 	{ url: "/{{userId}}", label: "Home" },
@@ -18,20 +20,24 @@ function activeRoute({ isActive }) {
 }
 const userNameClasses = "text-[2.6rem] text-black-200 font-medium";
 
+// todo: test following functionality and make it work through context
 function ProfileLayout() {
 	const [followers, setFollowers] = useState(0);
 	const { userId } = useParams();
 	const location = useLocation();
 	const { userData } = useLoaderData();
 	const [links, setLinks] = useState(linksArr);
+	const { state: profileState, dispatch } = useProfileContext();
 
 	useEffect(() => {
 		// update links based on current fetched user
-		userData.then(({ user }) => {
+		userData.then(({ user, loggedUser }) => {
+			dispatch({ type: SET_CURRENT_PROFILE, payload: user });
+			dispatch({ type: SET_LOGGED_PROFILE, payload: loggedUser });
 			setFollowers(user.followers.length);
 			setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, user._id) })));
 		});
-	}, [userData, userId]);
+	}, [userData, userId, dispatch]);
 
 	const cb = arr => setFollowers(arr.length); // via outlet context
 	// via button component
@@ -58,7 +64,7 @@ function ProfileLayout() {
 									{({ user, loggedUser }) => (
 										<>
 											<h1 className={userNameClasses}>{cap(user.name || getNameFromEmail(user.email))}</h1>
-											<FollowButton onClick={followersCounterHandler} className="md:hidden" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
+											{/* <FollowButton onClick={followersCounterHandler} className="md:hidden" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} /> */}
 										</>
 									)}
 								</Await>
@@ -98,8 +104,8 @@ function ProfileLayout() {
 									<p className="mb-1 font-medium text-text-dark">{cap(user?.name || getNameFromEmail(user?.email))}</p>
 									{/* followers */}
 									<Link to={"/" + user?._id + "/followers"} className="transition-all text-text-light hover:text-black-200">
-										{/* {user.followers.length + followersCounter} Followers */}
 										{followers} Followers
+										{/* {profileState && profileState.current && profileState.current.followers.length} Followers */}
 									</Link>
 									{/* title */}
 									{user?.title && <p className="mt-3 text-sm text-text-light">{user?.title}</p>}

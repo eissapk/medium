@@ -26,18 +26,16 @@ function ArticleItem({ article, isMe }: { article: ARTICLE; isMe?: boolean }) {
 				</a>
 			)}
 
-			<a href={`/${article.ownedBy}/${article?._id}`} className="flex gap-x-5">
+			<a href={`/${article.ownedBy}/${article?._id}`} className="flex gap-x-5 justify-between">
 				<div className="max-w-lg min-w-[65%]">
 					<h1 className="mb-1 text-xl font-bold text-text-dark">{article?.title}</h1>
 					<p className="mb-2 text-text-light">{getShortArticleDesc(article?.content)}</p>
 					<span className="text-[0.8rem] text-text-light">
-						{/* {getLocalTime(article?.createdAt)} . {article?.readTime} min read */}
-						{getLocalTime(article?.createdAt)} . {10} min read
+						{getLocalTime(article?.createdAt)} . {article?.readTime} min read
 					</span>
 				</div>
 				<div className="max-w-52">
-					{/* <img className="block w-full h-auto" src={article?.thumbnail || articleThumbnail} alt="Article thumbnail" /> */}
-					<img className="block w-full h-auto" src={articleThumbnail} alt="Article thumbnail" />
+					<img className="block w-full h-auto" src={article?.thumbnail || articleThumbnail} alt="Article thumbnail" />
 				</div>
 			</a>
 		</article>

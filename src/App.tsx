@@ -1,6 +1,7 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryCLient } from "./utils";
+import ProfileContextProvier from "./store/ProfileContext";
 
 // pages
 import RootLayout from "./pages/RootLayout";
@@ -30,7 +31,11 @@ const router = createBrowserRouter([
 			{ path: "signup", element: <Signup /> },
 			{
 				path: ":userId",
-				element: <ProfileLayout />,
+				element: (
+					<ProfileContextProvier>
+						<ProfileLayout />
+					</ProfileContextProvier>
+				),
 				loader: ProfileLayoutLoader,
 				children: [
 					{ index: true, element: <Profile />, loader: ProfileLoader },
