@@ -2,9 +2,13 @@ import { createContext, useEffect, useReducer } from "react";
 import { LOGIN, LOGOUT } from "../utils/types";
 import { cookies } from "../utils";
 
-export const AuthContext = createContext({});
+type ContextType = {
+	state: { user: { email: ""; _id: ""; avatar: "" } };
+	dispatch: React.Dispatch<any>;
+};
+export const AuthContext = createContext<ContextType>({ state: { user: { email: "", _id: "", avatar: "" } }, dispatch: () => {} });
 
-const reducer = (state, action) => {
+const reducer = (state: any, action: any) => {
 	switch (action.type) {
 		case LOGIN:
 			return { user: action.payload };
@@ -25,7 +29,7 @@ const AuthContextProvier = ({ children }: { children: React.ReactNode }) => {
 		const _id = cookies.get("userId"); // set by server
 		// todo: handle avatar url by server
 		if (email && _id) {
-			dispatch({ type: LOGIN, payload: { email, _id } });
+			dispatch({ type: LOGIN, payload: { email, _id, avatar: "" } });
 		}
 	}, []);
 

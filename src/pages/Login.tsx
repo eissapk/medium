@@ -13,11 +13,13 @@ function Login() {
 	useEffect(() => {
 		if (state.user) navigate("/");
 	}, [state.user, navigate]);
-	async function handleSubmit(e) {
+	async function handleSubmit(e: any) {
 		e.preventDefault();
 		await login(email, password);
 	}
-	const errorElement = (text, className = "") => <div className={`p-2.5 bg-red border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`}>{text}</div>;
+	const errorElement = (text: string | boolean, className = "") => (
+		<div className={`p-2.5 bg-red border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`}>{text}</div>
+	);
 	return (
 		<main className="flex justify-center">
 			<div>

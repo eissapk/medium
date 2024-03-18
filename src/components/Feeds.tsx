@@ -14,6 +14,11 @@ function Feeds() {
 		isPending,
 		error,
 		isError,
+	}: {
+		data: any;
+		isPending: boolean;
+		error: any;
+		isError: boolean;
 	} = useQuery({
 		queryKey: ["feeds", userId],
 		queryFn: ({ signal }) => fetchFeeds({ userId, signal }),
@@ -22,7 +27,7 @@ function Feeds() {
 
 	if (isError) {
 		logout(); // fix a bug temporary
-		const err: { code: number; message: string } = new Error(error.message);
+		const err: any = new Error(error.message);
 		err.code = error.code;
 		throw err;
 	}
@@ -42,7 +47,7 @@ function Feeds() {
 						</>
 					)}
 					{!isPending && !isError && !feeds.data.length && <p className="col-span-2 text-xs text-center text-text-light">No feeds yet</p>}
-					{!isPending && !isError && feeds.data.map((item: object, index: number) => <ArticleItem key={index} article={item} />)}
+					{!isPending && !isError && feeds.data.map((item: any, index: number) => <ArticleItem key={index} article={item} />)}
 				</div>
 			</div>
 		</div>
@@ -57,7 +62,7 @@ async function fetchFeeds({ userId, signal }: { userId: string; signal: AbortSig
 
 	await new Promise(r => setTimeout(r, 500)); // for testing
 	if (data.error) {
-		const error: { code: number; message: string } = new Error(data.message);
+		const error: any = new Error(data.message);
 		error.code = response.status;
 		throw error;
 	}

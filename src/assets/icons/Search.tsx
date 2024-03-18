@@ -1,4 +1,4 @@
-function Search({ className }) {
+function Search({ className = "" }) {
 	return (
 		<svg className={className} viewBox="0 0 24 24" fill="none">
 			<path

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Await, defer, useLoaderData } from "react-router-dom";
 
 function Article() {
-	const { article } = useLoaderData();
+	const { article } = useLoaderData() as { article: any };
 
 	return (
 		<div>
@@ -22,17 +22,20 @@ function Article() {
 
 export default Article;
 
-const loadArticle = async (userId, articleId) => {
+const loadArticle = async (userId: string, articleId: string) => {
+	console.log(userId);
+
 	const response = await fetch(`/api/article/${articleId}`, { headers: { "Content-Type": "application/json" } });
 	const data = await response.json();
 	if (data.error) {
-		const error = new Error(data.message);
+		const error: any = new Error(data.message);
 		error.code = response.status;
 		throw error;
 	}
 	// console.log("loadArticle:", data);
 	return data;
 };
-export const loader = async ({ params }: { params: { userId: string; articleId: string } }) => {
+// export const loader = async ({ params }: { params: { userId: string; articleId: string } }) => {
+export const loader = async ({ params }: any) => {
 	return defer({ article: loadArticle(params.userId, params.articleId) });
 };

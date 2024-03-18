@@ -14,11 +14,13 @@ function Signup() {
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [errorPasswordMatch, setErrorPasswordMatch] = useState(false);
 
-	const errorElement = (text, className = "") => <div className={`p-2.5 bg-red border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`}>{text}</div>;
+	const errorElement = (text: string | boolean, className = "") => (
+		<div className={`p-2.5 bg-red border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`}>{text}</div>
+	);
 	useEffect(() => {
 		if (state.user) navigate("/");
 	}, [state.user, navigate]);
-	async function handleSubmit(e) {
+	async function handleSubmit(e: any) {
 		e.preventDefault();
 		if (password !== confirmPassword) return setErrorPasswordMatch(true);
 		await signup(email, username, password);

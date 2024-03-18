@@ -9,7 +9,7 @@ function NewStory() {
 	const [thumbnail, setThumbnail] = useState("https://placehold.co/600x400");
 	const [readTime, setReadTime] = useState(1);
 
-	const handleSubmit = async e => {
+	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 
 		console.log({
@@ -25,7 +25,7 @@ function NewStory() {
 		});
 		const data = await response.json();
 		if (data.error) {
-			const error = new Error(data.message);
+			const error: any = new Error(data.message);
 			error.code = response.status;
 			throw error;
 		}

@@ -5,11 +5,11 @@ import { LOGIN } from "../utils/types";
 
 export const useLogin = () => {
 	const navigate = useNavigate();
-	const [error, setError] = useState(false);
+	const [error, setError] = useState<boolean | string>(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const { dispatch } = useAuthContext();
 
-	const login = async (email, password) => {
+	const login = async (email: string, password: string) => {
 		setIsLoading(true);
 		setError(false);
 

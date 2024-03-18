@@ -4,9 +4,8 @@ import { Suspense } from "react";
 import Spinner from "../components/Spinner";
 
 function Profile() {
-	const { user } = useOutletContext();
-
-	const { userArticles } = useLoaderData();
+	const { user } = useOutletContext() as { user: any };
+	const { userArticles } = useLoaderData() as { userArticles: any };
 
 	if (!user.articles.length) return <p className="text-xs text-center text-text-light">No articles yet</p>;
 
@@ -15,7 +14,7 @@ function Profile() {
 			<Await resolve={userArticles}>
 				{json => (
 					<div className="grid grid-cols-1 mb-10 gap-y-10">
-						{json.data.map((item, index) => (
+						{json.data.map((item: any, index: number) => (
 							<ArticleItem key={index} article={{ ...item, user }} isMe={true} />
 						))}
 					</div>
@@ -27,12 +26,12 @@ function Profile() {
 
 export default Profile;
 
-const loadArticles = async id => {
+const loadArticles = async (id: string) => {
 	const response = await fetch("/api/article/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const data = await response.json();
 
 	if (data.error) {
-		const error: { code: number; message: string } = new Error(data.message);
+		const error: any = new Error(data.message);
 		error.code = response.status;
 		throw error;
 	}
@@ -42,7 +41,8 @@ const loadArticles = async id => {
 	return data;
 };
 
-export const loader = async ({ params }: { params: { userId: string } }) => {
+// export const loader = async ({ params }: { params: { userId: string } }) => {
+export const loader = async ({ params }: any) => {
 	const { userId } = params;
 	return defer({ userArticles: loadArticles(userId) });
 };

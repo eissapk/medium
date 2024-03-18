@@ -13,7 +13,7 @@ const linksArr = [
 	{ url: "/{{userId}}" + "/followers", label: "Followers" },
 	{ url: "/{{userId}}" + "/following", label: "Following" },
 ];
-function activeRoute({ isActive }) {
+function activeRoute({ isActive }: { isActive: boolean }) {
 	let classes = "pb-[calc(1rem+2px)] text-sm transition-all text-text-light hover:text-black-100";
 	if (isActive) classes += " border-b border-black-100";
 	return classes;
@@ -25,13 +25,13 @@ function ProfileLayout() {
 	const [followers, setFollowers] = useState(0);
 	const { userId } = useParams();
 	const location = useLocation();
-	const { userData } = useLoaderData();
+	const { userData } = useLoaderData() as { userData: any };
 	const [links, setLinks] = useState(linksArr);
-	const { state: profileState, dispatch } = useProfileContext();
+	const { dispatch } = useProfileContext();
 
 	useEffect(() => {
 		// update links based on current fetched user
-		userData.then(({ user, loggedUser }) => {
+		userData.then(({ user, loggedUser }: { user: any; loggedUser: any }) => {
 			dispatch({ type: SET_CURRENT_PROFILE, payload: user });
 			dispatch({ type: SET_LOGGED_PROFILE, payload: loggedUser });
 			setFollowers(user.followers.length);
@@ -39,7 +39,7 @@ function ProfileLayout() {
 		});
 	}, [userData, userId, dispatch]);
 
-	const cb = arr => setFollowers(arr.length); // via outlet context
+	const cb = (arr: any) => setFollowers(arr.length); // via outlet context
 	// via button component
 	function followersCounterHandler({ increase }: { increase: boolean }) {
 		if (increase) setFollowers(followers + 1);
@@ -61,7 +61,7 @@ function ProfileLayout() {
 									</Spinner>
 								}>
 								<Await resolve={userData}>
-									{({ user, loggedUser }) => (
+									{({ user }) => (
 										<>
 											<h1 className={userNameClasses}>{cap(user.name || getNameFromEmail(user.email))}</h1>
 											{/* <FollowButton onClick={followersCounterHandler} className="md:hidden" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} /> */}
@@ -128,7 +128,7 @@ const loadUser = async (id: string) => {
 	const json = await response.json();
 
 	if (json.error) {
-		const error: { code: number; message: string } = new Error(json.message);
+		const error: any = new Error(json.message);
 		error.code = response.status;
 		throw error;
 	}
@@ -141,7 +141,7 @@ const loadLoggedUser = async (id: string) => {
 	const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
-		const error: { code: number; message: string } = new Error(json.message);
+		const error: any = new Error(json.message);
 		error.code = response.status;
 		throw error;
 	}
@@ -156,7 +156,8 @@ const loadUsers = async ({ userId, loggedUserId }: { userId: string; loggedUserI
 	return { loggedUser, user };
 };
 
-export const loader = async ({ params }: { params: { userId: string } }) => {
+export const loader = async ({ params }: any) => {
+	// export const loader = async ({ params }: { params: { userId: string } }) => {
 	const { userId } = params;
 	const loggedUserId = cookies.get("userId");
 	return defer({ userData: loadUsers({ userId, loggedUserId }) });

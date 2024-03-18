@@ -8,7 +8,7 @@ const linksArr = [
 	{ url: "/{{userId}}/following", label: "Following", namespace: "following" },
 ];
 
-function Icon({ name, ...props }) {
+function Icon({ name, ...props }: any) {
 	switch (name) {
 		case "twitter":
 			return <Twitter {...props} />;
@@ -16,7 +16,7 @@ function Icon({ name, ...props }) {
 }
 
 function About() {
-	const { user } = useOutletContext();
+	const { user } = useOutletContext() as { user: any };
 	// user.bio = "Editor of INSURGE intelligence and Return of the Reich";
 	// user.socialLinks = [{ url: "https://twitter.com/insurge", namespace: "twitter" }];
 	const [links, setLinks] = useState(linksArr);
@@ -46,7 +46,7 @@ function About() {
 			{user.socialLinks.length ? (
 				<ul className="flex gap-x-4">
 					<li className="text-sm text-text-dark">Connect with {cap(user.name || getNameFromEmail(user.email))}</li>
-					{user.socialLinks.map((item, index) => (
+					{user.socialLinks.map((item: any, index: number) => (
 						<li key={index}>
 							<a href={item.url} target="_blank" className="text-black-900">
 								<Icon name={item.namespace} className="w-6 h-6 pointer-events-none fill-black-900" />

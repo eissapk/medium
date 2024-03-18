@@ -8,7 +8,19 @@ type USER = {
 	followers: string[];
 	following: string[];
 };
-const FollowButton = ({ className = "", onClick, relatedUser, loggedUser, profileUrl }: { relatedUser; loggedUser: USER; profileUrl: string; className?: string; onClick?: () => void }) => {
+const FollowButton = ({
+	className = "",
+	onClick,
+	relatedUser,
+	loggedUser,
+	profileUrl,
+}: {
+	relatedUser: USER;
+	loggedUser: USER | null;
+	profileUrl: string;
+	className?: string;
+	onClick?: ({ increase }: { increase: boolean }) => void;
+}) => {
 	const { state, dispatch } = useProfileContext();
 	const [type, setType] = useState("");
 	const loggedUserId = cookies.get("userId");
@@ -50,7 +62,7 @@ const FollowButton = ({ className = "", onClick, relatedUser, loggedUser, profil
 
 		const json = await response.json();
 		if (json.error) {
-			const error = new Error(json.message);
+			const error: any = new Error(json.message);
 			error.code = response.status;
 			throw error;
 		}

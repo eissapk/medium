@@ -4,7 +4,7 @@ import { useLogout } from "../hooks/useLogout";
 import { Link } from "react-router-dom";
 import { Profile, Edit, LogoMini, Search } from "../assets/icons";
 import { useAuthContext } from "../hooks/useAuthContext";
-import profilePic from "../assets/profile-pic.webp";
+// import profilePic from "../assets/profile-pic.webp";
 
 function UserNav() {
 	const navigate = useNavigate();
@@ -13,7 +13,7 @@ function UserNav() {
 	const { pathname } = useLocation();
 	const avatar = useRef(null);
 
-	const handleMenuClick = e => {
+	const handleMenuClick = (e: any) => {
 		if (e.target !== avatar.current) setIsShown(false);
 	};
 

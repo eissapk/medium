@@ -1,9 +1,18 @@
 import { createContext, useReducer } from "react";
 import { SET_CURRENT_PROFILE, SET_LOGGED_PROFILE } from "../utils/types";
 
-export const ProfileContext = createContext({});
+type ProfileContextType = {
+	state: {
+		profile: {
+			logged: null;
+			current: null;
+		};
+	};
+	dispatch: React.Dispatch<any>;
+};
+export const ProfileContext = createContext<ProfileContextType>({ state: { profile: { logged: null, current: null } }, dispatch: () => {} });
 
-const reducer = (state, action) => {
+const reducer = (state: any, action: any) => {
 	switch (action.type) {
 		case SET_LOGGED_PROFILE:
 			return { profile: { logged: { ...action.payload }, current: { ...state.profile.current } } };

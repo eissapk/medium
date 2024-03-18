@@ -10,13 +10,18 @@ import FollowButton from "../components/FollowButton";
 function Following() {
 	const location = useLocation();
 	const [loggedUser, setLoggedUser] = useState(null);
-	const { user } = useOutletContext(); // this is the user of opened profile not the user related to follow button block element, so be careful
+	const { user } = useOutletContext() as { user: any }; // this is the user of opened profile not the user related to follow button block element, so be careful
 	const {
 		isPending,
 		error,
 		data: followingArr,
 		isError,
-		// refetch,
+	}: // refetch,
+	{
+		isPending: boolean;
+		error: any;
+		data: any;
+		isError: boolean;
 	} = useQuery({
 		queryKey: ["following", user._id],
 		queryFn: ({ signal }) => loadFollowing({ userId: user._id, signal }),
@@ -38,7 +43,7 @@ function Following() {
 	}, [user]);
 
 	if (isError) {
-		const err = new Error(error.message);
+		const err: any = new Error(error.message);
 		err.code = error.code;
 		throw err;
 	}
@@ -52,7 +57,7 @@ function Following() {
 					{isPending && <Spinner isUser={true} />}
 					{!isPending &&
 						!isError &&
-						followingArr.map((item, index) => (
+						followingArr.map((item: any, index: number) => (
 							<li key={item._id} className={cx("flex items-center justify-between", { "mt-5": index })}>
 								<a href={`/${item._id}`} className="flex items-center gap-x-2">
 									<img className="w-12 rounded-[50%]" src={item.avatar || profilePic} alt="avatar" />
@@ -73,7 +78,7 @@ const loadFollowing = async ({ userId, signal }: { userId: string; signal: Abort
 	const response = await fetch(`/api/user/${userId}/following`, { headers: { "Content-Type": "application/json" }, signal });
 	const json = await response.json();
 	if (json.error) {
-		const error = new Error(json.message);
+		const error: any = new Error(json.message);
 		error.code = response.status;
 		throw error;
 	}
@@ -88,7 +93,7 @@ const loadLoggedUser = async (id: string) => {
 	const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
-		const error: { code: number; message: string } = new Error(json.message);
+		const error: any = new Error(json.message);
 		error.code = response.status;
 		throw error;
 	}

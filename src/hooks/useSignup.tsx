@@ -3,11 +3,11 @@ import { useAuthContext } from "./useAuthContext";
 import { useState } from "react";
 
 export const useSignup = () => {
-	const [error, setError] = useState(false);
+	const [error, setError] = useState<boolean | string>(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const { dispatch } = useAuthContext();
 
-	const signup = async (email, username, password) => {
+	const signup = async (email: string, username: string, password: string) => {
 		setIsLoading(true);
 		setError(false);
 

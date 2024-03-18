@@ -1,4 +1,4 @@
-function Edit({ className }) {
+function Edit({ className = "" }) {
 	return (
 		<svg viewBox="0 0 24 24" fill="none" aria-label="Write" className={className}>
 			<path

@@ -12,14 +12,19 @@ import FollowButton from "../components/FollowButton";
 function Followers() {
 	const location = useLocation();
 	const [loggedUser, setLoggedUser] = useState(null);
-	const { user, cb } = useOutletContext(); // this is the user of opened profile not the user related to follow button block element, so be careful
+	const { user, cb } = useOutletContext() as { user: any; cb: any }; // this is the user of opened profile not the user related to follow button block element, so be careful
 	// const { state, dispatch } = useProfileContext();
 	const {
 		isPending,
 		error,
 		data: followersArr,
 		isError,
-		// refetch,
+	}: // refetch,
+	{
+		isPending: boolean;
+		error: any;
+		data: any;
+		isError: boolean;
 	} = useQuery({
 		queryKey: ["followers", user._id],
 		queryFn: ({ signal }) => loadFollowers({ userId: user._id, signal }),
@@ -43,7 +48,7 @@ function Followers() {
 	}, [user, followersArr, cb]);
 
 	if (isError) {
-		const err = new Error(error.message);
+		const err: any = new Error(error.message);
 		err.code = error.code;
 		throw err;
 	}
@@ -55,7 +60,7 @@ function Followers() {
 			<ul className="flex flex-col gap-y-2">
 				{isPending && <Spinner isUser={true} />}
 				{!isPending &&
-					followersArr.map((item, index) => (
+					followersArr.map((item: any, index: number) => (
 						<li key={item._id} className={cx("flex items-center justify-between", { "mt-5": index })}>
 							<a href={`/${item._id}`} className="flex items-center gap-x-2">
 								<img className="w-12 rounded-[50%]" src={item.avatar || profilePic} alt="avatar" />
@@ -75,7 +80,7 @@ const loadFollowers = async ({ userId, signal }: { userId: string; signal: Abort
 	const response = await fetch(`/api/user/${userId}/followers`, { headers: { "Content-Type": "application/json" }, signal });
 	const json = await response.json();
 	if (json.error) {
-		const error = new Error(json.message);
+		const error: any = new Error(json.message);
 		error.code = response.status;
 		throw error;
 	}
@@ -90,7 +95,7 @@ const loadLoggedUser = async (id: string) => {
 	const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
-		const error: { code: number; message: string } = new Error(json.message);
+		const error: any = new Error(json.message);
 		error.code = response.status;
 		throw error;
 	}

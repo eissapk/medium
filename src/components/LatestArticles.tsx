@@ -43,7 +43,7 @@ function LatestArticles() {
 					<h1 className="font-medium text-text-dark">Latest on Medium</h1>
 
 					<div className="grid grid-cols-1 py-5 mt-5 gap-y-10 gap-x-20 md:grid-cols-2">
-						{dummyArray.map((item, index) => (
+						{dummyArray.map((item: any, index: number) => (
 							<ArticleItem key={index} article={{ ...item.article, user: item.user }} />
 						))}
 					</div>

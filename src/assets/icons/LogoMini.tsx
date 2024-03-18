@@ -1,4 +1,4 @@
-function LogoMini({ className }) {
+function LogoMini({ className = "" }) {
 	return (
 		<svg viewBox="0 0 1043.63 592.71" className={className}>
 			<g data-name="Layer 2">

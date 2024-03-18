@@ -1,4 +1,4 @@
-function Profile({ className }) {
+function Profile({ className = "" }) {
 	return (
 		<svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Profile">
 			<circle cx={12} cy={7} r="4.5" stroke="currentColor" />
