@@ -1,4 +1,4 @@
-import { cap, cookies, getNameFromEmail } from "../utils";
+import { cap, cookies, fetchAPI, getNameFromEmail } from "../utils";
 import profilePic from "../assets/profile-pic.webp";
 import { useLocation, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -77,7 +77,8 @@ function Followers() {
 export default Followers;
 
 const loadFollowers = async ({ userId, signal }: { userId: string; signal: AbortSignal }) => {
-	const response = await fetch(`/api/user/${userId}/followers`, { headers: { "Content-Type": "application/json" }, signal });
+	// const response = await fetch(`/api/user/${userId}/followers`, { headers: { "Content-Type": "application/json" }, signal });
+	const response = await fetchAPI(`/api/user/${userId}/followers`, { headers: { "Content-Type": "application/json" }, signal });
 	const json = await response.json();
 	if (json.error) {
 		const error: any = new Error(json.message);
@@ -92,7 +93,8 @@ const loadFollowers = async ({ userId, signal }: { userId: string; signal: Abort
 };
 
 const loadLoggedUser = async (id: string) => {
-	const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
+	// const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
+	const response = await fetchAPI("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
 		const error: any = new Error(json.message);

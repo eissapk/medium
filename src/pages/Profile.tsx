@@ -2,6 +2,7 @@ import { useLoaderData, defer, useOutletContext, Await } from "react-router-dom"
 import ArticleItem from "../components/ArticleItem";
 import { Suspense } from "react";
 import Spinner from "../components/Spinner";
+import { fetchAPI } from "../utils";
 
 function Profile() {
 	const { user } = useOutletContext() as { user: any };
@@ -27,7 +28,8 @@ function Profile() {
 export default Profile;
 
 const loadArticles = async (id: string) => {
-	const response = await fetch("/api/article/user/" + id, { headers: { "Content-Type": "application/json" } });
+	// const response = await fetch("/api/article/user/" + id, { headers: { "Content-Type": "application/json" } });
+	const response = await fetchAPI("/api/article/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const data = await response.json();
 
 	if (data.error) {

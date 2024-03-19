@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import ArticleItem from "./ArticleItem";
 import Spinner from "./Spinner";
-import { cookies } from "../utils";
+import { cookies, fetchAPI } from "../utils";
 import { useLogout } from "../hooks/useLogout";
 
 function Feeds() {
@@ -57,7 +57,8 @@ function Feeds() {
 export default Feeds;
 
 async function fetchFeeds({ userId, signal }: { userId: string; signal: AbortSignal }) {
-	const response = await fetch(`/api/article/feeds/user/${userId}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
+	// const response = await fetch(`/api/article/feeds/user/${userId}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
+	const response = await fetchAPI(`/api/article/feeds/user/${userId}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
 	const data = await response.json();
 
 	await new Promise(r => setTimeout(r, 500)); // for testing

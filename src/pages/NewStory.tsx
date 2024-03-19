@@ -1,7 +1,7 @@
 // todo add thumnail and editor
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { cookies } from "../utils";
+import { cookies, fetchAPI } from "../utils";
 function NewStory() {
 	const navigate = useNavigate();
 	const [content, setContent] = useState("");
@@ -17,7 +17,8 @@ function NewStory() {
 			title,
 		});
 
-		const response = await fetch("/api/article/create", {
+		// const response = await fetch("/api/article/create", {
+		const response = await fetchAPI("/api/article/create", {
 			method: "POST",
 			body: JSON.stringify({ content, title, thumbnail, readTime }),
 			headers: { "Content-Type": "application/json" },

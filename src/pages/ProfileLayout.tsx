@@ -1,5 +1,5 @@
 import { Outlet, Link, NavLink, defer, Await, useLoaderData, useParams, useLocation } from "react-router-dom";
-import { cap, getNameFromEmail, cookies } from "../utils";
+import { cap, getNameFromEmail, cookies, fetchAPI } from "../utils";
 import { Suspense, useEffect, useState } from "react";
 import FollowButton from "../components/FollowButton";
 import Spinner from "../components/Spinner";
@@ -124,7 +124,8 @@ function ProfileLayout() {
 export default ProfileLayout;
 
 const loadUser = async (id: string) => {
-	const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
+	// const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
+	const response = await fetchAPI("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 
 	if (json.error) {
@@ -138,7 +139,8 @@ const loadUser = async (id: string) => {
 };
 
 const loadLoggedUser = async (id: string) => {
-	const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
+	// const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
+	const response = await fetchAPI("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
 		const error: any = new Error(json.message);

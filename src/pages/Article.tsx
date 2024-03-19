@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Await, defer, useLoaderData } from "react-router-dom";
+import { fetchAPI } from "../utils";
 
 function Article() {
 	const { article } = useLoaderData() as { article: any };
@@ -25,7 +26,8 @@ export default Article;
 const loadArticle = async (userId: string, articleId: string) => {
 	console.log(userId);
 
-	const response = await fetch(`/api/article/${articleId}`, { headers: { "Content-Type": "application/json" } });
+	// const response = await fetch(`/api/article/${articleId}`, { headers: { "Content-Type": "application/json" } });
+	const response = await fetchAPI(`/api/article/${articleId}`, { headers: { "Content-Type": "application/json" } });
 	const data = await response.json();
 	if (data.error) {
 		const error: any = new Error(data.message);

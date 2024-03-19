@@ -1,5 +1,5 @@
 import cx from "classnames";
-import { cookies } from "../utils";
+import { cookies, fetchAPI } from "../utils";
 import { useEffect, useState } from "react";
 import { useProfileContext } from "../hooks/useProfileContext";
 import { SET_LOGGED_PROFILE, SET_CURRENT_PROFILE } from "../utils/types";
@@ -55,10 +55,8 @@ const FollowButton = ({
 	const handleBtn = async () => {
 		if (!loggedUserId || !loggedUser || !relatedUser) return;
 
-		const response = await fetch(`/api/user/${loggedUserId}/${type}/${relatedUser._id}`, {
-			headers: { "Content-Type": "application/json" },
-			credentials: "include",
-		});
+		// const response = await fetch(`/api/user/${loggedUserId}/${type}/${relatedUser._id}`, { headers: { "Content-Type": "application/json" }, credentials: "include" });
+		const response = await fetchAPI(`/api/user/${loggedUserId}/${type}/${relatedUser._id}`, { headers: { "Content-Type": "application/json" }, credentials: "include" });
 
 		const json = await response.json();
 		if (json.error) {

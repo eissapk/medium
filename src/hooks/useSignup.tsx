@@ -1,3 +1,4 @@
+import { fetchAPI } from "../utils";
 import { LOGIN } from "../utils/types";
 import { useAuthContext } from "./useAuthContext";
 import { useState } from "react";
@@ -11,7 +12,8 @@ export const useSignup = () => {
 		setIsLoading(true);
 		setError(false);
 
-		const response = await fetch("/api/user/signup", { method: "POST", body: JSON.stringify({ email, username, password }), headers: { "Content-Type": "application/json" } });
+		// const response = await fetch("/api/user/signup", { method: "POST", body: JSON.stringify({ email, username, password }), headers: { "Content-Type": "application/json" } });
+		const response = await fetchAPI("/api/user/signup", { method: "POST", body: JSON.stringify({ email, username, password }), headers: { "Content-Type": "application/json" } });
 		const json = await response.json();
 		if (!response.ok || json.error) {
 			setError(json.message); // response from backend like so e.g.: { error: true, message: "Invalid credentials" }
