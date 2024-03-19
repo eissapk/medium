@@ -17,6 +17,8 @@ app.use(express.json({ limit: EXPRESS_LIMIT }));
 app.use(cookieParser());
 if (isDev) app.use(morgan("tiny"));
 else app.use(logger);
+
+// todo change port to vite port: 5173
 app.use(cors({ origin: isDev ? `http://localhost:${PORT}` : DOMAIN, credentials: true }));
 
 // routes
