@@ -15,7 +15,7 @@ const app = express();
 // middleware
 app.use(express.json({ limit: EXPRESS_LIMIT }));
 app.use(cookieParser());
-if (isDev) app.use(morgan("tiny"));
+if (!isDev) app.use(morgan("tiny"));
 else app.use(logger);
 
 // todo change port to vite port: 5173

@@ -50,6 +50,8 @@ export const loginUser = async (req, res) => {
 
 export const signupUser = async (req, res) => {
 	const { email, password, username } = req.body;
+	console.log("signupUser()", email, password, username);
+
 	if (!email) return res.status(400).json({ error: true, message: "Email is not present!" });
 	if (!username) return res.status(400).json({ error: true, message: "Username is not present!" });
 	if (!password) return res.status(400).json({ error: true, message: "Password is not present!" });

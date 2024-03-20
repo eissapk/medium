@@ -3,7 +3,7 @@ import User from "../models/user";
 const { JWT_SECRET } = process.env;
 
 const auth = async (req, res, next) => {
-	// console.log("verify token");
+	console.log("verify token");
 
 	console.log("cookie:", req.cookies);
 
