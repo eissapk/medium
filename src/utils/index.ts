@@ -25,6 +25,6 @@ export const getNameFromEmail = (email: string) => email.split("@")[0];
 export const getShortArticleDesc = (text: string) => text.split(" ").slice(0, 10).join(" ").concat("...");
 
 export const fetchAPI = async (url: string, opts: object) => {
-	url = mode == "dev" ? url : "https://medium-3k4o.onrender.com:3000" + url;
+	url = mode == "dev" ? url : "https://medium-3k4o.onrender.com" + url;
 	return await fetch(url, opts);
 };
