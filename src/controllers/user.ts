@@ -9,7 +9,7 @@ const cookieConfig = ({ days = 30, httpOnly = false }: { days?: number; httpOnly
 		path: "/",
 		expires: expiresIn(days),
 		httpOnly,
-		secure: true, // cookie created only on https protocols
+		// secure: true, // cookie created only on https protocols
 	};
 };
 
