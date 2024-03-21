@@ -3,13 +3,14 @@ import bcrypt from "bcryptjs";
 import { createToken, expiresIn, validator } from "../utils";
 import mongoose from "mongoose";
 
+// issue: cookies can't be shared between two different domains, (that's by cookies default design), so i have to serve the frontend from backend to use only one domain0
 const cookieConfig = ({ days = 30, httpOnly = false }: { days?: number; httpOnly?: boolean }) => {
 	return {
-		// sameSite: "strict",
-		// path: "/",
+		sameSite: "strict",
+		path: "/",
 		expires: expiresIn(days),
 		httpOnly,
-		// secure: true, // cookie created only on https protocols
+		secure: true, // cookie created only on https protocols
 	};
 };
 
