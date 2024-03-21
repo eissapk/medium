@@ -6,10 +6,10 @@ import mongoose from "mongoose";
 const cookieConfig = ({ days = 30, httpOnly = false }: { days?: number; httpOnly?: boolean }) => {
 	return {
 		// sameSite: "strict",
-		path: "/",
+		// path: "/",
 		expires: expiresIn(days),
 		httpOnly,
-		secure: true, // cookie created only on https protocols
+		// secure: true, // cookie created only on https protocols
 	};
 };
 
