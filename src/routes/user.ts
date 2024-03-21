@@ -2,7 +2,7 @@ import express from "express";
 import { loginUser, signupUser, getAllUsers, getUser, followUser, unFollowUser, getUserFollowers, getUserFollowing } from "../controllers/user";
 import auth from "../middleware/auth";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.post("/login", loginUser);
 router.post("/signup", signupUser);
@@ -20,3 +20,5 @@ router.get("/:id/unfollow/:user", unFollowUser);
 // todo: likes
 // router.get("/:id/like/:article", likeArticle);
 // router.get("/:id/unlike/:article", unLikeArticle);
+
+export default router;

@@ -3,9 +3,9 @@ import User from "../models/user";
 const { JWT_SECRET } = process.env;
 
 const auth = async (req, res, next) => {
-	console.log("verify token");
+	// console.log("verify token");
 
-	console.log("cookie:", req.cookies);
+	// console.log("cookie:", req.cookies);
 
 	if (!req.cookies || !req.cookies.token) {
 		return res.status(401).clearCookie("token").clearCookie("email").clearCookie("userId").json({ error: true, message: "Unauthorized: No token provided" });

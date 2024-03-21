@@ -2,7 +2,7 @@ import express from "express";
 import { createArticle, getArticles, getUserArticles, getUserFeeds, updateArticle, removeArticle, getArticle } from "../controllers/article";
 import auth from "../middleware/auth";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.get("/:id", getArticle);
 router.get("/user/:id", getUserArticles); // /api/article/user/:id
@@ -14,3 +14,4 @@ router.get("/", getArticles);
 router.post("/create", createArticle);
 router.delete("/remove/:id", removeArticle);
 router.put("/update/:id", updateArticle);
+export default router;
