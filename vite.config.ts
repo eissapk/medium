@@ -9,7 +9,8 @@ export default ({ mode }) => {
 		server: {
 			proxy: {
 				"/api": {
-					target: mode == "development" ? "http://localhost:3000" : "https://medium-3k4o.onrender.com",
+					target: "http://localhost:3000",
+					// target: mode == "development" ? "http://localhost:3000" : "https://medium-3k4o.onrender.com",
 					// target: process.env.VITE_mainAPI_host,
 					// secure: true,
 					changeOrigin: true,

@@ -1,5 +1,3 @@
-let mode = "dev";
-mode = "prod"; // comment with dev server only
 import Cookies from "universal-cookie";
 export const cookies = new Cookies();
 import { QueryClient } from "@tanstack/react-query";
@@ -25,6 +23,6 @@ export const getNameFromEmail = (email: string) => email.split("@")[0];
 export const getShortArticleDesc = (text: string) => text.split(" ").slice(0, 10).join(" ").concat("...");
 
 export const fetchAPI = async (url: string, opts: object) => {
-	url = mode == "dev" ? url : "https://medium-3k4o.onrender.com" + url;
+	// url = mode == "dev" ? url : "https://medium-3k4o.onrender.com" + url;
 	return await fetch(url, opts);
 };
