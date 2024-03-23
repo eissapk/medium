@@ -16,8 +16,7 @@ function Following() {
 		error,
 		data: followingArr,
 		isError,
-	}: // refetch,
-	{
+	}: {
 		isPending: boolean;
 		error: any;
 		data: any;
@@ -25,7 +24,6 @@ function Following() {
 	} = useQuery({
 		queryKey: ["following", user._id],
 		queryFn: ({ signal }) => loadFollowing({ userId: user._id, signal }),
-		// enabled: false, // for better performance
 	});
 
 	useEffect(() => {
@@ -36,8 +34,6 @@ function Following() {
 				const loggedUserData = await loadLoggedUser(loggedUserId);
 				setLoggedUser(loggedUserData);
 			}
-			// if (user.following.length) refetch(); // fetch only if there are following -- for better performance
-			// refetch(); // for better UX
 		}
 		init();
 	}, [user]);
@@ -75,7 +71,6 @@ function Following() {
 export default Following;
 
 const loadFollowing = async ({ userId, signal }: { userId: string; signal: AbortSignal }) => {
-	// const response = await fetch(`/api/user/${userId}/following`, { headers: { "Content-Type": "application/json" }, signal });
 	const response = await fetchAPI(`/api/user/${userId}/following`, { headers: { "Content-Type": "application/json" }, signal });
 	const json = await response.json();
 	if (json.error) {
@@ -91,7 +86,6 @@ const loadFollowing = async ({ userId, signal }: { userId: string; signal: Abort
 };
 
 const loadLoggedUser = async (id: string) => {
-	// const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const response = await fetchAPI("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {

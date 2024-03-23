@@ -8,24 +8,13 @@ type USER = {
 	followers: string[];
 	following: string[];
 };
-const FollowButton = ({
-	className = "",
-	onClick,
-	relatedUser,
-	loggedUser,
-	profileUrl,
-}: {
-	relatedUser: USER;
-	loggedUser: USER | null;
-	profileUrl: string;
-	className?: string;
-	onClick?: ({ increase }: { increase: boolean }) => void;
-}) => {
+const FollowButton = ({ className = "", relatedUser, loggedUser, profileUrl }: { relatedUser: USER; loggedUser: USER | null; profileUrl: string; className?: string }) => {
 	const { state, dispatch } = useProfileContext();
 	const [type, setType] = useState("");
+	const [isPending, setIsPending] = useState(false);
 	const loggedUserId = cookies.get("userId");
 	useEffect(() => {
-		console.log({ relatedUser, loggedUserId, profileUrl, loggedUser });
+		// console.log({ relatedUser, loggedUserId, profileUrl, loggedUser });
 
 		if (!state.profile.logged) dispatch({ type: SET_LOGGED_PROFILE, payload: loggedUser });
 		if (!state.profile.current && profileUrl.includes(relatedUser._id)) dispatch({ type: SET_CURRENT_PROFILE, payload: relatedUser });
@@ -45,9 +34,13 @@ const FollowButton = ({
 	if (relatedUser._id == loggedUser._id) return ""; // can't follow yourself
 
 	const btnClasses = () => {
-		return cx("flex px-4 py-2 text-sm transition-all rounded-full opacity-80 hover:opacity-100", {
+		return cx("flex px-4 py-2 text-sm transition-all rounded-full", {
 			"bg-green text-white": type == "follow",
 			"border text-green border-green": type !== "follow",
+			"opacity-80": !isPending,
+			"hover:opacity-100": !isPending,
+			"opacity-50": isPending,
+			"hover:opacity-50": isPending,
 			[className]: className,
 		});
 	};
@@ -55,26 +48,24 @@ const FollowButton = ({
 	const handleBtn = async () => {
 		if (!loggedUserId || !loggedUser || !relatedUser) return;
 
-		// const response = await fetch(`/api/user/${loggedUserId}/${type}/${relatedUser._id}`, { headers: { "Content-Type": "application/json" }, credentials: "include" });
+		setIsPending(true);
 		const response = await fetchAPI(`/api/user/${loggedUserId}/${type}/${relatedUser._id}`, { headers: { "Content-Type": "application/json" }, credentials: "include" });
 
 		const json = await response.json();
 		if (json.error) {
+			setIsPending(false);
 			const error: any = new Error(json.message);
 			error.code = response.status;
 			throw error;
 		}
-		console.log("handleBtn response:", json);
+		// console.log("handleBtn response:", json);
 
-		if (json.data.type == "follow") {
-			setType("unfollow");
-			if (onClick) onClick({ increase: true });
-		} else {
-			setType("follow");
-			if (onClick) onClick({ increase: false });
-		}
+		if (json.data.type == "follow") setType("unfollow");
+		else setType("follow");
+
 		dispatch({ type: SET_LOGGED_PROFILE, payload: json.data.user1 });
 		if (profileUrl.includes(json.data.user2._id)) dispatch({ type: SET_CURRENT_PROFILE, payload: json.data.user2 });
+		setIsPending(false);
 	};
 
 	return (

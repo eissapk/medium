@@ -6,21 +6,17 @@ import cx from "classnames";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "../components/Spinner";
 import FollowButton from "../components/FollowButton";
-// import { useProfileContext } from "../hooks/useProfileContext";
-// import { SET_CURRENT_PROFILE } from "../utils/types";
 
 function Followers() {
 	const location = useLocation();
 	const [loggedUser, setLoggedUser] = useState(null);
-	const { user, cb } = useOutletContext() as { user: any; cb: any }; // this is the user of opened profile not the user related to follow button block element, so be careful
-	// const { state, dispatch } = useProfileContext();
+	const { user } = useOutletContext() as { user: any }; // this is the user of opened profile not the user related to follow button block element, so be careful
 	const {
 		isPending,
 		error,
 		data: followersArr,
 		isError,
-	}: // refetch,
-	{
+	}: {
 		isPending: boolean;
 		error: any;
 		data: any;
@@ -28,12 +24,10 @@ function Followers() {
 	} = useQuery({
 		queryKey: ["followers", user._id],
 		queryFn: ({ signal }) => loadFollowers({ userId: user._id, signal }),
-		// enabled: false, // for better performance
 	});
 
 	useEffect(() => {
 		// console.log(user._id);
-		if (followersArr) cb(followersArr); // todo: invoke cb on each fetch of useQuery, currently it needs to fetch twice to get real followers arr
 		async function init() {
 			// this makes a bug by react -- can't update compoennt while rendering another,etc
 			const loggedUserId = cookies.get("userId");
@@ -41,11 +35,9 @@ function Followers() {
 				const loggedUserData = await loadLoggedUser(loggedUserId);
 				setLoggedUser(loggedUserData);
 			}
-			// if (user.followers.length) refetch(); // fetch only if there are followers -- for better performance
-			// refetch(); // for better UX
 		}
 		init();
-	}, [user, followersArr, cb]);
+	}, [user, followersArr]);
 
 	if (isError) {
 		const err: any = new Error(error.message);
@@ -77,7 +69,6 @@ function Followers() {
 export default Followers;
 
 const loadFollowers = async ({ userId, signal }: { userId: string; signal: AbortSignal }) => {
-	// const response = await fetch(`/api/user/${userId}/followers`, { headers: { "Content-Type": "application/json" }, signal });
 	const response = await fetchAPI(`/api/user/${userId}/followers`, { headers: { "Content-Type": "application/json" }, signal });
 	const json = await response.json();
 	if (json.error) {
@@ -86,14 +77,13 @@ const loadFollowers = async ({ userId, signal }: { userId: string; signal: Abort
 		throw error;
 	}
 
-	await new Promise(r => setTimeout(r, 500)); // for testing
+	// await new Promise(r => setTimeout(r, 500)); // for testing
 	// console.log("loadFollowers:", json);
 
 	return json.data;
 };
 
 const loadLoggedUser = async (id: string) => {
-	// const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const response = await fetchAPI("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
@@ -101,7 +91,7 @@ const loadLoggedUser = async (id: string) => {
 		error.code = response.status;
 		throw error;
 	}
-	await new Promise(r => setTimeout(r, 500)); // for testing
+	// await new Promise(r => setTimeout(r, 500)); // for testing
 	// console.log("loadLoggedUser", json);
 	return json.data;
 };

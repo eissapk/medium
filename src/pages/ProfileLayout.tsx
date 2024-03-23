@@ -20,33 +20,22 @@ function activeRoute({ isActive }: { isActive: boolean }) {
 }
 const userNameClasses = "text-[2.6rem] text-black-200 font-medium";
 
-// todo: test following functionality and make it work through context
 function ProfileLayout() {
-	const [followers, setFollowers] = useState(0);
 	const { userId } = useParams();
 	const location = useLocation();
 	const { userData } = useLoaderData() as { userData: any };
 	const [links, setLinks] = useState(linksArr);
-	const { dispatch } = useProfileContext();
+	const { dispatch, state } = useProfileContext();
 
 	useEffect(() => {
 		// update links based on current fetched user
 		userData.then(({ user, loggedUser }: { user: any; loggedUser: any }) => {
 			dispatch({ type: SET_CURRENT_PROFILE, payload: user });
 			dispatch({ type: SET_LOGGED_PROFILE, payload: loggedUser });
-			setFollowers(user.followers.length);
 			setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, user._id) })));
 		});
 	}, [userData, userId, dispatch]);
 
-	const cb = (arr: any) => setFollowers(arr.length); // via outlet context
-	// via button component
-	function followersCounterHandler({ increase }: { increase: boolean }) {
-		if (increase) setFollowers(followers + 1);
-		else setFollowers(followers - 1 < 0 ? 0 : followers - 1);
-	}
-
-	//todo: update followers number better way
 	return (
 		<main className="px-4">
 			<div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] mx-auto max-w-max gap-x-20">
@@ -61,10 +50,10 @@ function ProfileLayout() {
 									</Spinner>
 								}>
 								<Await resolve={userData}>
-									{({ user }) => (
+									{({ user, loggedUser }) => (
 										<>
 											<h1 className={userNameClasses}>{cap(user.name || getNameFromEmail(user.email))}</h1>
-											{/* <FollowButton onClick={followersCounterHandler} className="md:hidden" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} /> */}
+											<FollowButton className="md:hidden" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
 										</>
 									)}
 								</Await>
@@ -84,7 +73,7 @@ function ProfileLayout() {
 
 					<div>
 						<Suspense fallback={<Spinner isArticle={true} />}>
-							<Await resolve={userData}>{({ user }) => <Outlet context={{ user, cb }} />}</Await>
+							<Await resolve={userData}>{({ user }) => <Outlet context={{ user }} />}</Await>
 						</Suspense>
 					</div>
 				</div>
@@ -104,13 +93,13 @@ function ProfileLayout() {
 									<p className="mb-1 font-medium text-text-dark">{cap(user?.name || getNameFromEmail(user?.email))}</p>
 									{/* followers */}
 									<Link to={"/" + user?._id + "/followers"} className="transition-all text-text-light hover:text-black-200">
-										{followers} Followers
-										{/* {profileState && profileState.current && profileState.current.followers.length} Followers */}
+										{/* @ts-expect-error -- fix  */}
+										{state?.profile?.current?.followers?.length || 0} Followers
 									</Link>
 									{/* title */}
 									{user?.title && <p className="mt-3 text-sm text-text-light">{user?.title}</p>}
 									{/* cta */}
-									<FollowButton onClick={followersCounterHandler} className="mt-2" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
+									<FollowButton className="mt-2" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
 								</>
 							)}
 						</Await>
@@ -124,7 +113,6 @@ function ProfileLayout() {
 export default ProfileLayout;
 
 const loadUser = async (id: string) => {
-	// const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const response = await fetchAPI("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 
@@ -133,13 +121,12 @@ const loadUser = async (id: string) => {
 		error.code = response.status;
 		throw error;
 	}
-	await new Promise(r => setTimeout(r, 500)); // for testing
+	// await new Promise(r => setTimeout(r, 500)); // for testing
 	// console.log("loadUser:", json);
 	return json.data;
 };
 
 const loadLoggedUser = async (id: string) => {
-	// const response = await fetch("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const response = await fetchAPI("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
@@ -147,7 +134,7 @@ const loadLoggedUser = async (id: string) => {
 		error.code = response.status;
 		throw error;
 	}
-	await new Promise(r => setTimeout(r, 500)); // for testing
+	// await new Promise(r => setTimeout(r, 500)); // for testing
 	// console.log("loadLoggedUser", json);
 	return json.data;
 };
