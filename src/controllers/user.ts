@@ -145,7 +145,8 @@ export const followUser = async (req, res) => {
 		await User.findOneAndUpdate({ _id: currentUserId }, { following: currentUserNewFollowingArr });
 
 		// add to followers
-		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: [...foreignUser.followers, currentUserId] });
+		const foreignUserNewFollowersArr = [...foreignUser.followers, currentUserId];
+		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: foreignUserNewFollowersArr });
 
 		res.status(200).json({
 			success: true,
@@ -156,7 +157,10 @@ export const followUser = async (req, res) => {
 					following: currentUserNewFollowingArr,
 				},
 				type: "follow",
-				user2: foreignUserId,
+				user2: {
+					...foreignUser.toJSON(),
+					followers: foreignUserNewFollowersArr,
+				},
 			},
 		});
 	} catch (err) {
@@ -185,7 +189,8 @@ export const unFollowUser = async (req, res) => {
 		await User.findOneAndUpdate({ _id: currentUserId }, { following: currentUserNewFollowingArr });
 
 		// remove from followers
-		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: foreignUser.followers.filter(item => item.toString() != currentUserId.toString()) });
+		const foreignUserNewFollowersArr = foreignUser.followers.filter(item => item.toString() != currentUserId.toString());
+		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: foreignUserNewFollowersArr });
 
 		res.status(200).json({
 			success: true,
@@ -197,7 +202,10 @@ export const unFollowUser = async (req, res) => {
 				},
 
 				type: "unfollow",
-				user2: foreignUserId,
+				user2: {
+					...foreignUser.toJSON(),
+					followers: foreignUserNewFollowersArr,
+				},
 			},
 		});
 	} catch (err) {
