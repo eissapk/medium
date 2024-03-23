@@ -61,7 +61,7 @@ async function fetchFeeds({ userId, signal }: { userId: string; signal: AbortSig
 	const response = await fetchAPI(`/api/article/feeds/user/${userId}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
 	const data = await response.json();
 
-	await new Promise(r => setTimeout(r, 500)); // for testing
+	// await new Promise(r => setTimeout(r, 500)); // for testing
 	if (data.error) {
 		const error: any = new Error(data.message);
 		error.code = response.status;

@@ -79,7 +79,7 @@ const loadFollowing = async ({ userId, signal }: { userId: string; signal: Abort
 		throw error;
 	}
 
-	await new Promise(r => setTimeout(r, 500)); // for testing
+	// await new Promise(r => setTimeout(r, 500)); // for testing
 	// console.log("loadFollowing:", json);
 
 	return json.data;
@@ -93,7 +93,7 @@ const loadLoggedUser = async (id: string) => {
 		error.code = response.status;
 		throw error;
 	}
-	await new Promise(r => setTimeout(r, 500)); // for testing
+	// await new Promise(r => setTimeout(r, 500)); // for testing
 	// console.log("loadLoggedUser", json);
 	return json.data;
 };

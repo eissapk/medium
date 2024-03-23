@@ -38,7 +38,7 @@ const loadArticles = async (id: string) => {
 		throw error;
 	}
 
-	await new Promise(r => setTimeout(r, 500)); // for testing
+	// await new Promise(r => setTimeout(r, 500)); // for testing
 
 	return data;
 };
