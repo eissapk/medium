@@ -1,4 +1,4 @@
-import { cap, cookies, fetchAPI, getNameFromEmail } from "../utils";
+import { cap, cookies, fetchAPI } from "../utils";
 import profilePic from "../assets/profile-pic.webp";
 import { useLocation, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -57,7 +57,7 @@ function Following() {
 							<li key={item._id} className={cx("flex items-center justify-between", { "mt-5": index })}>
 								<a href={`/${item._id}`} className="flex items-center gap-x-2">
 									<img className="w-12 rounded-[50%]" src={item.avatar || profilePic} alt="avatar" />
-									<span className="font-medium text-text-dark ps-2">{cap(item.name || getNameFromEmail(item.email))}</span>
+									<span className="font-medium text-text-dark ps-2">{cap(item.name || item.username)}</span>
 								</a>
 								<FollowButton relatedUser={item} loggedUser={loggedUser} profileUrl={location.pathname} />
 							</li>

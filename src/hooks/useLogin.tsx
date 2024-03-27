@@ -14,7 +14,6 @@ export const useLogin = () => {
 		setIsLoading(true);
 		setError(false);
 
-		// const response = await fetch("/api/user/login", { method: "POST", body: JSON.stringify({ email, password }), headers: { "Content-Type": "application/json" } });
 		const response = await fetchAPI("/api/user/login", { method: "POST", body: JSON.stringify({ email, password }), headers: { "Content-Type": "application/json" } });
 		const json = await response.json();
 		if (!response.ok || json.error) {

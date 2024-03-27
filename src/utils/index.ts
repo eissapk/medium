@@ -20,7 +20,14 @@ export const cap = (text: string) => {
 
 export const getNameFromEmail = (email: string) => email.split("@")[0];
 
-export const getShortArticleDesc = (text: string) => text.split(" ").slice(0, 10).join(" ").concat("...");
+export const getShortArticleDesc = (text: string) => {
+	if (text.split(" ").length > 10) return text.split(" ").slice(0, 10).join(" ").concat("...");
+	else return text;
+};
+export const getShortArticleTitle = (text: string) => {
+	if (text.length > 40) return text.slice(0, 40).concat("...");
+	else return text;
+};
 
 export const fetchAPI = async (url: string, opts: object) => {
 	// url = mode == "dev" ? url : "https://medium-3k4o.onrender.com" + url;

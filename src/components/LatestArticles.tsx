@@ -12,6 +12,7 @@ const user = {
 	_id: "65deef664a411947d2eb72b7",
 	avatar: "https://miro.medium.com/v2/resize:fill:44:44/1*pUa4O3SR1XTWUtUMhnrQUw.jpeg",
 	name: "Dustin Moskovitz",
+	username: "@dustinmoskovitz",
 };
 const dummyArray = [
 	{

@@ -1,5 +1,5 @@
 import { Outlet, Link, NavLink, defer, Await, useLoaderData, useParams, useLocation } from "react-router-dom";
-import { cap, getNameFromEmail, cookies, fetchAPI } from "../utils";
+import { cap, cookies, fetchAPI } from "../utils";
 import { Suspense, useEffect, useState } from "react";
 import FollowButton from "../components/FollowButton";
 import Spinner from "../components/Spinner";
@@ -52,7 +52,7 @@ function ProfileLayout() {
 								<Await resolve={userData}>
 									{({ user, loggedUser }) => (
 										<>
-											<h1 className={userNameClasses}>{cap(user.name || getNameFromEmail(user.email))}</h1>
+											<h1 className={userNameClasses}>{cap(user.name || user.username)}</h1>
 											<FollowButton className="md:hidden" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
 										</>
 									)}
@@ -90,7 +90,7 @@ function ProfileLayout() {
 									</div>
 
 									{/* name */}
-									<p className="mb-1 font-medium text-text-dark">{cap(user?.name || getNameFromEmail(user?.email))}</p>
+									<p className="mb-1 font-medium text-text-dark">{cap(user?.name || user?.username)}</p>
 									{/* followers */}
 									<Link to={"/" + user?._id + "/followers"} className="transition-all text-text-light hover:text-black-200">
 										{/* @ts-expect-error -- fix  */}

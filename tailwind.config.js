@@ -39,6 +39,7 @@ export default {
 			},
 			boxShadow: {
 				menu: "rgba(0, 0, 0, 0.05) 0px 0px 4px, rgba(0, 0, 0, 0.15) 0px 2px 8px",
+				search: "rgba(0, 0, 0, 0.15) 0px 2px 10px 0px",
 			},
 			maxWidth: {
 				max: "80rem", // for centering containers on large screens

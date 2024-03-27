@@ -4,7 +4,10 @@ import { useLogout } from "../hooks/useLogout";
 import { Link } from "react-router-dom";
 import { Profile, Edit, LogoMini, Search } from "../assets/icons";
 import { useAuthContext } from "../hooks/useAuthContext";
-// import profilePic from "../assets/profile-pic.webp";
+import { fetchAPI, getLocalTime, getShortArticleTitle } from "../utils";
+import profilePic from "../assets/profile-pic.webp";
+import Spinner from "./Spinner";
+// todo: split this into  components
 
 function UserNav() {
 	const navigate = useNavigate();
@@ -12,25 +15,70 @@ function UserNav() {
 	const { logout } = useLogout();
 	const { pathname } = useLocation();
 	const avatar = useRef(null);
+	const searchInput = useRef(null);
+	const [t, setT] = useState<null | ReturnType<typeof setTimeout>>(null);
+	const [searchData, setSearchData] = useState({ users: [], articles: [] });
+	const [isMenuShown, setIsMenuShown] = useState(false);
+	const [isSearchShown, setIsSearchShown] = useState(false);
+	const [isNewStoryRoute, setIsNewStoryRoute] = useState(false);
+	const [isSearchError, setIsSearchError] = useState(false);
+	const [isSearchPending, setIsSearchPending] = useState(true);
+	const [searchError, setSearchError] = useState("");
+	// todo: use useMutation here
 
 	const handleMenuClick = (e: any) => {
-		if (e.target !== avatar.current) setIsShown(false);
+		if (e.target !== avatar.current) setIsMenuShown(false);
+	};
+	const handleSearchClick = (e: any) => {
+		if (e.target !== searchInput.current) setIsSearchShown(false);
+	};
+
+	const handleClicks = (e: any) => {
+		handleMenuClick(e);
+		handleSearchClick(e);
 	};
 
 	useEffect(() => {
 		if (pathname === "/new-story") setIsNewStoryRoute(true);
 		else setIsNewStoryRoute(false);
-		document.body.addEventListener("click", handleMenuClick);
-		return () => document.body.removeEventListener("click", handleMenuClick);
-	}, [pathname]);
-
-	const [isShown, setIsShown] = useState(false);
-	const [isNewStoryRoute, setIsNewStoryRoute] = useState(false);
+		document.body.addEventListener("click", handleClicks);
+		return () => document.body.removeEventListener("click", handleClicks);
+	}, [pathname, handleClicks]);
 
 	const handleLogout = () => {
 		logout();
 		setTimeout(() => navigate("/"), 200);
 	};
+
+	const handleQuery = (text: string) => {
+		if (text.trim() === "") return setIsSearchShown(false);
+		if (t) clearTimeout(t);
+		setT(setTimeout(() => search(text.trim()), 200)); // debounce each 200ms
+	};
+
+	const search = async (text: string) => {
+		setIsSearchPending(true);
+		setIsSearchShown(true);
+		// todo fix error handler -- unexpected token | json
+		// todo: check if we are in home page or user page
+		const response = await fetchAPI(`/api/search/${text}`, { headers: { "Content-Type": "application/json" } });
+		const json = await response.json();
+		console.log(json);
+		setSearchData(json.data);
+		setIsSearchError(false);
+		setSearchError("");
+		setIsSearchPending(false);
+
+		if (json.error) {
+			setIsSearchError(true);
+			setSearchError(json.message);
+			setIsSearchPending(false);
+			const error: any = new Error(json.message);
+			error.code = response.status;
+			throw error;
+		}
+	};
+
 	return (
 		<nav className="flex flex-col items-center justify-between py-2 bg-white gap-y-5 sm:flex-row">
 			<ul className="flex items-center gap-x-5">
@@ -40,9 +88,55 @@ function UserNav() {
 					</Link>
 				</li>
 				{!isNewStoryRoute && (
-					<li className="rounded-[1.25rem] bg-input flex items-center justify-items-center">
+					<li className="rounded-[1.25rem] bg-input flex relative items-center justify-items-center">
 						<Search className="absolute w-6 h-6 pointer-events-none ms-4 text-text-light" />
-						<input type="text" placeholder="Search" className="outline-none text-sm placeholder:text-text-light min-h-10 p-2.5 ps-12 bg-transparent min-w-[15rem]" />
+						<input
+							ref={searchInput}
+							onChange={e => handleQuery(e.target.value)}
+							type="text"
+							placeholder="Search"
+							className="outline-none text-sm placeholder:text-text-light min-h-10 p-2.5 ps-12 bg-transparent min-w-[15rem]"
+						/>
+						{isSearchShown && (
+							<ul className="flex flex-col gap-y-4  min-h-7 max-h-[60vh] overflow-y-auto absolute min-w-full w-max max-w-[18rem] bg-white top-[calc(100%+0.25rem)] z-10 left-0 p-4 border border-border-light rounded shadow-search">
+								{/* <span className="absolute left-8 -top-4 border-[0.5em] border-transparent border-b-white"></span> */}
+								{isSearchPending && <Spinner isUser={true} size="sm" />}
+								{/* todo fix error handler  */}
+
+								{/* hints */}
+								{!isSearchPending && isSearchError && <li className="text-xs text-text-light text-center">{searchError}</li>}
+								{!isSearchPending && !searchData.users.length && !searchData.articles.length && <li className="text-xs text-text-light text-center">No results found</li>}
+
+								{/* users - works in home page only */}
+								{!isSearchPending && !isSearchError && !!searchData.users.length && <li className="border-b border-border-light pb-2 text-text-light text-sm tracking-widest uppercase">People</li>}
+								{!isSearchPending &&
+									!isSearchError &&
+									!!searchData.users.length &&
+									searchData.users.map((user: any) => (
+										<li key={user._id}>
+											<Link to={`/${user._id}`} className="flex w-full items-center gap-x-2">
+												<img className="h-6 rounded-full" src={user?.avatar || profilePic} alt="Author avatar" />
+												<span className="text-sm text-text-dark">{user?.name || user?.username}</span>
+											</Link>
+										</li>
+									))}
+								{/* articles - works in profile page only */}
+								{!isSearchPending && !isSearchError && !!searchData.articles.length && (
+									<li className="border-b border-border-light pb-2 text-text-light text-sm tracking-widest uppercase">Articles</li>
+								)}
+								{!isSearchPending &&
+									!isSearchError &&
+									!!searchData.articles.length &&
+									searchData.articles.map((article: any) => (
+										<li key={article._id}>
+											<Link to={`/${article.ownedBy}/${article._id}`} className="flex w-full flex-col gap-y-2">
+												<span className="text-sm text-text-dark">{getShortArticleTitle(article?.title)}</span>
+												<span className="text-xs text-text-light">{getLocalTime(article?.createdAt)}</span>
+											</Link>
+										</li>
+									))}
+							</ul>
+						)}
 					</li>
 				)}
 			</ul>
@@ -66,8 +160,8 @@ function UserNav() {
 				)}
 
 				<li className="flex">
-					<button ref={avatar} type="button" onClick={() => setIsShown(!isShown)} className="flex border rounded-full cursor-pointer opacity-80 hover:opacity-100 border-text-light ">
-						{/* <button ref={avatar} type="button" onClick={() => setIsShown(!isShown)} className="cursor-pointer opacity-80 hover:opacity-100"> */}
+					<button ref={avatar} type="button" onClick={() => setIsMenuShown(!isMenuShown)} className="flex border rounded-full cursor-pointer opacity-80 hover:opacity-100 border-text-light ">
+						{/* <button ref={avatar} type="button" onClick={() => setIsMenuShown(!isMenuShown)} className="cursor-pointer opacity-80 hover:opacity-100"> */}
 						{/* <img src={state.user.avatar || profilePic} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" /> */}
 						{state.user.avatar ? (
 							<img src={state.user.avatar} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" />
@@ -77,7 +171,7 @@ function UserNav() {
 					</button>
 				</li>
 
-				{isShown && (
+				{isMenuShown && (
 					<div className="absolute right-0 bg-white rounded top-[calc(100%+0.5em)] border-line shadow-menu text-sm min-w-60 py-2 z-[1]">
 						<ul>
 							<li>

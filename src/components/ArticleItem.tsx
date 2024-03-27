@@ -1,4 +1,4 @@
-import { getLocalTime, getNameFromEmail, getShortArticleDesc } from "../utils";
+import { getLocalTime, getShortArticleDesc } from "../utils";
 import articleThumbnail from "../assets/article-thumbnail.webp";
 import profilePic from "../assets/profile-pic.webp";
 type ARTICLE = {
@@ -13,16 +13,17 @@ type ARTICLE = {
 		avatar: string;
 		name: string;
 		email: string;
+		username: string;
 	};
 };
 
-function ArticleItem({ article, isMe }: { article: ARTICLE; isMe?: boolean }) {
+function ArticleItem({ article, isProfile }: { article: ARTICLE; isProfile?: boolean }) {
 	return (
 		<article>
-			{!isMe && (
+			{!isProfile && (
 				<a href={`/${article.ownedBy}`} className="inline-flex items-center mb-2 gap-x-2">
 					<img className="h-6 rounded-full" src={article.user?.avatar || profilePic} alt="Author avatar" />
-					<span className="text-sm font-medium">{article.user?.name || getNameFromEmail(article.user?.email)}</span>
+					<span className="text-sm font-medium">{article.user?.name || article.user?.username}</span>
 				</a>
 			)}
 

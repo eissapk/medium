@@ -1,6 +1,6 @@
 import { Link, useOutletContext } from "react-router-dom";
 import { Twitter } from "../assets/icons";
-import { getLocalTime, cap, getNameFromEmail } from "../utils";
+import { getLocalTime, cap } from "../utils";
 import { useEffect, useState } from "react";
 
 const linksArr = [
@@ -45,7 +45,7 @@ function About() {
 			{/* social links */}
 			{user.socialLinks.length ? (
 				<ul className="flex gap-x-4">
-					<li className="text-sm text-text-dark">Connect with {cap(user.name || getNameFromEmail(user.email))}</li>
+					<li className="text-sm text-text-dark">Connect with {cap(user.name || user.username)}</li>
 					{user.socialLinks.map((item: any, index: number) => (
 						<li key={index}>
 							<a href={item.url} target="_blank" className="text-black-900">

@@ -5,6 +5,7 @@ import { fetchAPI } from "../utils";
 function Article() {
 	const { article } = useLoaderData() as { article: any };
 
+	// todo check if current profile is own by logged user (if so then add delete,update buttons for each article)
 	return (
 		<div>
 			<Suspense fallback={<p>Loading...</p>}>

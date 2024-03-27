@@ -39,8 +39,9 @@ const FollowButton = ({ className = "", relatedUser, loggedUser, profileUrl }: {
 			"border text-green border-green": type !== "follow",
 			"opacity-80": !isPending,
 			"hover:opacity-100": !isPending,
-			"opacity-50": isPending,
-			"hover:opacity-50": isPending,
+			"opacity-30": isPending,
+			"hover:opacity-30": isPending,
+			// "filter grayscale": isPending,
 			[className]: className,
 		});
 	};

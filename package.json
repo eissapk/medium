@@ -10,12 +10,32 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@editorjs/checklist": "latest",
+		"@editorjs/code": "latest",
+		"@editorjs/delimiter": "latest",
+		"@editorjs/editorjs": "latest",
+		"@editorjs/embed": "latest",
+		"@editorjs/header": "latest",
+		"@editorjs/image": "latest",
+		"@editorjs/inline-code": "latest",
+		"@editorjs/link": "latest",
+		"@editorjs/list": "latest",
+		"@editorjs/marker": "latest",
+		"@editorjs/paragraph": "latest",
+		"@editorjs/quote": "latest",
+		"@editorjs/raw": "latest",
+		"@editorjs/simple-image": "latest",
+		"@editorjs/table": "latest",
+		"@editorjs/warning": "latest",
 		"@tanstack/react-query": "^5.25.0",
 		"classnames": "^2.5.1",
+		"formik": "^2.4.5",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"react-editor-js": "^2.1.0",
 		"react-router-dom": "^6.22.1",
-		"universal-cookie": "^7.1.0"
+		"universal-cookie": "^7.1.0",
+		"yup": "^1.4.0"
 	},
 	"devDependencies": {
 		"@types/react": "^18.2.56",

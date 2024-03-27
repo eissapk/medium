@@ -37,17 +37,15 @@ function Feeds() {
 			<div className="mx-auto max-w-max">
 				<h1 className="inline-block pb-4 mt-6 text-sm font-medium border-b text-text-dark border-border-light pe-4">Latest from people you follow</h1>
 
-				<div className="grid grid-cols-1 py-5 mt-5 gap-y-10 gap-x-20 md:grid-cols-2">
-					{isPending && (
-						<>
-							<Spinner isArticle={true} />
-							<Spinner isArticle={true} />
-							<Spinner isArticle={true} />
-							<Spinner isArticle={true} />
-						</>
-					)}
-					{!isPending && !isError && !feeds.data.length && <p className="col-span-2 text-xs text-center text-text-light">No feeds yet</p>}
-					{!isPending && !isError && feeds.data.map((item: any, index: number) => <ArticleItem key={index} article={item} />)}
+				<div className="grid grid-cols-1 py-5 mt-5 gap-y-10 gap-x-20 md:grid-cols-[2fr_1fr]">
+					<div>
+						{isPending && <Spinner isArticle={true} />}
+						{!isPending && !isError && !feeds.data.length && <p className="col-span-2 text-xs text-center text-text-light">No feeds yet</p>}
+						{!isPending && !isError && feeds.data.map((item: any, index: number) => <ArticleItem key={index} article={item} />)}
+					</div>
+					<div className="pt-10 border-t border-border-light md:pt-0 md:ps-10 md:border-t-0 md:border-s">
+						<h2 className="text-3xl font-bold text-black-100 text-center">Imagine your ad here.</h2>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -57,7 +55,6 @@ function Feeds() {
 export default Feeds;
 
 async function fetchFeeds({ userId, signal }: { userId: string; signal: AbortSignal }) {
-	// const response = await fetch(`/api/article/feeds/user/${userId}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
 	const response = await fetchAPI(`/api/article/feeds/user/${userId}`, { headers: { "Content-Type": "application/json" }, signal, credentials: "include" });
 	const data = await response.json();
 
