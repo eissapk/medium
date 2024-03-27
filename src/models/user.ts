@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-const Schema = mongoose.Schema;
+import { model, Schema } from "mongoose";
 const userSchema = new Schema(
 	{
 		email: { type: String, required: true, unique: true },
@@ -17,4 +16,6 @@ const userSchema = new Schema(
 	{ timestamps: true }
 );
 
-export default mongoose.model("User", userSchema);
+userSchema.index({ username: 1, name: 1, email: 1 }); // for binary search | effecient for large database -- comment this line if your database is small
+
+export default model("User", userSchema);

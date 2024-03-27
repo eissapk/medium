@@ -2,6 +2,7 @@ import User from "../models/user";
 import bcrypt from "bcryptjs";
 import { createToken, expiresIn, validator } from "../utils";
 import mongoose from "mongoose";
+// todo: try using distinct("email") if you want just values
 
 // issue: cookies can't be shared between two different domains, (that's by cookies default design), so i have to serve the frontend from backend to use only one domain0
 const cookieConfig = ({ days = 30, httpOnly = false }: { days?: number; httpOnly?: boolean }) => {
@@ -19,6 +20,15 @@ export const loginUser = async (req, res) => {
 	if (!email || !password) return res.status(400).json({ error: true, message: "Password or Email is not present!" });
 
 	try {
+		// const foo = await User.find({ email }).explain("executionStats");
+		// console.log("executionStats:", foo);
+		/* if nReturned = totalDocsExamined then it means that it's a good query (indexes enabled [binary search algorithm is used]
+		executionStats: {
+			nReturned: 1,
+			totalDocsExamined: 1
+		}
+		*/
+
 		const user = await User.findOne({ email });
 		if (!user) {
 			// todo: add brute force attack protection , e.g. counter of failed login max 3 times and then block the user and force him to change password
@@ -31,7 +41,6 @@ export const loginUser = async (req, res) => {
 		}
 
 		const token = createToken(user.id);
-		// todo add a cookie
 
 		res
 			.status(200)
@@ -73,6 +82,7 @@ export const signupUser = async (req, res) => {
 		const salt = await bcrypt.genSalt(10);
 		const hash = await bcrypt.hash(password, salt);
 		const user = await User.create({ email, username, password: hash });
+		await User.createIndexes(); //todo: test if it works
 		const token = createToken(user.id);
 
 		res

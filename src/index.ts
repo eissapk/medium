@@ -13,6 +13,7 @@ const app = express();
 // routes
 import articleRoute from "./routes/article";
 import userRoute from "./routes/user";
+import searchRoute from "./routes/search";
 
 // middleware
 app.use(express.json({ limit: EXPRESS_LIMIT }));
@@ -28,6 +29,7 @@ app.use(cors({ origin: isDev ? `http://localhost:${PORT}` : DOMAIN, credentials:
 // app.use(require("./routes").Router);
 app.use("/api/user", userRoute);
 app.use("/api/article", articleRoute);
+app.use("/api/search", searchRoute);
 // had to serve frontend from here due to cookies issue with different domains -- if you want to reveert delete this line and client folder
 app.get("*", (req, res) => res.sendFile(path.resolve(__dirname, "../client/index.html"))); // for production -- comment if you use frontend seperatly
 

@@ -64,8 +64,8 @@ export const getUserFeeds = async (req, res) => {
 };
 
 export const createArticle = async (req, res) => {
-	const { title, thumbnail, content, readTime } = req.body;
-	if (!title || !thumbnail || !content || !readTime) return res.status(400).json({ error: true, message: "One or these fields are missing: title, content, thumbnail, readTime" });
+	const { title, thumbnail = null, content, readTime } = req.body;
+	if (!title || !content || !readTime) return res.status(400).json({ error: true, message: "One or these fields are missing: title, content, readTime" });
 
 	const ownedBy = req.user._id.toString(); // binded to req by default via auth module
 	const slug = title
