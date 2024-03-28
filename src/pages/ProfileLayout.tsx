@@ -3,7 +3,7 @@ import { cap, cookies, fetchAPI } from "../utils";
 import { Suspense, useEffect, useState } from "react";
 import FollowButton from "../components/FollowButton";
 import Spinner from "../components/Spinner";
-import profilePic from "../assets/profile-pic.webp";
+import { profilePic } from "../assets";
 import { useProfileContext } from "../hooks/useProfileContext";
 import { SET_LOGGED_PROFILE, SET_CURRENT_PROFILE } from "../utils/types";
 

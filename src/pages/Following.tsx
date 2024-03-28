@@ -1,5 +1,5 @@
 import { cap, cookies, fetchAPI } from "../utils";
-import profilePic from "../assets/profile-pic.webp";
+import { profilePic } from "../assets";
 import { useLocation, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import cx from "classnames";

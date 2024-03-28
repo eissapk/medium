@@ -1,23 +1,23 @@
 // todo add thumnail and editor
 // todo validate inputs with yup and formik
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cookies, fetchAPI } from "../utils";
 import Editor from "../components/Editor";
 function NewStory() {
 	const navigate = useNavigate();
-	const [content, setContent] = useState("");
 	const [title, setTitle] = useState("");
 	const [thumbnail, setThumbnail] = useState(null);
-	const [readTime, setReadTime] = useState(1);
+	const [readTime, setReadTime] = useState(5);
+	const [editor, setEditor] = useState<null | object>(null);
 
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 
-		console.log({
-			content,
-			title,
-		});
+		const savedData = await editor?._editorJS?.save();
+		const content = savedData.blocks;
+
+		console.log({ content, title, readTime });
 
 		const response = await fetchAPI("/api/article/create", {
 			method: "POST",
@@ -25,6 +25,7 @@ function NewStory() {
 			headers: { "Content-Type": "application/json" },
 			credentials: "include",
 		});
+
 		const data = await response.json();
 		if (data.error) {
 			const error: any = new Error(data.message);
@@ -33,38 +34,42 @@ function NewStory() {
 		}
 
 		const userId = cookies.get("userId");
-		setContent("");
 		setTitle("");
 		setReadTime(1);
-		// todo add thumnail from 1st image in parsed content
-		setThumbnail(null);
-		const path = "/" + userId + "/" + data.data._id;
-		console.log(path);
+		setThumbnail(null); // todo add thumnail from 1st image in parsed content
 
-		navigate(path);
+		navigate("/" + userId + "/" + data.data._id); // navigate to article path
 	};
-	useEffect(() => {}, []);
+
+	// do cool stuff here -- look at docs
+	const init = (editor: any) => {
+		console.log(editor._editorJS);
+		editor._editorJS.isReady.then(() => {
+			setEditor(editor);
+			// editor._editorJS.caret.setToFirstBlock();
+		});
+	};
 
 	return (
-		<>
-			<form className="m-4" id="publishNewStory" onSubmit={handleSubmit}>
-				<div className="max-w-max mx-auto flex flex-col md:flex-row gap-x-4 p-2 pb-0">
-					<div className="mb-4 md:mb-0 max-w-lg">
-						<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Title</label>
-						<input autoFocus className="w-full px-1 transition-all border rounded-sm border-border-light" type="text" value={title} onChange={e => setTitle(e.target.value)} />
-					</div>
-					<div className="mb-4 max-w-20 md:mb-0">
-						<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Read time</label>
-						<input className="w-full px-1 text-center transition-all border rounded-sm border-border-light" type="number" value={readTime} onChange={e => setReadTime(+e.target.value)} />
-					</div>
+		<form className="px-4 py-6 mx-auto xl:px-0 max-w-max" id="publishNewStory" onSubmit={handleSubmit}>
+			<div className="mb-6 grid gap-y-4 grid-cols-1 md:grid-cols-[2fr_12rem]">
+				<div className="w-full">
+					<input
+						autoFocus
+						placeholder="Title"
+						className="w-full text-5xl font-bold text-center outline-none md:text-start text-text-dark"
+						type="text"
+						value={title}
+						onChange={e => setTitle(e.target.value)}
+					/>
 				</div>
-
-				{/* <div className="max-w-max mx-auto p-2 pt-4">
-					<textarea value={content} onChange={e => setContent(e.target.value)} className="outline-none  w-full h-[50vh]" placeholder="Tell your story"></textarea>
-				</div> */}
-			</form>
-			<Editor />
-		</>
+				<div className="flex items-center justify-center xl:justify-end gap-x-2">
+					<label className="text-sm font-medium text-text-light">Read time</label>
+					<input className="text-5xl font-bold text-center outline-none text-text-dark max-w-24" type="number" value={readTime} min={1} onChange={e => setReadTime(+e.target.value)} />
+				</div>
+			</div>
+			<Editor onInitialize={init} />
+		</form>
 	);
 }
 

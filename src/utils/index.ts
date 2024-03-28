@@ -24,6 +24,21 @@ export const getShortArticleDesc = (text: string) => {
 	if (text.split(" ").length > 10) return text.split(" ").slice(0, 10).join(" ").concat("...");
 	else return text;
 };
+export const getTextFromEditorBlocks = (blocks: any): string => {
+	// todo: udpate these regexes with solid ones on regexer
+	const openTagRegex = /<.*>/g;
+	const closeTagRegex = /<\/.*>/g;
+	const selfClosingTagregex = /<.*\/>/g;
+	return blocks
+		.map((item: any) => {
+			if (!["list", "delimiter", "image"].includes(item.type)) return item.data.text;
+			if (item.type == "list") return item.data.items.map((str: string) => str).join(" ");
+		})
+		.join(" ")
+		.replace(openTagRegex, "")
+		.replace(closeTagRegex, "")
+		.replace(selfClosingTagregex, "");
+};
 export const getShortArticleTitle = (text: string) => {
 	if (text.length > 40) return text.slice(0, 40).concat("...");
 	else return text;

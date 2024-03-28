@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Profile, Edit, LogoMini, Search } from "../assets/icons";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { fetchAPI, getLocalTime, getShortArticleTitle } from "../utils";
-import profilePic from "../assets/profile-pic.webp";
+import { profilePic } from "../assets";
 import Spinner from "./Spinner";
 // todo: split this into  components
 
@@ -104,17 +104,17 @@ function UserNav() {
 								{/* todo fix error handler  */}
 
 								{/* hints */}
-								{!isSearchPending && isSearchError && <li className="text-xs text-text-light text-center">{searchError}</li>}
-								{!isSearchPending && !searchData.users.length && !searchData.articles.length && <li className="text-xs text-text-light text-center">No results found</li>}
+								{!isSearchPending && isSearchError && <li className="text-xs text-center text-text-light">{searchError}</li>}
+								{!isSearchPending && !searchData.users.length && !searchData.articles.length && <li className="text-xs text-center text-text-light">No results found</li>}
 
 								{/* users - works in home page only */}
-								{!isSearchPending && !isSearchError && !!searchData.users.length && <li className="border-b border-border-light pb-2 text-text-light text-sm tracking-widest uppercase">People</li>}
+								{!isSearchPending && !isSearchError && !!searchData.users.length && <li className="pb-2 text-sm tracking-widest uppercase border-b border-border-light text-text-light">People</li>}
 								{!isSearchPending &&
 									!isSearchError &&
 									!!searchData.users.length &&
 									searchData.users.map((user: any) => (
 										<li key={user._id}>
-											<Link to={`/${user._id}`} className="flex w-full items-center gap-x-2">
+											<Link to={`/${user._id}`} className="flex items-center w-full gap-x-2">
 												<img className="h-6 rounded-full" src={user?.avatar || profilePic} alt="Author avatar" />
 												<span className="text-sm text-text-dark">{user?.name || user?.username}</span>
 											</Link>
@@ -122,14 +122,14 @@ function UserNav() {
 									))}
 								{/* articles - works in profile page only */}
 								{!isSearchPending && !isSearchError && !!searchData.articles.length && (
-									<li className="border-b border-border-light pb-2 text-text-light text-sm tracking-widest uppercase">Articles</li>
+									<li className="pb-2 text-sm tracking-widest uppercase border-b border-border-light text-text-light">Articles</li>
 								)}
 								{!isSearchPending &&
 									!isSearchError &&
 									!!searchData.articles.length &&
 									searchData.articles.map((article: any) => (
 										<li key={article._id}>
-											<Link to={`/${article.ownedBy}/${article._id}`} className="flex w-full flex-col gap-y-2">
+											<Link to={`/${article.ownedBy}/${article._id}`} className="flex flex-col w-full gap-y-2">
 												<span className="text-sm text-text-dark">{getShortArticleTitle(article?.title)}</span>
 												<span className="text-xs text-text-light">{getLocalTime(article?.createdAt)}</span>
 											</Link>
@@ -160,14 +160,8 @@ function UserNav() {
 				)}
 
 				<li className="flex">
-					<button ref={avatar} type="button" onClick={() => setIsMenuShown(!isMenuShown)} className="flex border rounded-full cursor-pointer opacity-80 hover:opacity-100 border-text-light ">
-						{/* <button ref={avatar} type="button" onClick={() => setIsMenuShown(!isMenuShown)} className="cursor-pointer opacity-80 hover:opacity-100"> */}
-						{/* <img src={state.user.avatar || profilePic} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" /> */}
-						{state.user.avatar ? (
-							<img src={state.user.avatar} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" />
-						) : (
-							<span className="inline-block w-8 h-8 text-2xl text-center transition-all pointer-events-none text-black-100 ">{state.user.email[0].toUpperCase()}</span>
-						)}
+					<button ref={avatar} type="button" onClick={() => setIsMenuShown(!isMenuShown)} className="cursor-pointer opacity-80 hover:opacity-100">
+						<img src={state.user.avatar || profilePic} alt="avatar" className="block h-8 transition-all rounded-full pointer-events-none" />
 					</button>
 				</li>
 

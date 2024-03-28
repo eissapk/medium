@@ -43,8 +43,8 @@ function Feeds() {
 						{!isPending && !isError && !feeds.data.length && <p className="col-span-2 text-xs text-center text-text-light">No feeds yet</p>}
 						{!isPending && !isError && feeds.data.map((item: any, index: number) => <ArticleItem key={index} article={item} />)}
 					</div>
-					<div className="pt-10 border-t border-border-light md:pt-0 md:ps-10 md:border-t-0 md:border-s">
-						<h2 className="text-3xl font-bold text-black-100 text-center">Imagine your ad here.</h2>
+					<div className="pt-10 border-t border-border-light md:pt-0 md:px-10 md:border-t-0 md:border-s">
+						<h2 className="text-3xl font-bold text-center text-black-100">Imagine your ad here.</h2>
 					</div>
 				</div>
 			</div>

@@ -1,6 +1,5 @@
-import { getLocalTime, getShortArticleDesc } from "../utils";
-import articleThumbnail from "../assets/article-thumbnail.webp";
-import profilePic from "../assets/profile-pic.webp";
+import { getLocalTime, getShortArticleDesc, getTextFromEditorBlocks } from "../utils";
+import { articleThumbnail, profilePic } from "../assets";
 type ARTICLE = {
 	_id: string;
 	title: string;
@@ -17,6 +16,7 @@ type ARTICLE = {
 	};
 };
 
+getTextFromEditorBlocks;
 function ArticleItem({ article, isProfile }: { article: ARTICLE; isProfile?: boolean }) {
 	return (
 		<article>
@@ -27,10 +27,10 @@ function ArticleItem({ article, isProfile }: { article: ARTICLE; isProfile?: boo
 				</a>
 			)}
 
-			<a href={`/${article.ownedBy}/${article?._id}`} className="flex gap-x-5 justify-between">
+			<a href={`/${article.ownedBy}/${article?._id}`} className="flex justify-between gap-x-5">
 				<div className="max-w-lg min-w-[65%]">
 					<h1 className="mb-1 text-xl font-bold text-text-dark">{article?.title}</h1>
-					<p className="mb-2 text-text-light">{getShortArticleDesc(article?.content)}</p>
+					<p className="mb-2 text-text-light">{getShortArticleDesc(getTextFromEditorBlocks(article?.content))}</p>
 					<span className="text-[0.8rem] text-text-light">
 						{getLocalTime(article?.createdAt)} . {article?.readTime} min read
 					</span>

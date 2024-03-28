@@ -29,7 +29,6 @@ function Profile() {
 export default Profile;
 
 const loadArticles = async (id: string) => {
-	// const response = await fetch("/api/article/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const response = await fetchAPI("/api/article/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const data = await response.json();
 
