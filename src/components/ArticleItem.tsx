@@ -1,4 +1,4 @@
-import { getLocalTime, getShortArticleDesc, getTextFromEditorBlocks } from "../utils";
+import { cap, getLocalTime, getShortArticleDesc, getTextFromEditorBlocks } from "../utils";
 import { articleThumbnail, profilePic } from "../assets";
 type ARTICLE = {
 	_id: string;
@@ -23,7 +23,7 @@ function ArticleItem({ article, isProfile }: { article: ARTICLE; isProfile?: boo
 			{!isProfile && (
 				<a href={`/${article.ownedBy}`} className="inline-flex items-center mb-2 gap-x-2">
 					<img className="h-6 rounded-full" src={article.user?.avatar || profilePic} alt="Author avatar" />
-					<span className="text-sm font-medium">{article.user?.name || article.user?.username}</span>
+					<span className="text-sm font-medium">{cap(article.user?.name || article.user?.username)}</span>
 				</a>
 			)}
 

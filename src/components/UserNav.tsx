@@ -83,9 +83,9 @@ function UserNav() {
 		<nav className="flex flex-col items-center justify-between py-2 bg-white gap-y-5 sm:flex-row">
 			<ul className="flex items-center gap-x-5">
 				<li>
-					<Link to="/">
+					<a href="/">
 						<LogoMini className="h-6 " />
-					</Link>
+					</a>
 				</li>
 				{!isNewStoryRoute && (
 					<li className="rounded-[1.25rem] bg-input flex relative items-center justify-items-center">
@@ -114,10 +114,10 @@ function UserNav() {
 									!!searchData.users.length &&
 									searchData.users.map((user: any) => (
 										<li key={user._id}>
-											<Link to={`/${user._id}`} className="flex items-center w-full gap-x-2">
+											<a href={`/${user._id}`} className="flex items-center w-full gap-x-2">
 												<img className="h-6 rounded-full" src={user?.avatar || profilePic} alt="Author avatar" />
 												<span className="text-sm text-text-dark">{user?.name || user?.username}</span>
-											</Link>
+											</a>
 										</li>
 									))}
 								{/* articles - works in profile page only */}
@@ -129,10 +129,10 @@ function UserNav() {
 									!!searchData.articles.length &&
 									searchData.articles.map((article: any) => (
 										<li key={article._id}>
-											<Link to={`/${article.ownedBy}/${article._id}`} className="flex flex-col w-full gap-y-2">
+											<a href={`/${article.ownedBy}/${article._id}`} className="flex flex-col w-full gap-y-2">
 												<span className="text-sm text-text-dark">{getShortArticleTitle(article?.title)}</span>
 												<span className="text-xs text-text-light">{getLocalTime(article?.createdAt)}</span>
-											</Link>
+											</a>
 										</li>
 									))}
 							</ul>

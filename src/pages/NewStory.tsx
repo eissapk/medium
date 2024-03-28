@@ -57,7 +57,7 @@ function NewStory() {
 					<input
 						autoFocus
 						placeholder="Title"
-						className="w-full text-5xl font-bold text-center outline-none md:text-start text-text-dark"
+						className="w-full text-4xl font-bold text-center outline-none md:text-start text-text-dark"
 						type="text"
 						value={title}
 						onChange={e => setTitle(e.target.value)}

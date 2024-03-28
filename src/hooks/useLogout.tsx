@@ -6,14 +6,12 @@ export const useLogout = () => {
 	const { dispatch } = useAuthContext();
 
 	const logout = () => {
+		// memory
+		dispatch({ type: LOGOUT });
 		// cookies
 		cookies.remove("email");
 		cookies.remove("username");
 		cookies.remove("userId");
-		// memory
-		dispatch({ type: LOGOUT });
-
-		location.reload();
 	};
 
 	return { logout };

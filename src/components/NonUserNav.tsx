@@ -3,9 +3,9 @@ import { Logo } from "../assets/icons";
 const NonUserNav = () => {
 	return (
 		<nav className="flex flex-col justify-between py-6 sm:flex-row gap-y-5">
-			<Link to="/">
+			<a href="/">
 				<Logo className="h-6" />
-			</Link>
+			</a>
 
 			<ul className="flex justify-end gap-x-5">
 				<li>

@@ -8,7 +8,23 @@ type USER = {
 	followers: string[];
 	following: string[];
 };
-const FollowButton = ({ className = "", relatedUser, loggedUser, profileUrl }: { relatedUser: USER; loggedUser: USER | null; profileUrl: string; className?: string }) => {
+const FollowButton = ({
+	className = "",
+	includeDot = false,
+	alignDot = "left",
+	isArticle = false,
+	relatedUser,
+	loggedUser,
+	profileUrl,
+}: {
+	relatedUser: USER;
+	loggedUser: USER | null;
+	profileUrl: string;
+	className?: string;
+	isArticle?: boolean;
+	includeDot?: boolean;
+	alignDot?: string;
+}) => {
 	const { state, dispatch } = useProfileContext();
 	const [type, setType] = useState("");
 	const [isPending, setIsPending] = useState(false);
@@ -34,6 +50,15 @@ const FollowButton = ({ className = "", relatedUser, loggedUser, profileUrl }: {
 	if (relatedUser._id == loggedUser._id) return ""; // can't follow yourself
 
 	const btnClasses = () => {
+		if (isArticle) {
+			return cx("flex transition-all text-green", {
+				"opacity-80": !isPending,
+				"hover:opacity-100": !isPending,
+				"opacity-30": isPending,
+				"hover:opacity-30": isPending,
+				[className]: className,
+			});
+		}
 		return cx("flex px-4 py-2 text-sm transition-all rounded-full", {
 			"bg-green text-white": type == "follow",
 			"border text-green border-green": type !== "follow",
@@ -71,7 +96,9 @@ const FollowButton = ({ className = "", relatedUser, loggedUser, profileUrl }: {
 
 	return (
 		<button onClick={handleBtn} type="button" className={btnClasses()}>
+			{includeDot && alignDot == "left" && <span className="text-text-light pe-2">.</span>}
 			{type == "follow" ? "Follow" : "Following"}
+			{includeDot && alignDot == "right" && <span className="text-text-light ps-2">.</span>}
 		</button>
 	);
 };

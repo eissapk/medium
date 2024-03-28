@@ -106,3 +106,7 @@ body {
 .codex-editor i {
 	font-style: italic;
 }
+
+.codex-editor__redactor {
+	padding-bottom: 0 !important;
+}
