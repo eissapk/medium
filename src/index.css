@@ -79,34 +79,44 @@ body {
 }
 
 /* revert native styles for editor only */
-.codex-editor h1 {
+#editorjs .codex-editor h1 {
 	font-size: 2rem;
 	font-weight: 700;
 }
-.codex-editor h2 {
+#editorjs .codex-editor h2 {
 	font-size: 1.5rem;
 	font-weight: 700;
 }
-.codex-editor h3 {
+#editorjs .codex-editor h3 {
 	font-size: 1.17rem;
 	font-weight: 700;
 }
-.codex-editor h4 {
+#editorjs .codex-editor h4 {
 	font-size: 1rem;
 	font-weight: 700;
 }
-.codex-editor h5 {
+#editorjs .codex-editor h5 {
 	font-size: 0.83rem;
 	font-weight: 700;
 }
-.codex-editor h6 {
+#editorjs .codex-editor h6 {
 	font-size: 0.67rem;
 	font-weight: 700;
 }
-.codex-editor i {
+#editorjs .codex-editor i {
 	font-style: italic;
 }
 
-.codex-editor__redactor {
+#articlePage #editorjs .codex-editor__redactor {
 	padding-bottom: 0 !important;
+}
+
+#articlePage #editorjs .ce-code textarea {
+	height: min-content;
+	resize: none;
+	min-height: fit-content;
+}
+
+#articlePage #editorjs .codex-editor__redactor > div.ce-block:first-of-type {
+	display: none !important;
 }

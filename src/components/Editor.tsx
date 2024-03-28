@@ -2,50 +2,35 @@ import EditorJS from "@editorjs/editorjs";
 import { useEffect, useRef } from "react";
 import { EDITOR_JS_TOOLS } from "../utils/editorTools";
 
-const DEFAULT_INITIAL_DATA = {
-	time: new Date().getTime(),
-	blocks: [
-		{
-			type: "header",
-			data: {
-				text: "This is my awesome editor!",
-				level: 1,
-			},
-		},
-	],
-};
-
-// todo handle props
-// function Editor({ onInitialize, blocks = defaultBlocks, readOnly = false }: { onInitialize?: (editor: any) => void; blocks?: any[]; readOnly?: boolean }) {
-function Editor() {
-	const ejInstance = useRef();
+function Editor({ onReady, blocks = [], readOnly = false }: { onReady?: (editor: any) => void; blocks?: any; readOnly?: boolean }) {
+	const ejInstance = useRef(null);
 
 	const initEditor = () => {
 		const editor = new EditorJS({
 			holder: "editorjs",
+			placeholder: "Let's write an awesome story!",
 			onReady: () => {
 				ejInstance.current = editor;
+				if (onReady) onReady(editor);
 			},
-			autofocus: true,
+			readOnly,
+			// autofocus: true,
 			tools: EDITOR_JS_TOOLS,
-			data: DEFAULT_INITIAL_DATA,
-			onChange: async () => {
-				const content = await editor.saver.save();
-
-				console.log(content);
-			},
+			data: { time: new Date().getTime(), blocks },
+			// onChange: async () => {
+			// 	if (readOnly) return;
+			// 	const content = await editor.saver.save();
+			// 	console.log(content);
+			// },
 		});
 	};
 	useEffect(() => {
-		initEditor();
-
 		if (ejInstance.current === null) initEditor();
-
 		return () => {
-			// ejInstance?.current?.destroy();
-			// ejInstance?.current = null;
+			ejInstance?.current?.destroy();
+			ejInstance.current = null;
 		};
-	}, [ejInstance]);
-	return <div id="editorjs" ref={ejInstance}></div>;
+	}, []);
+	return <div id="editorjs"></div>;
 }
 export default Editor;

@@ -14,10 +14,10 @@ function NewStory() {
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 
-		const savedData = await editor?._editorJS?.save();
+		const savedData = await editor.saver.save();
 		const content = savedData.blocks;
 
-		console.log({ content, title, readTime });
+		// console.log({ content, title, readTime, savedData });
 
 		const response = await fetchAPI("/api/article/create", {
 			method: "POST",
@@ -42,13 +42,7 @@ function NewStory() {
 	};
 
 	// do cool stuff here -- look at docs
-	const init = (editor: any) => {
-		console.log(editor._editorJS);
-		editor._editorJS.isReady.then(() => {
-			setEditor(editor);
-			// editor._editorJS.caret.setToFirstBlock();
-		});
-	};
+	const onReady = (editor: any) => setEditor(editor);
 
 	return (
 		<form className="px-4 py-6 mx-auto xl:px-0 max-w-max" id="publishNewStory" onSubmit={handleSubmit}>
@@ -68,7 +62,7 @@ function NewStory() {
 					<input className="text-5xl font-bold text-center outline-none text-text-dark max-w-24" type="number" value={readTime} min={1} onChange={e => setReadTime(+e.target.value)} />
 				</div>
 			</div>
-			<Editor onInitialize={init} />
+			<Editor onReady={onReady} />
 		</form>
 	);
 }

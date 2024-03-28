@@ -4,7 +4,7 @@ import { useLogout } from "../hooks/useLogout";
 import { Link } from "react-router-dom";
 import { Profile, Edit, LogoMini, Search } from "../assets/icons";
 import { useAuthContext } from "../hooks/useAuthContext";
-import { fetchAPI, getLocalTime, getShortArticleTitle } from "../utils";
+import { cap, fetchAPI, getLocalTime, getShortArticleTitle } from "../utils";
 import { profilePic } from "../assets";
 import Spinner from "./Spinner";
 // todo: split this into  components
@@ -116,7 +116,7 @@ function UserNav() {
 										<li key={user._id}>
 											<a href={`/${user._id}`} className="flex items-center w-full gap-x-2">
 												<img className="h-6 rounded-full" src={user?.avatar || profilePic} alt="Author avatar" />
-												<span className="text-sm text-text-dark">{user?.name || user?.username}</span>
+												<span className="text-sm text-text-dark">{cap(user?.name || user?.username)}</span>
 											</a>
 										</li>
 									))}

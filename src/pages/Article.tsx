@@ -26,16 +26,14 @@ function Article() {
 		console.log("shareArticle");
 	};
 
-	const onInitialize = editor => {
-		editor._editorJS.isReady.then(() => {
-			const h = wrapper.current.offsetHeight;
-			if (h > window.innerHeight + 200) setIsBottomArticleActionsShown(true);
-			else setIsBottomArticleActionsShown(false);
-		});
+	const onReady = () => {
+		const h = wrapper.current.offsetHeight;
+		if (h > window.innerHeight + 200) setIsBottomArticleActionsShown(true);
+		else setIsBottomArticleActionsShown(false);
 	};
 	// todo check if current profile is own by logged user (if so then add delete,update buttons for each article)
 	return (
-		<div className="pb-80">
+		<div className="pb-80" id="articlePage">
 			<Suspense fallback={<Spinner isArticle={true} />}>
 				<Await resolve={data}>
 					{({ article, user, loggedUser }) => (
@@ -63,7 +61,7 @@ function Article() {
 							</div>
 
 							<ArticleActions article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} playArticle={playArticle} shareArticle={shareArticle} />
-							<Editor readOnly={true} blocks={article.content} onInitialize={onInitialize} />
+							<Editor readOnly={true} blocks={article.content} onReady={onReady} />
 							{isBottomArticleActionsShown && <ArticleActions article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} shareArticle={shareArticle} />}
 						</div>
 					)}
