@@ -27,9 +27,8 @@ app.use(cookieParser());
 if (isDev) app.use(logger);
 else app.use(morgan("tiny"));
 
-// app.use(express.static(path.resolve(__dirname, "../client"))); // for production -- comment if you use frontend seperatly
-// todo change port to vite port: 5173 if you use vite
-app.use(cors({ origin: isDev ? `http://localhost:${PORT}` : DOMAIN, credentials: true }));
+app.use(express.static(path.resolve(__dirname, "../client"))); // for production -- comment if you use frontend seperatly
+app.use(cors({ origin: isDev ? "http://localhost:5173" : DOMAIN, credentials: true }));
 
 // routes
 // app.use(require("./routes").Router);
@@ -38,7 +37,7 @@ app.use("/api/article", articleRoute);
 app.use("/api/search", searchRoute);
 app.use("/api/upload", uploadRoute);
 // had to serve frontend from here due to cookies issue with different domains -- if you want to reveert delete this line and client folder
-// app.get("*", (req, res) => res.sendFile(path.resolve(__dirname, "../client/index.html"))); // for production -- comment if you use frontend seperatly
+app.get("*", (req, res) => res.sendFile(path.resolve(__dirname, "../client/index.html"))); // for production -- comment if you use frontend seperatly
 
 // static files
 app.use("/api/assets/images", express.static(path.resolve(__dirname, "./assets/images")));
