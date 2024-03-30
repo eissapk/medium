@@ -10,7 +10,7 @@ import ArticleActions from "../components/ArticleActions";
 function Article() {
 	const { data } = useLoaderData() as { data: any };
 	const location = useLocation();
-	const wrapper = useRef<null | HTMLDivElement>(null);
+	const wrapper = useRef<HTMLDivElement>(null);
 	const [isBottomArticleActionsShown, setIsBottomArticleActionsShown] = useState(false);
 
 	const likeArticle = async () => {
@@ -27,9 +27,11 @@ function Article() {
 	};
 
 	const onReady = () => {
-		const h = wrapper.current.offsetHeight;
-		if (h > window.innerHeight + 200) setIsBottomArticleActionsShown(true);
-		else setIsBottomArticleActionsShown(false);
+		if (wrapper.current) {
+			const h = wrapper.current.offsetHeight;
+			if (h > window.innerHeight + 200) setIsBottomArticleActionsShown(true);
+			else setIsBottomArticleActionsShown(false);
+		}
 	};
 	// todo check if current profile is own by logged user (if so then add delete,update buttons for each article)
 	return (

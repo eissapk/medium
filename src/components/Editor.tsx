@@ -3,13 +3,14 @@ import { useEffect, useRef } from "react";
 import { EDITOR_JS_TOOLS } from "../utils/editorTools";
 
 function Editor({ onReady, blocks = [], readOnly = false }: { onReady?: (editor: any) => void; blocks?: any; readOnly?: boolean }) {
-	const ejInstance = useRef(null);
+	const ejInstance = useRef<HTMLElement | null>(null);
 
 	const initEditor = () => {
 		const editor = new EditorJS({
 			holder: "editorjs",
 			placeholder: "Let's write an awesome story!",
 			onReady: () => {
+				// @ts-expect-error
 				ejInstance.current = editor;
 				if (onReady) onReady(editor);
 			},
@@ -27,6 +28,7 @@ function Editor({ onReady, blocks = [], readOnly = false }: { onReady?: (editor:
 	useEffect(() => {
 		if (ejInstance.current === null) initEditor();
 		return () => {
+			// @ts-expect-error
 			ejInstance?.current?.destroy();
 			ejInstance.current = null;
 		};

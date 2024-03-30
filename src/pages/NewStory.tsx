@@ -9,7 +9,7 @@ function NewStory() {
 	const [title, setTitle] = useState("");
 	const [thumbnail, setThumbnail] = useState(null);
 	const [readTime, setReadTime] = useState(5);
-	const [editor, setEditor] = useState<null | object>(null);
+	const [editor, setEditor] = useState<any>(null);
 
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
