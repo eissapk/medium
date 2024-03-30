@@ -7,7 +7,7 @@ import Editor from "../components/Editor";
 function NewStory() {
 	const navigate = useNavigate();
 	const [title, setTitle] = useState("");
-	const [thumbnail, setThumbnail] = useState(null);
+	// const [thumbnail, setThumbnail] = useState(null);
 	const [readTime, setReadTime] = useState(5);
 	const [editor, setEditor] = useState<any>(null);
 
@@ -16,8 +16,15 @@ function NewStory() {
 
 		const savedData = await editor.saver.save();
 		const content = savedData.blocks;
+		let thumbnail = null;
 
-		// console.log({ content, title, readTime, savedData });
+		const firstImage = content.find((block: any) => block.type === "image");
+		// todo: fix thumbnail doesn't get set with useState
+		if (firstImage) {
+			// setThumbnail(firstImage.data.file.url);
+			thumbnail = firstImage.data.file.url;
+		}
+		console.log({ content, thumbnail, title, readTime, savedData });
 
 		const response = await fetchAPI("/api/article/create", {
 			method: "POST",
@@ -36,7 +43,6 @@ function NewStory() {
 		const userId = cookies.get("userId");
 		setTitle("");
 		setReadTime(1);
-		setThumbnail(null); // todo add thumnail from 1st image in parsed content
 
 		navigate("/" + userId + "/" + data.data._id); // navigate to article path
 	};

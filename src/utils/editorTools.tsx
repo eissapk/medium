@@ -27,6 +27,7 @@ import Delimiter from "@editorjs/delimiter";
 import InlineCode from "@editorjs/inline-code";
 // @ts-expect-error
 import Underline from "@editorjs/underline";
+import { fetchAPI } from ".";
 
 export const EDITOR_JS_TOOLS = {
 	embed: Embed,
@@ -40,13 +41,23 @@ export const EDITOR_JS_TOOLS = {
 	image: {
 		class: Image,
 		config: {
-			endpoints: {
-				byFile: "/api/upload/byfile",
-				byUrl: "/api/upload/byurl",
+			// endpoints: {
+			// 	byFile: "/api/upload/byfile",
+			// 	byUrl: "/api/upload/byurl",
+			// },
+			uploader: {
+				async uploadByFile(file: any) {
+					const data = new FormData();
+					data.append("image", file);
+					const response = await fetchAPI("/api/upload/byfile", { method: "POST", body: data, credentials: "include" });
+					const json = await response.json();
+					return json;
+				},
 			},
 		},
 	},
 	raw: Raw,
+
 	header: Header,
 	quote: Quote,
 	checklist: CheckList,
