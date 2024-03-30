@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import path from "path";
 const { JWT_SECRET, JWT_EXPIRATION } = process.env;
 
 export const validator = {
@@ -22,4 +23,22 @@ export function logger(req, res, next) {
 
 export const expiresIn = (period: number) => {
 	return new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * period);
+};
+
+export const multerConfig = {
+	storage: {
+		destination: (req, file, cb) => cb(null, path.resolve(__dirname, "../uploads")),
+		filename: (req, file, cb) => {
+			const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+			cb(null, uniqueSuffix + "-" + file.originalname);
+		},
+	},
+	fileFilter: (req, file, cb) => {
+		if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
+			cb(null, true);
+		} else {
+			cb(null, false);
+		}
+	},
+	limits: { fileSize: 1024 * 1024 * 2 },
 };

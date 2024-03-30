@@ -1,20 +1,29 @@
-// import multer from "multer";
-// const upload = multer({ dest: "." });
-export const uploadByFile = (req, res) => {
-	console.log("upload file", req.file);
-	console.log("upload body", req.body);
-	// res.status(200).json({ success: true, message: "uploaded by file" });
+import fs from "fs";
+import path from "path";
+// todo: upload to firebase storage, (because each deploy here will wipe out user asstes)
+export const uploadByFile = async (req, res) => {
+	try {
+		const file = req.files[0];
+		// console.log("file:", file);
+		if (file.size > 1 * 1024 * 1024) return res.status(400).json({ error: true, message: "File size is greater than 1MB" });
+
+		const b64 = Buffer.from(file.buffer).toString("base64");
+		// const url = `data:${file.mimetype};base64,${b64}`;
+		const data = `${b64}`;
+		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+
+		if (!fs.existsSync(path.resolve(__dirname, "../uploads/" + req.user._id))) fs.mkdirSync(path.resolve(__dirname, "../uploads/" + req.user._id));
+		fs.writeFileSync(path.resolve(__dirname, `../uploads/${req.user._id}/${uniqueSuffix + "-" + file.originalname}`), data, "base64");
+
+		// the valid response regarding image tool plugin of @editorjs is { success: 1, file: { url: "" } }
+		res.status(200).json({ success: 1, message: "uploaded by file", file: { url: `/api/uploads/${req.user._id}/${uniqueSuffix + "-" + file.originalname}` } });
+	} catch (error) {
+		res.status(400).json({ error: true, message: error.message });
+	}
 };
 
 export const uploadByUrl = (req, res) => {
-	console.log("upload url", req.body);
+	console.log("upload file", req.files);
+	console.log("upload body", req.body);
 	res.status(200).json({ success: true, message: "uploaded by url" });
 };
-
-// import multer from "multer";
-// const upload = multer({ dest: "." });
-// router.post("/byfile", upload.single("uploaded_file"), function (req, res) {
-// 	// req.file is the name of your file in the form above, here 'uploaded_file'
-// 	// req.body will hold the text fields, if there were any
-// 	console.log(req.file, req.body);
-// });
