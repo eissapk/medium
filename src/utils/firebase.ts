@@ -3,5 +3,7 @@ const { apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId }
 
 export const firebase = () => {
 	const firebaseConfig = { apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId };
-	return initializeApp(firebaseConfig);
+	const initApp = initializeApp(firebaseConfig);
+	console.log("Connected to Firebase.");
+	return initApp;
 };

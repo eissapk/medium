@@ -6,6 +6,7 @@ import path from "path";
 import morgan from "morgan";
 import multer from "multer";
 import { connectDB } from "./utils/mongo";
+import { firebase } from "./utils/firebase";
 import { logger } from "./utils";
 const { NODE_ENV, PORT, EXPRESS_LIMIT, DOMAIN } = process.env;
 const isDev = NODE_ENV == "dev";
@@ -45,6 +46,7 @@ app.use("/api/uploads", express.static(path.resolve(__dirname, "./uploads")));
 
 // db
 connectDB();
+firebase();
 
 // init server
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

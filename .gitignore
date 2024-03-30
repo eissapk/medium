@@ -2,4 +2,3 @@ node_modules
 build
 uploads/*.*
 .env
-x.env
