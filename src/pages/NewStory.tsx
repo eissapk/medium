@@ -1,4 +1,3 @@
-// todo add thumnail and editor
 // todo validate inputs with yup and formik
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +6,6 @@ import Editor from "../components/Editor";
 function NewStory() {
 	const navigate = useNavigate();
 	const [title, setTitle] = useState("");
-	// const [thumbnail, setThumbnail] = useState(null);
 	const [readTime, setReadTime] = useState(5);
 	const [editor, setEditor] = useState<any>(null);
 
@@ -19,11 +17,8 @@ function NewStory() {
 		let thumbnail = null;
 
 		const firstImage = content.find((block: any) => block.type === "image");
-		// todo: fix thumbnail doesn't get set with useState
-		if (firstImage) {
-			// setThumbnail(firstImage.data.file.url);
-			thumbnail = firstImage.data.file.url;
-		}
+		if (firstImage) thumbnail = firstImage.data.file.url;
+
 		console.log({ content, thumbnail, title, readTime, savedData });
 
 		const response = await fetchAPI("/api/article/create", {
