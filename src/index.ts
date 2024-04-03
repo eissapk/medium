@@ -42,7 +42,7 @@ app.get("*", (req, res) => res.sendFile(path.resolve(__dirname, "../client/index
 
 // static files
 app.use("/api/assets/images", express.static(path.resolve(__dirname, "./assets/images")));
-app.use("/api/uploads", express.static(path.resolve(__dirname, "./uploads")));
+app.use("/api/uploads", express.static(path.resolve(__dirname, "./uploads"))); // todo: fix this (doesn't work on production)
 
 // db
 connectDB();

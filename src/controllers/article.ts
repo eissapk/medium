@@ -4,10 +4,12 @@ import mongoose from "mongoose";
 
 export const getArticle = async (req, res) => {
 	const { id } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
+	let article: any = null;
 
 	try {
-		const article = await Article.findById(id);
+		if (mongoose.Types.ObjectId.isValid(id)) article = await Article.findById(id);
+		else article = await Article.findOne({ slug: id });
+
 		if (!article) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
 		res.status(200).json({ success: true, data: article });
 	} catch (err) {
@@ -26,10 +28,12 @@ export const getArticles = async (req, res) => {
 
 export const getUserArticles = async (req, res) => {
 	const { id: userId } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+	let user: any = null;
 
 	try {
-		const user = await User.findById(userId);
+		if (mongoose.Types.ObjectId.isValid(userId)) user = await User.findById(userId);
+		else user = await User.findOne({ username: userId });
+
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 
 		const articles = await Article.find({ _id: { $in: user.articles } }).sort({ createdAt: -1 }); // todo: add limit
@@ -41,10 +45,12 @@ export const getUserArticles = async (req, res) => {
 
 export const getUserFeeds = async (req, res) => {
 	const { id } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+	let user: any = null;
 
 	try {
-		const user = await User.findById(id);
+		if (mongoose.Types.ObjectId.isValid(id)) user = await User.findById(id);
+		else user = await User.findOne({ username: id });
+
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 
 		const articles = await Article.find({ ownedBy: { $in: user.following } }).sort({ createdAt: -1 }); // todo: add limit
@@ -91,24 +97,29 @@ export const createArticle = async (req, res) => {
 	}
 };
 
+// todo: test this
 export const removeArticle = async (req, res) => {
 	const { id } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(id) || !id) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
+	let article: any = null;
 	try {
-		const article = await Article.findById(id);
+		if (mongoose.Types.ObjectId.isValid(id)) article = await Article.findById(id);
+		else article = await Article.findOne({ slug: id });
+
 		if (!article) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
 
 		// check if the article is owned by current User
-		if (!req.user.articles.find(item => item.toString() == id)) {
+		if (!req.user.articles.find(item => item.toString() == article._id)) {
 			return res.status(401).json({ error: true, message: "Unauthorized User!" });
 		}
 
-		await Article.findByIdAndDelete(id);
+		// remove from article colletion
+		await Article.findByIdAndDelete(article._id);
 
-		// remove article from current User
+		// remove article from (current) User collection
 		const user = await User.findById(req.user._id);
 		const userArticles = user?.articles || [];
-		await User.findOneAndUpdate({ _id: req.user._id }, { articles: userArticles.filter(item => item._id.toString() != id) });
+		// todo: check alternative method to findOneAndUpdateById
+		await User.findOneAndUpdate({ _id: req.user._id }, { articles: userArticles.filter(item => item.toString() != article._id) });
 
 		res.status(200).json({ success: true, data: article });
 	} catch (err) {
@@ -118,22 +129,24 @@ export const removeArticle = async (req, res) => {
 
 export const updateArticle = async (req, res) => {
 	const { id } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(id) || !id) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
+	let article: any = null;
 
 	const { title, thumbnail, content } = req.body;
 	if (!title && !thumbnail && !content) return res.status(400).json({ error: true, message: "A property is missing!" });
 
 	try {
-		const exists = await Article.findById(id);
-		if (!exists) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
+		if (mongoose.Types.ObjectId.isValid(id)) article = await Article.findById(id);
+		else article = await Article.findOne({ slug: id });
 
-		// check if the article is owned by current User
-		if (!req.user.articles.find(item => item.toString() == id)) {
+		if (!article) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
+
+		// check if the article is owned by authenticated User
+		if (!req.user.articles.find(item => item.toString() == article._id.toString())) {
 			return res.status(401).json({ error: true, message: "Unauthorized User!" });
 		}
 
-		const article = await Article.findOneAndUpdate({ _id: id }, { ...req.body });
-		if (!article) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
+		// todo: check alternative method to findOneAndUpdateById
+		await Article.findOneAndUpdate({ _id: article._id }, { ...req.body });
 
 		res.status(200).json({ success: true, data: article });
 	} catch (err) {

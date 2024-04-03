@@ -20,7 +20,7 @@ export const uploadByFile = async (req, res) => {
 			if (!fs.existsSync(path.resolve(__dirname, "../uploads/" + req.user._id))) fs.mkdirSync(path.resolve(__dirname, "../uploads/" + req.user._id));
 			fs.writeFileSync(path.resolve(__dirname, `../uploads/${req.user._id}/${uniqueSuffix + "-" + file.originalname}`), data, "base64");
 			// the valid response regarding image tool plugin of @editorjs is { success: 1, file: { url: "" } }
-			return res.status(200).json({ success: 1, message: "uploaded by file", file: { url: `/api/uploads/${req.user._id}/${uniqueSuffix + "-" + file.originalname}` } });
+			return res.status(200).json({ success: 1, message: `Uploaded ${file.originalname}`, file: { url: `/api/uploads/${req.user._id}/${uniqueSuffix + "-" + file.originalname}` } });
 		}
 
 		const filePath = `${req.user._id}/${uniqueSuffix + "-" + file.originalname}`;

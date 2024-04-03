@@ -113,19 +113,12 @@ export const getAllUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
 	const { id } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
-
-	// const which = { key: "", value: "" };
-	// if (id) {
-	// 	which.key = "id";
-	// 	which.value = id;
-	// } else if (username) {
-	// 	which.key = "username";
-	// 	which.value = username;
-	// }
+	let user: any = null;
 
 	try {
-		const user = await User.findById(id);
+		if (mongoose.Types.ObjectId.isValid(id)) user = await User.findById(id);
+		else user = await User.findOne({ username: id });
+
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 		res.status(200).json({ success: true, data: user });
 	} catch (err) {
@@ -135,28 +128,30 @@ export const getUser = async (req, res) => {
 
 export const followUser = async (req, res) => {
 	const { id: currentUserId, user: foreignUserId } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(currentUserId)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
-	if (!mongoose.Types.ObjectId.isValid(foreignUserId)) return res.status(404).json({ error: true, message: "Foreign User doesn't exist!" });
+	let currentUser: any = null;
+	let foreignUser: any = null;
 
 	if (currentUserId == foreignUserId) return res.status(400).json({ error: true, message: "User can't follow himself!" });
 
 	try {
-		const currentUser = await User.findById(currentUserId);
+		if (mongoose.Types.ObjectId.isValid(currentUserId)) currentUser = await User.findById(currentUserId);
+		else currentUser = await User.findOne({ username: currentUserId });
 		if (!currentUser) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 
-		const foreignUser = await User.findById(foreignUserId);
+		if (mongoose.Types.ObjectId.isValid(foreignUserId)) foreignUser = await User.findById(foreignUserId);
+		else foreignUser = await User.findOne({ username: foreignUserId });
 		if (!foreignUser) return res.status(404).json({ error: true, message: "Foreign User doesn't exist!" });
 
 		// check if current user is already following foreign user
-		if (currentUser.following.includes(foreignUserId)) return res.status(200).json({ success: true, message: "user is being followed already!" });
+		if (currentUser.following.includes(foreignUser._id.toString())) return res.status(200).json({ success: true, message: "user is being followed already!" });
 
 		// add to following
-		const currentUserNewFollowingArr = [...currentUser.following, foreignUserId];
-		await User.findOneAndUpdate({ _id: currentUserId }, { following: currentUserNewFollowingArr });
+		const currentUserNewFollowingArr = [...currentUser.following, foreignUser._id];
+		await User.findOneAndUpdate({ _id: currentUser._id }, { following: currentUserNewFollowingArr });
 
 		// add to followers
-		const foreignUserNewFollowersArr = [...foreignUser.followers, currentUserId];
-		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: foreignUserNewFollowersArr });
+		const foreignUserNewFollowersArr = [...foreignUser.followers, currentUser._id];
+		await User.findOneAndUpdate({ _id: foreignUser._id }, { followers: foreignUserNewFollowersArr });
 
 		res.status(200).json({
 			success: true,
@@ -180,27 +175,29 @@ export const followUser = async (req, res) => {
 
 export const unFollowUser = async (req, res) => {
 	const { id: currentUserId, user: foreignUserId } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(currentUserId)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
-	if (!mongoose.Types.ObjectId.isValid(foreignUserId)) return res.status(404).json({ error: true, message: "Foreign User doesn't exist!" });
+	let currentUser: any = null;
+	let foreignUser: any = null;
 
 	try {
-		const currentUser = await User.findById(currentUserId);
+		if (mongoose.Types.ObjectId.isValid(currentUserId)) currentUser = await User.findById(currentUserId);
+		else currentUser = await User.findOne({ username: currentUserId });
 		if (!currentUser) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 
-		const foreignUser = await User.findById(foreignUserId);
+		if (mongoose.Types.ObjectId.isValid(foreignUserId)) foreignUser = await User.findById(foreignUserId);
+		else foreignUser = await User.findOne({ username: foreignUserId });
 		if (!foreignUser) return res.status(404).json({ error: true, message: "Foreign User doesn't exist!" });
 
 		// check if current user is already following foreign user
-		if (!currentUser.following.includes(foreignUserId)) return res.status(200).json({ success: true, message: "user is not being followed already!" });
+		if (!currentUser.following.includes(foreignUser._id)) return res.status(200).json({ success: true, message: "user is not being followed already!" });
 
 		// remove from following
 
-		const currentUserNewFollowingArr = currentUser.following.filter(item => item.toString() != foreignUserId.toString());
-		await User.findOneAndUpdate({ _id: currentUserId }, { following: currentUserNewFollowingArr });
+		const currentUserNewFollowingArr = currentUser.following.filter(item => item.toString() != foreignUser._id.toString());
+		await User.findOneAndUpdate({ _id: currentUser._id }, { following: currentUserNewFollowingArr });
 
 		// remove from followers
-		const foreignUserNewFollowersArr = foreignUser.followers.filter(item => item.toString() != currentUserId.toString());
-		await User.findOneAndUpdate({ _id: foreignUserId }, { followers: foreignUserNewFollowersArr });
+		const foreignUserNewFollowersArr = foreignUser.followers.filter(item => item.toString() != currentUser._id.toString());
+		await User.findOneAndUpdate({ _id: foreignUser._id }, { followers: foreignUserNewFollowersArr });
 
 		res.status(200).json({
 			success: true,
@@ -225,10 +222,12 @@ export const unFollowUser = async (req, res) => {
 
 export const getUserFollowers = async (req, res) => {
 	const { id } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+	let user: any = null;
 
 	try {
-		const user = await User.findById(id);
+		if (mongoose.Types.ObjectId.isValid(id)) user = await User.findById(id);
+		else user = await User.findOne({ username: id });
+
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 
 		const followers = await User.find({ _id: { $in: user.followers } }).sort({ createdAt: -1 });
@@ -241,10 +240,12 @@ export const getUserFollowers = async (req, res) => {
 
 export const getUserFollowing = async (req, res) => {
 	const { id } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: true, message: "User doesn't exist!" });
+	let user: any = null;
 
 	try {
-		const user = await User.findById(id);
+		if (mongoose.Types.ObjectId.isValid(id)) user = await User.findById(id);
+		else user = await User.findOne({ username: id });
+
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist!" });
 
 		const following = await User.find({ _id: { $in: user.following } }).sort({ createdAt: -1 });
