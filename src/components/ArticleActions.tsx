@@ -20,10 +20,13 @@ const ArticleActions = ({
 			</button>
 
 			<div className="flex items-center gap-x-5">
-				<button type="button" onClick={bookmarkArticle}>
-					<Bookmark className="w-6 h-6 pointer-events-none text-text-light fill-text-light" />
-				</button>
-				{playArticle && (
+				{/* todo: handle these (bookmark & play) later */}
+				{false && (
+					<button type="button" onClick={bookmarkArticle}>
+						<Bookmark className="w-6 h-6 pointer-events-none text-text-light fill-text-light" />
+					</button>
+				)}
+				{false && playArticle && (
 					<button type="button" onClick={playArticle}>
 						<Play className="w-6 h-6 pointer-events-none text-text-light fill-text-light" />
 					</button>

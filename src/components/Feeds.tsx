@@ -6,7 +6,7 @@ import { useLogout } from "../hooks/useLogout";
 
 function Feeds() {
 	const { logout } = useLogout();
-	const userId = cookies.get("userId");
+	const userId = cookies.get("username") || cookies.get("userId");
 	if (!userId) logout();
 
 	const {

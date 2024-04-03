@@ -29,7 +29,7 @@ function Following() {
 	useEffect(() => {
 		// console.log(user._id);
 		async function init() {
-			const loggedUserId = cookies.get("userId");
+			const loggedUserId = cookies.get("username") || cookies.get("userId");
 			if (loggedUserId) {
 				const loggedUserData = await loadLoggedUser(loggedUserId);
 				setLoggedUser(loggedUserData);
@@ -52,7 +52,7 @@ function Following() {
 				<ul className="flex flex-col gap-y-2">
 					{isPending && <Spinner isUser={true} />}
 					{!isPending &&
-						!isError &&
+						!!followingArr.length &&
 						followingArr.map((item: any, index: number) => (
 							<li key={item._id} className={cx("flex items-center justify-between", { "mt-5": index })}>
 								<a href={`/${item._id}`} className="flex items-center gap-x-2">

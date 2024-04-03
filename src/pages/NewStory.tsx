@@ -35,7 +35,7 @@ function NewStory() {
 			throw error;
 		}
 
-		const userId = cookies.get("userId");
+		const userId = cookies.get("username") || cookies.get("userId");
 		setTitle("");
 		setReadTime(1);
 

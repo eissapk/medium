@@ -32,7 +32,7 @@ function ProfileLayout() {
 		userData.then(({ user, loggedUser }: { user: any; loggedUser: any }) => {
 			dispatch({ type: SET_CURRENT_PROFILE, payload: user });
 			dispatch({ type: SET_LOGGED_PROFILE, payload: loggedUser });
-			setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, user._id) })));
+			setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, user.username || user._id) })));
 		});
 	}, [userData, userId, dispatch]);
 
@@ -92,7 +92,7 @@ function ProfileLayout() {
 									{/* name */}
 									<p className="mb-1 font-medium text-text-dark">{cap(user?.name || user?.username)}</p>
 									{/* followers */}
-									<Link to={"/" + user?._id + "/followers"} className="transition-all text-text-light hover:text-black-200">
+									<Link to={"/" + (user.username || user?._id) + "/followers"} className="transition-all text-text-light hover:text-black-200">
 										{/* @ts-expect-error -- fix  */}
 										{state?.profile?.current?.followers?.length || 0} Followers
 									</Link>
@@ -148,6 +148,6 @@ const loadUsers = async ({ userId, loggedUserId }: { userId: string; loggedUserI
 export const loader = async ({ params }: any) => {
 	// export const loader = async ({ params }: { params: { userId: string } }) => {
 	const { userId } = params;
-	const loggedUserId = cookies.get("userId");
+	const loggedUserId = cookies.get("username") || cookies.get("userId");
 	return defer({ userData: loadUsers({ userId, loggedUserId }) });
 };

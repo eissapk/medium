@@ -5,6 +5,7 @@ import { useProfileContext } from "../hooks/useProfileContext";
 import { SET_LOGGED_PROFILE, SET_CURRENT_PROFILE } from "../utils/types";
 type USER = {
 	_id: string;
+	username: string;
 	followers: string[];
 	following: string[];
 };
@@ -28,7 +29,7 @@ const FollowButton = ({
 	const { state, dispatch } = useProfileContext();
 	const [type, setType] = useState("");
 	const [isPending, setIsPending] = useState(false);
-	const loggedUserId = cookies.get("userId");
+	const loggedUserId = cookies.get("username") || cookies.get("userId");
 	useEffect(() => {
 		// console.log({ relatedUser, loggedUserId, profileUrl, loggedUser });
 
@@ -75,7 +76,7 @@ const FollowButton = ({
 		if (!loggedUserId || !loggedUser || !relatedUser) return;
 
 		setIsPending(true);
-		const response = await fetchAPI(`/api/user/${loggedUserId}/${type}/${relatedUser._id}`, { headers: { "Content-Type": "application/json" }, credentials: "include" });
+		const response = await fetchAPI(`/api/user/${loggedUserId}/${type}/${relatedUser.username || relatedUser._id}`, { headers: { "Content-Type": "application/json" }, credentials: "include" });
 
 		const json = await response.json();
 		if (json.error) {

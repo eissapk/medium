@@ -33,7 +33,7 @@ function Followers() {
 		// console.log(user._id);
 		async function init() {
 			// this makes a bug by react -- can't update compoennt while rendering another,etc
-			const loggedUserId = cookies.get("userId");
+			const loggedUserId = cookies.get("username") || cookies.get("userId");
 			if (loggedUserId) {
 				const loggedUserData = await loadLoggedUser(loggedUserId);
 				setLoggedUser(loggedUserData);
@@ -55,6 +55,7 @@ function Followers() {
 			<ul className="flex flex-col gap-y-2">
 				{isPending && <Spinner isUser={true} />}
 				{!isPending &&
+					!!followersArr.length &&
 					followersArr.map((item: any, index: number) => (
 						<li key={item._id} className={cx("flex items-center justify-between", { "mt-5": index })}>
 							<a href={`/${item._id}`} className="flex items-center gap-x-2">

@@ -50,12 +50,12 @@ function Article() {
 							<h1 className="mt-10 text-4xl font-bold text-text-dark">{article.title}</h1>
 							{/* user info block (image, name, article read time, follow button, etc) */}
 							<div className="flex items-center mt-10 mb-2 gap-x-4">
-								<Link to={`/${user._id}`} className="">
+								<Link to={`/${user.username || user._id}`} className="">
 									<img className="h-10 rounded-full" src={user.avatar || profilePic} alt="Author avatar" />
 								</Link>
 								<div>
 									<div className="flex items-center gap-x-2">
-										<Link to={`/${user._id}`}>
+										<Link to={`/${user.username || user._id}`}>
 											<span className="text-sm font-">{cap(user.name || user.username)}</span>
 										</Link>
 										<FollowButton includeDot={true} alignDot="left" isArticle={true} relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
@@ -130,6 +130,6 @@ const loadData = async (userId: string, loggedUserId: string, articleId: string)
 };
 // export const loader = async ({ params }: { params: { userId: string; articleId: string } }) => {
 export const loader = async ({ params }: any) => {
-	const loggedUserId = cookies.get("userId");
+	const loggedUserId = cookies.get("username") || cookies.get("userId");
 	return defer({ data: loadData(params.userId, loggedUserId, params.articleId) });
 };

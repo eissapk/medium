@@ -2,6 +2,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryCLient } from "./utils";
 import ProfileContextProvier from "./store/ProfileContext";
+import { cookies } from "./utils";
 
 // pages
 import RootLayout from "./pages/RootLayout";
@@ -19,6 +20,12 @@ import Following from "./pages/Following";
 import Settings from "./pages/Settings";
 import Article, { loader as ArticleLoader } from "./pages/Article";
 import NewStory from "./pages/NewStory";
+
+const isLogged = (): boolean => {
+	const email = cookies.get("email"); // set by server
+	const _id = cookies.get("username") || cookies.get("userId"); // set by server
+	return email && _id;
+};
 
 const router = createBrowserRouter([
 	{
@@ -44,9 +51,19 @@ const router = createBrowserRouter([
 					{ path: "following", element: <Following /> },
 				],
 			},
-			{ path: ":userId/settings", element: <Settings /> },
 			{ path: ":userId/:articleId", element: <Article />, loader: ArticleLoader },
-			{ path: "/new-story", element: <NewStory /> },
+			{
+				path: ":userId/settings",
+				element: <Settings />,
+				// @ts-expect-error -- todo: use a better approach instead of loader
+				loader: () => (!isLogged() ? location.replace("/") : null),
+			},
+			{
+				path: "/new-story",
+				element: <NewStory />,
+				// @ts-expect-error -- todo: use a better approach instead of loader
+				loader: () => (!isLogged() ? location.replace("/") : null),
+			},
 		],
 	},
 ]);

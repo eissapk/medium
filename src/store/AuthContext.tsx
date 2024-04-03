@@ -26,7 +26,7 @@ const AuthContextProvier = ({ children }: { children: React.ReactNode }) => {
 	// make user auto login
 	useEffect(() => {
 		const email = cookies.get("email"); // set by server
-		const _id = cookies.get("userId"); // set by server
+		const _id = cookies.get("username") || cookies.get("userId"); // set by server
 		// todo: handle avatar url by server
 		if (email && _id) {
 			dispatch({ type: LOGIN, payload: { email, _id, avatar: "" } });
