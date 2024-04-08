@@ -21,7 +21,7 @@ const reducer = (state: any, action: any) => {
 
 const AuthContextProvier = ({ children }: { children: React.ReactNode }) => {
 	const [state, dispatch] = useReducer(reducer, { user: null });
-	console.log("auth context", state);
+	// console.log("auth context", state);
 
 	// make user auto login
 	useEffect(() => {

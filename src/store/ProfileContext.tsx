@@ -25,7 +25,7 @@ const reducer = (state: any, action: any) => {
 
 const ProfileContextProvier = ({ children }: { children: React.ReactNode }) => {
 	const [state, dispatch] = useReducer(reducer, { profile: { logged: null, current: null } });
-	console.log("profile context", state);
+	// console.log("profile context", state);
 
 	return <ProfileContext.Provider value={{ dispatch, state }}>{children}</ProfileContext.Provider>;
 };

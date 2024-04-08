@@ -46,8 +46,9 @@ function UserNav() {
 	}, [pathname, handleClicks]);
 
 	const handleLogout = () => {
-		logout();
-		setTimeout(() => navigate("/"), 200);
+		logout(() => {
+			setTimeout(() => navigate("/"), 200);
+		});
 	};
 
 	const handleQuery = (text: string) => {
@@ -114,7 +115,7 @@ function UserNav() {
 									!!searchData.users.length &&
 									searchData.users.map((user: any) => (
 										<li key={user._id}>
-											<a href={`/${user._id}`} className="flex items-center w-full gap-x-2">
+											<a href={`/${user.username || user._id}`} className="flex items-center w-full gap-x-2">
 												<img className="h-6 rounded-full" src={user?.avatar || profilePic} alt="Author avatar" />
 												<span className="text-sm text-text-dark">{cap(user?.name || user?.username)}</span>
 											</a>
@@ -129,7 +130,7 @@ function UserNav() {
 									!!searchData.articles.length &&
 									searchData.articles.map((article: any) => (
 										<li key={article._id}>
-											<a href={`/${article.ownedBy}/${article._id}`} className="flex flex-col w-full gap-y-2">
+											<a href={`/${article.ownedBy}/${article.slug || article._id}`} className="flex flex-col w-full gap-y-2">
 												<span className="text-sm text-text-dark">{getShortArticleTitle(article?.title)}</span>
 												<span className="text-xs text-text-light">{getLocalTime(article?.createdAt)}</span>
 											</a>

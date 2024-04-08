@@ -68,9 +68,9 @@ function Article() {
 								</div>
 							</div>
 
-							<ArticleActions article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} playArticle={playArticle} shareArticle={shareArticle} />
+							<ArticleActions isLogged={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} playArticle={playArticle} shareArticle={shareArticle} />
 							<Editor readOnly={true} blocks={article.content} onReady={onReady} />
-							{isBottomArticleActionsShown && <ArticleActions article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} shareArticle={shareArticle} />}
+							{isBottomArticleActionsShown && <ArticleActions isLogged={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} shareArticle={shareArticle} />}
 						</div>
 					)}
 				</Await>
@@ -81,9 +81,7 @@ function Article() {
 
 export default Article;
 
-const loadArticle = async (userId: string, articleId: string) => {
-	console.log(userId);
-
+const loadArticle = async (articleId: string) => {
 	const response = await fetchAPI(`/api/article/${articleId}`, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
@@ -109,6 +107,7 @@ const loadUser = async (id: string) => {
 };
 
 const loadLoggedUser = async (id: string) => {
+	if (!id) return null;
 	const response = await fetchAPI("/api/user/" + id, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
@@ -121,10 +120,10 @@ const loadLoggedUser = async (id: string) => {
 };
 
 const loadData = async (userId: string, loggedUserId: string, articleId: string) => {
-	const article = await loadArticle(userId, articleId);
+	const article = await loadArticle(articleId);
 	const user = await loadUser(userId);
 	const loggedUser = await loadLoggedUser(loggedUserId);
-	// console.log({ article, user, loggedUser });
+	console.log({ article, user, loggedUser });
 
 	return { article, user, loggedUser };
 };

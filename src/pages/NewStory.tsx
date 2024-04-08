@@ -1,5 +1,5 @@
 // todo validate inputs with yup and formik
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cookies, fetchAPI } from "../utils";
 import Editor from "../components/Editor";
@@ -8,6 +8,7 @@ function NewStory() {
 	const [title, setTitle] = useState("");
 	const [readTime, setReadTime] = useState(5);
 	const [editor, setEditor] = useState<any>(null);
+	const titleRef = useRef(null);
 
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
@@ -28,9 +29,9 @@ function NewStory() {
 			credentials: "include",
 		});
 
-		const data = await response.json();
-		if (data.error) {
-			const error: any = new Error(data.message);
+		const json = await response.json();
+		if (json.error) {
+			const error: any = new Error(json.message);
 			error.code = response.status;
 			throw error;
 		}
@@ -39,18 +40,21 @@ function NewStory() {
 		setTitle("");
 		setReadTime(1);
 
-		navigate("/" + userId + "/" + data.data._id); // navigate to article path
+		navigate("/" + userId + "/" + (json.data.slug || json.data._id)); // navigate to article path
 	};
 
 	// do cool stuff here -- look at docs
-	const onReady = (editor: any) => setEditor(editor);
+	const onReady = (editor: any) => {
+		setEditor(editor);
+		if (titleRef?.current) titleRef.current?.focus();
+	};
 
 	return (
 		<form className="px-4 py-6 mx-auto xl:px-0 max-w-max" id="publishNewStory" onSubmit={handleSubmit}>
 			<div className="mb-6 grid gap-y-4 grid-cols-1 md:grid-cols-[2fr_12rem]">
 				<div className="w-full">
 					<input
-						autoFocus
+						ref={titleRef}
 						placeholder="Title"
 						className="w-full text-4xl font-bold text-center outline-none md:text-start text-text-dark"
 						type="text"

@@ -5,13 +5,15 @@ import { cookies } from "../utils";
 export const useLogout = () => {
 	const { dispatch } = useAuthContext();
 
-	const logout = () => {
-		// memory
-		dispatch({ type: LOGOUT });
+	// todo: fix when use logs out and reloads the page the cookies gets back again or not cleared at all
+	const logout = (cb: () => void) => {
 		// cookies
+		cookies.remove("userId");
 		cookies.remove("email");
 		cookies.remove("username");
-		cookies.remove("userId");
+		// memory
+		dispatch({ type: LOGOUT });
+		if (cb) cb();
 	};
 
 	return { logout };
