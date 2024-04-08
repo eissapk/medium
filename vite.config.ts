@@ -6,8 +6,8 @@ export default ({ mode }) => {
 		server: {
 			proxy: {
 				"/api": {
-					target: "http://localhost:3000",
-					// target: mode == "development" ? "http://localhost:3000" : "https://meedium.onrender.com",
+					// target: "http://localhost:3000",
+					target: mode == "development" ? "http://localhost:3000" : "https://meedium.onrender.com",
 					changeOrigin: true,
 				},
 			},
