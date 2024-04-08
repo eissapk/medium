@@ -46,6 +46,7 @@ function NewStory() {
 	// do cool stuff here -- look at docs
 	const onReady = (editor: any) => {
 		setEditor(editor);
+		// @ts-expect-error -- handle focus method later
 		if (titleRef?.current) titleRef.current?.focus();
 	};
 
