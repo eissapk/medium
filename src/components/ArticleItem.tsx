@@ -37,7 +37,7 @@ function ArticleItem({ article, isProfile }: { article: ARTICLE; isProfile?: boo
 					</span>
 				</div>
 				<div className="max-w-52">
-					<img className="block w-full max-h-40 h-auto" src={article?.thumbnail || articleThumbnail} alt="Article thumbnail" />
+					<img className="block object-cover w-20 h-20" src={article?.thumbnail || articleThumbnail} alt="Article thumbnail" />
 				</div>
 			</a>
 		</article>
