@@ -44,11 +44,11 @@ export const getShortArticleTitle = (text: string) => {
 	else return text;
 };
 
-let mode = "dev";
-mode = "prod";
+// let mode = "dev";
+// mode = "prod";
 export const fetchAPI = async (url: string, opts: object) => {
 	// opts.headers["Access-Control-Allow-Origin"] = "https://meedium.onrender.com";
 	// opts.headers["Access-Control-Allow-Credentials"] = true;
-	url = mode == "dev" ? url : "https://meedium.onrender.com" + url;
+	// url = mode == "dev" ? url : "https://meedium.onrender.com" + url;
 	return await fetch(url, opts);
 };
