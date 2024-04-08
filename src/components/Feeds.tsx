@@ -38,7 +38,7 @@ function Feeds() {
 				<h1 className="inline-block pb-4 mt-6 text-sm font-medium border-b text-text-dark border-border-light pe-4">Latest from people you follow</h1>
 
 				<div className="grid grid-cols-1 py-5 mt-5 gap-y-10 gap-x-20 md:grid-cols-[2fr_1fr]">
-					<div>
+					<div className="grid gap-10">
 						{isPending && <Spinner isArticle={true} />}
 						{!isPending && !isError && !feeds.data.length && <p className="col-span-2 text-xs text-center text-text-light">No feeds yet</p>}
 						{!isPending && !isError && feeds.data.map((item: any, index: number) => <ArticleItem key={index} article={item} />)}
