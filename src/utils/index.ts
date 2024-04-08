@@ -44,7 +44,13 @@ export const getShortArticleTitle = (text: string) => {
 	else return text;
 };
 
+let mode = "dev";
+mode = "prod";
 export const fetchAPI = async (url: string, opts: object) => {
-	// url = mode == "dev" ? url : "https://medium-3k4o.onrender.com" + url;
+	// @ts-expect-error -- just testing cross origin cookies
+	opts.headers["Access-Control-Allow-Origin"] = "https://meedium.onrender.com";
+	// @ts-expect-error -- just testing cross origin cookies
+	opts.headers["Access-Control-Allow-Credentials"] = true;
+	url = mode == "dev" ? url : "https://meedium.onrender.com" + url;
 	return await fetch(url, opts);
 };
