@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 // issue: cookies can't be shared between two different domains, (that's by cookies default design), so i have to serve the frontend from backend to use only one domain0
 const cookieConfig = ({ days = 30, httpOnly = false }: { days?: number; httpOnly?: boolean }) => {
 	return {
-		// sameSite: "strict",
+		sameSite: "strict",
 		path: "/",
 		expires: expiresIn(days),
 		httpOnly,
@@ -15,6 +15,7 @@ const cookieConfig = ({ days = 30, httpOnly = false }: { days?: number; httpOnly
 	};
 };
 
+// todo make logout route/method
 export const loginUser = async (req, res) => {
 	const { email, password } = req.body;
 	if (!email || !password) return res.status(400).json({ error: true, message: "Password or Email is not present!" });
