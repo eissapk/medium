@@ -100,8 +100,8 @@ function Article() {
 
 export default Article;
 
-const loadArticle = async (articleId: string) => {
-	const response = await fetchAPI(`/api/article/${articleId}`, { headers: { "Content-Type": "application/json" } });
+const loadArticle = async (articleId: string, userId: string) => {
+	const response = await fetchAPI(`/api/article/${articleId}/of/${userId}`, { headers: { "Content-Type": "application/json" } });
 	const json = await response.json();
 	if (json.error) {
 		const error: any = new Error(json.message);
@@ -139,7 +139,7 @@ const loadLoggedUser = async (id: string) => {
 };
 
 const loadData = async (userId: string, loggedUserId: string, articleId: string) => {
-	const article = await loadArticle(articleId);
+	const article = await loadArticle(articleId, userId);
 	const user = await loadUser(userId);
 	const loggedUser = await loadLoggedUser(loggedUserId);
 	// console.log({ article, user, loggedUser });

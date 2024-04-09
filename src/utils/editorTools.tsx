@@ -51,13 +51,12 @@ export const EDITOR_JS_TOOLS = {
 					data.append("image", file);
 					const response = await fetchAPI("/api/upload/byfile", { method: "POST", body: data, credentials: "include" });
 					const json = await response.json();
-					return json;
+					return json; // response must be {success:1, file:{url:""}}
 				},
 			},
 		},
 	},
 	raw: Raw,
-
 	header: Header,
 	quote: Quote,
 	checklist: CheckList,

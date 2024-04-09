@@ -75,6 +75,7 @@ const ArticleActions = ({
 	};
 	return (
 		<div className="flex items-center justify-between p-2 my-6 border-y border-border-light">
+			{/* for uesr */}
 			{loggedUser && (
 				<button type="button" className="flex items-center gap-x-1 group/articleActions" onClick={likeArticle} disabled={likeIsPending}>
 					<Like
@@ -92,7 +93,14 @@ const ArticleActions = ({
 					)}
 				</button>
 			)}
-			{!loggedUser && <span className="invisible"></span>}
+
+			{/* for non-user */}
+			{!loggedUser && (
+				<button type="button" className="flex items-center gap-x-1 " disabled={true}>
+					<Like className={cx("w-6 h-6 pointer-events-none text-text-light fill-text-light")} />
+					{!!article.likes.length && <span className="text-xs leading-normal pointer-events-none text-text-light">{article.likes.length}</span>}
+				</button>
+			)}
 
 			<div className="flex items-center gap-x-5">
 				{/* todo: handle these (bookmark & play) later */}

@@ -112,11 +112,20 @@ body {
 }
 
 #articlePage #editorjs .ce-code textarea {
-	height: min-content;
-	resize: none;
-	min-height: fit-content;
+	resize: vertical;
+}
+#articlePage #editorjs .tc-table,
+#editorjs .tc-table {
+	border-left: 1px solid var(--color-border);
+}
+#articlePage #editorjs .cdx-quote__caption,
+#editorjs .cdx-quote__caption {
+	display: none;
 }
 
 #articlePage #editorjs .codex-editor__redactor > div.ce-block:first-of-type {
 	display: none !important;
 }
+
+/* todo fix quote and <i> tag */
+/* todo: add systax highlighter for code */
