@@ -17,8 +17,4 @@ router.get("/", getAllUsers);
 router.get("/:id/follow/:user", followUser);
 router.get("/:id/unfollow/:user", unFollowUser);
 
-// todo: likes
-// router.get("/:id/like/:article", likeArticle);
-// router.get("/:id/unlike/:article", unLikeArticle);
-
 export default router;

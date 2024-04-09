@@ -1,5 +1,5 @@
 import express from "express";
-import { createArticle, getArticles, getUserArticles, getUserFeeds, updateArticle, removeArticle, getArticle } from "../controllers/article";
+import { createArticle, getArticles, getUserArticles, getUserFeeds, updateArticle, removeArticle, getArticle, likeArticle } from "../controllers/article";
 import auth from "../middleware/auth";
 
 const router = express.Router();
@@ -14,4 +14,6 @@ router.get("/", getArticles);
 router.post("/create", createArticle);
 router.delete("/remove/:id", removeArticle);
 router.put("/update/:id", updateArticle);
+router.get("/:articleId/likedby/:userId", likeArticle);
+
 export default router;

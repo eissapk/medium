@@ -153,3 +153,37 @@ export const updateArticle = async (req, res) => {
 		res.status(400).json({ error: true, message: err.message });
 	}
 };
+
+export const likeArticle = async (req, res) => {
+	const { articleId, userId } = req.params;
+	if (!userId || !articleId) return res.status(400).json({ error: true, message: "User id or article id are missing!" });
+
+	try {
+		const article = await Article.findById(articleId);
+		if (!article) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
+
+		// Article is being liked by this user already! -- unlike then
+		if (article.likes.includes(userId)) return unLikeArticle(articleId, userId, res);
+
+		const newLikes = [...article.likes, userId];
+		await Article.findOneAndUpdate({ _id: articleId }, { likes: newLikes });
+
+		res.status(200).json({ success: true, message: `User ${userId} liked Article ${articleId}`, data: { ...article?.toJSON(), likes: newLikes } });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
+};
+
+const unLikeArticle = async (articleId, userId, res) => {
+	try {
+		const article = await Article.findById(articleId);
+
+		const newLikes = article?.likes.filter(id => id != userId);
+
+		await Article.findOneAndUpdate({ _id: articleId }, { likes: newLikes });
+
+		res.status(200).json({ success: true, message: `User ${userId} Unliked Article ${articleId}`, data: { ...article?.toJSON(), likes: newLikes } });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
+};
