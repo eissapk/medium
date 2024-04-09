@@ -1,4 +1,4 @@
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Await, Link, defer, useLoaderData, useLocation } from "react-router-dom";
 import { fetchAPI, cap, getLocalTime, cookies } from "../utils";
 import Editor from "../components/Editor";
@@ -12,9 +12,29 @@ function Article() {
 	const location = useLocation();
 	const wrapper = useRef<HTMLDivElement>(null);
 	const [isBottomArticleActionsShown, setIsBottomArticleActionsShown] = useState(false);
+	const [article, setArticle] = useState<any>(null);
+
+	useEffect(() => {
+		data.then(({ article: articleObj }: { article: any }) => setArticle(articleObj));
+	}, [data]);
 
 	const likeArticle = async () => {
-		console.log("likeArticle");
+		data.then(async ({ article, loggedUser }: { article: any; loggedUser: any }) => {
+			if (!loggedUser) return;
+			const loggedUserId = loggedUser._id;
+			const articleId = article._id;
+			const response = await fetchAPI(`/api/article/${articleId}/likedby/${loggedUserId}`, { method: "GET", headers: { "Content-Type": "application/json" } });
+			const json = await response.json(); // returned data is the updated article e.g. {data:{likes:[], slug:""}}
+
+			if (json.error) {
+				const error: any = new Error(json.message);
+				error.code = response.status;
+				throw error;
+			}
+
+			setArticle(json.data);
+			// console.log("likeArticle", json);
+		});
 	};
 	const bookmarkArticle = async () => {
 		console.log("bookmarkArticle");
@@ -44,10 +64,10 @@ function Article() {
 					</div>
 				}>
 				<Await resolve={data}>
-					{({ article, user, loggedUser }) => (
+					{({ user, loggedUser }) => (
 						<div className="max-w-[40.625rem] mx-auto" ref={wrapper}>
 							{/* article title */}
-							<h1 className="mt-10 text-4xl font-bold text-text-dark">{article.title}</h1>
+							<h1 className="mt-10 text-4xl font-bold text-text-dark">{article?.title}</h1>
 							{/* user info block (image, name, article read time, follow button, etc) */}
 							<div className="flex items-center mt-10 mb-2 gap-x-4">
 								<Link to={`/${user.username || user._id}`} className="">
@@ -61,16 +81,16 @@ function Article() {
 										<FollowButton includeDot={true} alignDot="left" isArticle={true} relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
 									</div>
 									<div className="flex items-center justify-center text-sm gap-x-2 text-text-light">
-										<span>{article.readTime} min read</span>
+										<span>{article?.readTime} min read</span>
 										<span className="text-text-light">.</span>
-										<span>{getLocalTime(article.createdAt)}</span>
+										<span>{getLocalTime(article?.createdAt)}</span>
 									</div>
 								</div>
 							</div>
 
-							<ArticleActions isLogged={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} playArticle={playArticle} shareArticle={shareArticle} />
-							<Editor readOnly={true} blocks={article.content} onReady={onReady} />
-							{isBottomArticleActionsShown && <ArticleActions isLogged={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} shareArticle={shareArticle} />}
+							<ArticleActions loggedUser={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} playArticle={playArticle} shareArticle={shareArticle} />
+							<Editor readOnly={true} blocks={article?.content} onReady={onReady} />
+							{isBottomArticleActionsShown && <ArticleActions loggedUser={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} shareArticle={shareArticle} />}
 						</div>
 					)}
 				</Await>
@@ -123,7 +143,7 @@ const loadData = async (userId: string, loggedUserId: string, articleId: string)
 	const article = await loadArticle(articleId);
 	const user = await loadUser(userId);
 	const loggedUser = await loadLoggedUser(loggedUserId);
-	console.log({ article, user, loggedUser });
+	// console.log({ article, user, loggedUser });
 
 	return { article, user, loggedUser };
 };

@@ -96,7 +96,7 @@ const FollowButton = ({
 	};
 
 	return (
-		<button onClick={handleBtn} type="button" className={btnClasses()}>
+		<button onClick={handleBtn} type="button" className={btnClasses()} disabled={isPending}>
 			{includeDot && alignDot == "left" && <span className="text-text-light pe-2">.</span>}
 			{type == "follow" ? "Follow" : "Following"}
 			{includeDot && alignDot == "right" && <span className="text-text-light ps-2">.</span>}
