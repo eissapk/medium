@@ -3,12 +3,24 @@ import User from "../models/user";
 import mongoose from "mongoose";
 
 export const getArticle = async (req, res) => {
-	const { id } = req.params;
+	// hint: if we quey by slug then we must check for the ownedBy also
+	const { articleId, userId } = req.params;
 	let article: any = null;
 
 	try {
-		if (mongoose.Types.ObjectId.isValid(id)) article = await Article.findById(id);
-		else article = await Article.findOne({ slug: id });
+		if (mongoose.Types.ObjectId.isValid(articleId)) article = await Article.findById(articleId);
+		// check by slug for a related user!!!!!
+		else {
+			if (!userId) return res.status(400).json({ error: true, message: "UserId/username is not present!" });
+
+			if (mongoose.Types.ObjectId.isValid(userId)) article = await Article.findOne({ slug: articleId, ownedBy: userId });
+			else {
+				// means it's a usename not id -- so we need to fetch that user to get its id to query the final article by (slug and ownedBy)
+				const selectedUser = await User.findOne({ username: userId });
+				if (!selectedUser) return res.status(400).json({ error: true, message: "User doesn't exist!" });
+				article = await Article.findOne({ slug: articleId, ownedBy: selectedUser.id });
+			}
+		}
 
 		if (!article) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
 		res.status(200).json({ success: true, data: article });
@@ -99,11 +111,22 @@ export const createArticle = async (req, res) => {
 
 // todo: test this
 export const removeArticle = async (req, res) => {
-	const { id } = req.params;
+	const { articleId, userId } = req.params;
 	let article: any = null;
 	try {
-		if (mongoose.Types.ObjectId.isValid(id)) article = await Article.findById(id);
-		else article = await Article.findOne({ slug: id });
+		if (mongoose.Types.ObjectId.isValid(articleId)) article = await Article.findById(articleId);
+		// check by slug for a related user!!!!!
+		else {
+			if (!userId) return res.status(400).json({ error: true, message: "UserId/username is not present!" });
+
+			if (mongoose.Types.ObjectId.isValid(userId)) article = await Article.findOne({ slug: articleId, ownedBy: userId });
+			else {
+				// means it's a usename not id -- so we need to fetch that user to get its id to query the final article by (slug and ownedBy)
+				const selectedUser = await User.findOne({ username: userId });
+				if (!selectedUser) return res.status(400).json({ error: true, message: "User doesn't exist!" });
+				article = await Article.findOne({ slug: articleId, ownedBy: selectedUser.id });
+			}
+		}
 
 		if (!article) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
 
@@ -128,15 +151,26 @@ export const removeArticle = async (req, res) => {
 };
 
 export const updateArticle = async (req, res) => {
-	const { id } = req.params;
+	const { articleId, userId } = req.params;
 	let article: any = null;
 
 	const { title, thumbnail, content } = req.body;
 	if (!title && !thumbnail && !content) return res.status(400).json({ error: true, message: "A property is missing!" });
 
 	try {
-		if (mongoose.Types.ObjectId.isValid(id)) article = await Article.findById(id);
-		else article = await Article.findOne({ slug: id });
+		if (mongoose.Types.ObjectId.isValid(articleId)) article = await Article.findById(articleId);
+		// check by slug for a related user!!!!!
+		else {
+			if (!userId) return res.status(400).json({ error: true, message: "UserId/username is not present!" });
+
+			if (mongoose.Types.ObjectId.isValid(userId)) article = await Article.findOne({ slug: articleId, ownedBy: userId });
+			else {
+				// means it's a usename not id -- so we need to fetch that user to get its id to query the final article by (slug and ownedBy)
+				const selectedUser = await User.findOne({ username: userId });
+				if (!selectedUser) return res.status(400).json({ error: true, message: "User doesn't exist!" });
+				article = await Article.findOne({ slug: articleId, ownedBy: selectedUser.id });
+			}
+		}
 
 		if (!article) return res.status(404).json({ error: true, message: "Article doesn't exist!" });
 
