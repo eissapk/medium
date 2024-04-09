@@ -2,6 +2,7 @@ import EditorJS from "@editorjs/editorjs";
 import { useEffect, useRef } from "react";
 import { EDITOR_JS_TOOLS } from "../utils/editorTools";
 
+// todo: handle the style of tools in both readyonly and non-readonly modes and rmeove unused tools from packagejson
 function Editor({ onReady, blocks = [], readOnly = false }: { onReady?: (editor: any) => void; blocks?: any; readOnly?: boolean }) {
 	const ejInstance = useRef<HTMLElement | null>(null);
 

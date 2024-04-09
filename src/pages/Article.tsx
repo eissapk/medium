@@ -13,38 +13,36 @@ function Article() {
 	const wrapper = useRef<HTMLDivElement>(null);
 	const [isBottomArticleActionsShown, setIsBottomArticleActionsShown] = useState(false);
 	const [article, setArticle] = useState<any>(null);
-	const [shareListIsShown, setShareListIsShown] = useState(false);
+	const [likeIsPending, setLikeIsPending] = useState(false);
 
 	useEffect(() => {
 		data.then(({ article: articleObj }: { article: any }) => setArticle(articleObj));
 	}, [data]);
 
 	const likeArticle = async () => {
-		data.then(async ({ article, loggedUser }: { article: any; loggedUser: any }) => {
-			if (!loggedUser) return;
-			const loggedUserId = loggedUser._id;
-			const articleId = article._id;
-			const response = await fetchAPI(`/api/article/${articleId}/likedby/${loggedUserId}`, { method: "GET", headers: { "Content-Type": "application/json" } });
-			const json = await response.json(); // returned data is the updated article e.g. {data:{likes:[], slug:""}}
+		setLikeIsPending(true);
+		const { article, loggedUser } = await data;
+		if (!loggedUser) return;
+		const loggedUserId = loggedUser._id;
+		const articleId = article._id;
+		const response = await fetchAPI(`/api/article/${articleId}/likedby/${loggedUserId}`, { method: "GET", headers: { "Content-Type": "application/json" } });
+		const json = await response.json(); // returned data is the updated article e.g. {data:{likes:[], slug:""}}
 
-			if (json.error) {
-				const error: any = new Error(json.message);
-				error.code = response.status;
-				throw error;
-			}
+		if (json.error) {
+			setLikeIsPending(false);
+			const error: any = new Error(json.message);
+			error.code = response.status;
+			throw error;
+		}
 
-			setArticle(json.data);
-			// console.log("likeArticle", json);
-		});
+		setArticle(json.data);
+		setLikeIsPending(false);
 	};
 	const bookmarkArticle = async () => {
 		console.log("bookmarkArticle");
 	};
 	const playArticle = async () => {
 		console.log("playArticle");
-	};
-	const shareArticle = async () => {
-		setShareListIsShown(!shareListIsShown);
 	};
 
 	const onReady = () => {
@@ -89,19 +87,9 @@ function Article() {
 								</div>
 							</div>
 
-							<ArticleActions
-								shareListIsShown={shareListIsShown}
-								loggedUser={loggedUser}
-								article={article}
-								likeArticle={likeArticle}
-								bookmarkArticle={bookmarkArticle}
-								playArticle={playArticle}
-								shareArticle={shareArticle}
-							/>
+							<ArticleActions likeIsPending={likeIsPending} loggedUser={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} playArticle={playArticle} />
 							<Editor readOnly={true} blocks={article?.content} onReady={onReady} />
-							{isBottomArticleActionsShown && (
-								<ArticleActions shareListIsShown={shareListIsShown} loggedUser={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} shareArticle={shareArticle} />
-							)}
+							{isBottomArticleActionsShown && <ArticleActions likeIsPending={likeIsPending} loggedUser={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} />}
 						</div>
 					)}
 				</Await>
