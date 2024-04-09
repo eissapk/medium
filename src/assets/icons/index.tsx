@@ -8,3 +8,6 @@ export { default as Share } from "./Share";
 export { default as Like } from "./Like";
 export { default as Play } from "./Play";
 export { default as Bookmark } from "./Bookmark";
+export { default as Linkedin } from "./Linkedin";
+export { default as Facebook } from "./Facebook";
+export { default as Copy } from "./Copy";

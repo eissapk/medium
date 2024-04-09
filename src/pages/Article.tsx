@@ -13,6 +13,7 @@ function Article() {
 	const wrapper = useRef<HTMLDivElement>(null);
 	const [isBottomArticleActionsShown, setIsBottomArticleActionsShown] = useState(false);
 	const [article, setArticle] = useState<any>(null);
+	const [shareListIsShown, setShareListIsShown] = useState(false);
 
 	useEffect(() => {
 		data.then(({ article: articleObj }: { article: any }) => setArticle(articleObj));
@@ -43,7 +44,7 @@ function Article() {
 		console.log("playArticle");
 	};
 	const shareArticle = async () => {
-		console.log("shareArticle");
+		setShareListIsShown(!shareListIsShown);
 	};
 
 	const onReady = () => {
@@ -88,9 +89,19 @@ function Article() {
 								</div>
 							</div>
 
-							<ArticleActions loggedUser={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} playArticle={playArticle} shareArticle={shareArticle} />
+							<ArticleActions
+								shareListIsShown={shareListIsShown}
+								loggedUser={loggedUser}
+								article={article}
+								likeArticle={likeArticle}
+								bookmarkArticle={bookmarkArticle}
+								playArticle={playArticle}
+								shareArticle={shareArticle}
+							/>
 							<Editor readOnly={true} blocks={article?.content} onReady={onReady} />
-							{isBottomArticleActionsShown && <ArticleActions loggedUser={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} shareArticle={shareArticle} />}
+							{isBottomArticleActionsShown && (
+								<ArticleActions shareListIsShown={shareListIsShown} loggedUser={loggedUser} article={article} likeArticle={likeArticle} bookmarkArticle={bookmarkArticle} shareArticle={shareArticle} />
+							)}
 						</div>
 					)}
 				</Await>

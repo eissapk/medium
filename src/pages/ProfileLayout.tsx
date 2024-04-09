@@ -85,9 +85,9 @@ function ProfileLayout() {
 							{({ user, loggedUser }) => (
 								<>
 									{/* avatar */}
-									<div className="flex flex-col mb-4">
+									<Link to={"/" + (user.username || user._id)} className="flex flex-col mb-4">
 										<img src={user?.avatar || profilePic} alt="avatar" className="w-20 rounded-full" />
-									</div>
+									</Link>
 
 									{/* name */}
 									<p className="mb-1 font-medium text-text-dark">{cap(user?.name || user?.username)}</p>
