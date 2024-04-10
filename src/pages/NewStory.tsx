@@ -1,5 +1,5 @@
 // todo validate inputs with yup and formik
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cookies, fetchAPI } from "../utils";
 import Editor from "../components/Editor";
@@ -9,6 +9,12 @@ function NewStory() {
 	const [readTime, setReadTime] = useState(5);
 	const [editor, setEditor] = useState<any>(null);
 	const titleRef = useRef(null);
+
+	useEffect(() => {
+		const email = cookies.get("email"); // set by server
+		const id = cookies.get("username") || cookies.get("userId"); // set by server
+		if (!email || !id) location.replace("/");
+	}, []);
 
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
