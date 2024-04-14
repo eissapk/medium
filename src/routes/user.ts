@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, signupUser, getAllUsers, getUser, followUser, unFollowUser, getUserFollowers, getUserFollowing } from "../controllers/user";
+import { loginUser, signupUser, checkUsernameAvailability, getAllUsers, getUser, followUser, unFollowUser, getUserFollowers, getUserFollowing } from "../controllers/user";
 import auth from "../middleware/auth";
 
 const router = express.Router();
@@ -7,6 +7,7 @@ const router = express.Router();
 router.post("/login", loginUser);
 router.post("/signup", signupUser);
 router.get("/:id", getUser);
+router.get("/username/:username", checkUsernameAvailability);
 // router.get("/:username", getUser); // todo: add query by username beside id
 router.get("/:id/followers", getUserFollowers);
 router.get("/:id/following", getUserFollowing);

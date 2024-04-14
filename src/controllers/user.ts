@@ -102,6 +102,19 @@ export const signupUser = async (req, res) => {
 	}
 };
 
+export const checkUsernameAvailability = async (req, res) => {
+	const { username } = req.params;
+	if (!username) return res.status(400).json({ error: true, message: "Username is not present!" });
+
+	try {
+		const _username = await User.findOne({ username });
+		if (!_username) return res.status(200).json({ success: true, message: "username is available!", data: { taken: false } });
+		return res.status(200).json({ success: true, message: "Username is taken!", data: { taken: true } });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
+};
+
 export const getAllUsers = async (req, res) => {
 	// const { start, end } = req.body; // todo
 	try {
