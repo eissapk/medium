@@ -25,10 +25,8 @@ export const getShortArticleDesc = (text: string) => {
 	else return text;
 };
 export const getTextFromEditorBlocks = (blocks: any): string => {
-	// todo: udpate these regexes with solid ones on regexer
-	const openTagRegex = /<.*>/g;
-	const closeTagRegex = /<\/.*>/g;
-	const selfClosingTagregex = /<.*\/>/g;
+	const openTagRegex = /<[a-z]+(>|.*?[^?]>)/g; // open and self-closing
+	const closeTagRegex = /<\/[a-z]+(>|.*?[^?]>)/g; // close
 	return blocks
 		.map((item: any) => {
 			if (!["list", "delimiter", "image"].includes(item.type)) return item.data.text;
@@ -36,8 +34,7 @@ export const getTextFromEditorBlocks = (blocks: any): string => {
 		})
 		.join(" ")
 		.replace(openTagRegex, "")
-		.replace(closeTagRegex, "")
-		.replace(selfClosingTagregex, "");
+		.replace(closeTagRegex, "");
 };
 export const getShortArticleTitle = (text: string) => {
 	if (text.length > 40) return text.slice(0, 40).concat("...");

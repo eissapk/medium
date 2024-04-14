@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { cap, cookies, fetchAPI } from "../utils";
 import { Await, defer, useLoaderData } from "react-router-dom";
 import Spinner from "../components/Spinner";
@@ -17,7 +17,7 @@ function Settings() {
 	const [name, setName] = useState<string | null>(null);
 	const [bio, setBio] = useState<string | null>(null);
 	const [avatar, setAvatar] = useState<string | null>(null);
-	const [isModalShown, setIsModalShown] = useState(false);
+	const dialogRef = useRef(null);
 
 	useEffect(() => {
 		(async () => {
@@ -38,23 +38,25 @@ function Settings() {
 		console.log(type);
 		setType(type);
 		setModalTitle(title);
-		setIsModalShown(true);
-	};
+		if (dialogRef.current) {
+			// @ts-expect-error -- handle it later
+			dialogRef.current.showModal();
 
-	const hideModal = (dialog: any) => {
-		console.log("hide");
-		if (dialog.current) {
-			console.log(dialog.current);
-			setIsModalShown(false); // todo: handle it with native hide method of dialog
-			// dialog.current.hide();
+			// auto focus 1st input
+			setTimeout(() => {
+				// @ts-expect-error -- handle it later
+				const input = dialogRef.current.querySelector("input");
+				if (input) input.focus();
+			}, 0);
 		}
 	};
 
-	const submit = (dialog: any) => {
-		console.log("submit");
+	const hideModal = (dialog: any) => {
+		if (dialog.current) dialog.current.close();
+	};
 
+	const submit = (dialog: any) => {
 		if (dialog.current) {
-			console.log(dialog.current);
 			console.log({ name, username, email, password, bio, avatar });
 			// todo: fetch endpoint to update some user data
 		}
@@ -88,11 +90,9 @@ function Settings() {
 
 	return (
 		<>
-			{isModalShown && (
-				<Modal title={modalTitle} hideModal={hideModal} submit={submit}>
-					{modalContent(type)}
-				</Modal>
-			)}
+			<Modal title={modalTitle} hideModal={hideModal} submit={submit} ref={dialogRef}>
+				{modalContent(type)}
+			</Modal>
 
 			<div className="px-4 py-4 mb-4">
 				<div className="mx-auto max-w-max">

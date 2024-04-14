@@ -1,22 +1,21 @@
-import { useEffect, useRef } from "react";
+import { forwardRef } from "react";
 import cx from "classnames";
-function Modal({ hideModal, title, children, submit }: { submit: (dialog: any) => void; hideModal: (dialog: any) => void; title: string; children: any }) {
-	const dialog = useRef(null);
-	useEffect(() => {
-		if (dialog.current) {
-			// @ts-expect-error -- handle it better
-			dialog.current.showModal();
-			// @ts-expect-error -- handle type of querySelector
-			const input = dialog.current.querySelector("input");
-			if (input) input.focus();
-		}
-	}, []);
 
-	const hide = () => hideModal(dialog);
-	const save = () => submit(dialog);
+const Modal = forwardRef(function ({ hideModal, title, children, submit }: { submit: (dialog: any) => void; hideModal: (dialog: any) => void; title: string; children: any }, ref: any) {
+	const hide = () => hideModal(ref);
+	const save = () => submit(ref);
+
+	const isOutside = (event: any) => {
+		const rect = event.target.getBoundingClientRect();
+		return rect.left > event.clientX || rect.right < event.clientX || rect.top > event.clientY || rect.bottom < event.clientY;
+	};
+
+	const clickHandler = (event: any) => {
+		if (isOutside(event)) ref.current.close();
+	};
 
 	return (
-		<dialog ref={dialog} className="p-6 rounded max-w-[40rem] bg-white shadow-search w-full md:w-[40rem]">
+		<dialog ref={ref} className="p-6 rounded max-w-[40rem] bg-white shadow-search w-full md:w-[40rem]" onClick={clickHandler}>
 			<header className="grid grid-cols-[1fr_4rem] mb-4 items-center">
 				<h1 className="text-xl font-medium text-text-dark">{title}</h1>
 				<button type="button" className="relative w-full h-full py-6" onClick={hide}>
@@ -36,6 +35,6 @@ function Modal({ hideModal, title, children, submit }: { submit: (dialog: any) =
 			</div>
 		</dialog>
 	);
-}
+});
 
 export default Modal;

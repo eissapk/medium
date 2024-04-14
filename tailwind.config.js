@@ -15,7 +15,8 @@ export default {
 				yellow: "#ffc017",
 				green: "#1a8917",
 				main: "#242424",
-				red: "#ffefef",
+				"red-light": "#ffefef",
+				red: "#D37676",
 				text: {
 					light: "#6B6B6B",
 					dark: "#242424",
