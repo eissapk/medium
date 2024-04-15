@@ -8,8 +8,7 @@ export const validator = {
 		return str.includes("@");
 	},
 	isStrongPassword(str: string): boolean {
-		// return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}/.test(str); // todo fix regex
-		// return str.length >= 6 && /[a-z]/.test(str) && /[A-Z]/.test(str) && /~|!|@|#|$|%|^|&|\*|(|)|_/.test(str) && /\d/.test(str);
+		// return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(str); // for production
 		return str.length >= 6;
 	},
 };
