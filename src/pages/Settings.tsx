@@ -5,7 +5,11 @@ import Spinner from "../components/Spinner";
 import { profilePic } from "../assets";
 import Modal from "../components/Modal";
 import Ad from "../components/Ad";
+import { Form, Formik } from "formik";
+import { settingsEmailSchema, settingsUsernameSchema, settingsPasswordSchema } from "../schema";
+import Input from "../components/Input";
 
+const inputStyle = "px-1 transition-all border rounded border-border-light";
 // todo: add delete account option
 function Settings() {
 	const { userData } = useLoaderData() as { userData: any };
@@ -13,7 +17,6 @@ function Settings() {
 	const [modalTitle, setModalTitle] = useState("");
 	const [email, setEmail] = useState("");
 	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
 	const [name, setName] = useState<string | null>(null);
 	const [bio, setBio] = useState<string | null>(null);
 	const [avatar, setAvatar] = useState<string | null>(null);
@@ -57,17 +60,46 @@ function Settings() {
 
 	const submit = (dialog: any) => {
 		if (dialog.current) {
-			console.log({ name, username, email, password, bio, avatar });
+			// console.log({ name, username, email, password, bio, avatar });
 			// todo: fetch endpoint to update some user data
 		}
 	};
 
-	const modalContent = (type: string) => {
-		return (
-			<>
-				{type == "email" && <input className="w-1/2 px-2 py-1 transition-all border rounded-sm border-border-light" type="email" value={email} onChange={e => setEmail(e.target.value)} />}
-				{type == "username" && <input className="w-1/2 px-2 py-1 transition-all border rounded-sm border-border-light" type="text" value={username} onChange={e => setUsername(e.target.value)} />}
-				{type == "password" && <input className="w-1/2 px-2 py-1 transition-all border rounded-sm border-border-light" type="text" value={password} onChange={e => setPassword(e.target.value)} />}
+	const updateEmailHandler = async (values: any) => {
+		console.log({ values });
+	};
+	const updatePasswordHandler = async (values: any) => {
+		console.log({ values });
+	};
+	const updateUsernameHandler = async (values: any) => {
+		console.log({ values });
+	};
+
+	// todo: check how to handle submit button for formik without losing the layout of modal
+	return (
+		<>
+			<Modal title={modalTitle} hideModal={hideModal} submit={submit} ref={dialogRef}>
+				{type == "email" && (
+					<Formik initialValues={{ email }} validationSchema={settingsEmailSchema} onSubmit={updateEmailHandler}>
+						<Form>
+							<Input className={inputStyle} name="email" type="email" />
+						</Form>
+					</Formik>
+				)}
+				{type == "password" && (
+					<Formik initialValues={{ password: "" }} validationSchema={settingsPasswordSchema} onSubmit={updatePasswordHandler}>
+						<Form>
+							<Input className={inputStyle} name="password" type="text" />
+						</Form>
+					</Formik>
+				)}
+				{type == "username" && (
+					<Formik initialValues={{ username }} validationSchema={settingsUsernameSchema} onSubmit={updateUsernameHandler}>
+						<Form>
+							<Input className={inputStyle} name="username" type="text" />
+						</Form>
+					</Formik>
+				)}
 				{type == "info" && (
 					<>
 						<div className="mb-2 ">
@@ -84,14 +116,6 @@ function Settings() {
 						</div>
 					</>
 				)}
-			</>
-		);
-	};
-
-	return (
-		<>
-			<Modal title={modalTitle} hideModal={hideModal} submit={submit} ref={dialogRef}>
-				{modalContent(type)}
 			</Modal>
 
 			<div className="px-4 py-4 mb-4">

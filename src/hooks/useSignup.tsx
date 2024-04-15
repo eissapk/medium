@@ -24,6 +24,7 @@ export const useSignup = () => {
 		dispatch({ type: LOGIN, payload: json.data.user });
 
 		setIsLoading(false);
+		setError(false);
 	};
 
 	return { signup, error, isLoading };

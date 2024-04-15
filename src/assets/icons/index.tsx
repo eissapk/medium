@@ -11,3 +11,7 @@ export { default as Bookmark } from "./Bookmark";
 export { default as Linkedin } from "./Linkedin";
 export { default as Facebook } from "./Facebook";
 export { default as Copy } from "./Copy";
+export { default as Tick } from "./Tick";
+export { default as Warn } from "./Warn";
+export { default as Loader } from "./Loader";
+export { default as Close } from "./Close";

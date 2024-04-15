@@ -7,18 +7,23 @@ import { Form, Formik } from "formik";
 import Input from "../components/Input";
 import { signupSchema } from "../schema";
 import { fetchAPI } from "../utils";
+import { useMutation } from "@tanstack/react-query";
+import { Tick, Warn, Loader } from "../assets/icons";
 
 const inputStyle = "px-1 mx-4 transition-all border rounded border-border-light";
 const labelStyle = "font-medium inline-block text-sm text-text-light min-w-[7rem]";
-const submitBtnStyle = "px-6 py-2 mx-auto block text-sm text-green transition-all rounded-full opacity-80 hover:opacity-100 border-green border font-medium";
+const submitBtnStyle = "flex items-center gap-x-2 px-6 py-2 mx-auto block text-sm text-green transition-all rounded-full border-green border font-medium";
 const initialValues = { username: "", email: "", password: "", confirmPassword: "" };
 
+// todo: add email provider like sendgrid to check if email is real and for sending confirmation emails
 function Signup() {
 	const navigate = useNavigate();
 	const { signup, error, isLoading } = useSignup();
 	const { state } = useAuthContext();
 	const [t, setT] = useState<null | ReturnType<typeof setTimeout>>(null);
-	const [userIsTaken, setUserIsTaken] = useState(false);
+	const [isTyping, setIsTyping] = useState(false);
+
+	const { mutate, isPending: checkPending, data: checkData } = useMutation({ mutationFn: checkUsername });
 
 	const errorElement = (text: string | boolean, className = "") => (
 		<div className={`p-2.5 bg-red-light border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`}>{text}</div>
@@ -28,28 +33,56 @@ function Signup() {
 		if (state.user) navigate("/");
 	}, [state.user, navigate]);
 
-	async function submitHandler(values: any, actions: any) {
-		console.log({ values, actions });
+	async function submitHandler(values: any) {
+		// console.log({ values, actions });
 		if (values.password !== values.confirmPassword) return;
 		await signup(values.email, values.username, values.password);
-		// actions.resetForm();
 	}
 
-	const usernameChecker = async (text: string) => {
-		// console.log("debounce", text);
+	async function checkUsername(text: string) {
+		// await new Promise(r => setTimeout(r, 500));
 		const response = await fetchAPI("/api/user/username/" + text, { headers: { "Content-Type": "application/json" } });
 		const json = await response.json();
-		if (json.success) {
-			if (json?.data?.taken) setUserIsTaken(true);
-			else setUserIsTaken(false);
+		if (json.error) {
+			const error: any = new Error(json.message);
+			error.code = response.status;
+			throw error;
 		}
-	};
+		return json.data;
+	}
 
 	const debounceHandler = (text: string) => {
+		setIsTyping(true);
 		if (text?.trim() === "") return;
 		text = text.trim();
 		if (t) clearTimeout(t);
-		setT(setTimeout(() => usernameChecker(text), 200));
+		setT(
+			setTimeout(() => {
+				setIsTyping(false);
+				// console.log("debounce", text);
+				mutate(text);
+			}, 200)
+		);
+	};
+
+	const usernameValidityLinter = (props: any) => {
+		const fixedClasses = "text-start text-xs my-2";
+		if (checkPending) return <p className={cx(fixedClasses, "text-text-light")}>Checking availability...</p>;
+		if (checkData?.taken)
+			return (
+				<p className={cx(fixedClasses, "text-start text-xs my-2 text-red flex items-center")}>
+					<Warn className="inline w-3 h-3 me-1" />
+					<span>{props.values.username} already taken</span>
+				</p>
+			);
+		if (!props.errors.username && checkData && checkData?.hasOwnProperty("taken") && !checkData?.taken && !isTyping) {
+			return (
+				<p className={cx(fixedClasses, "text-green flex items-center")}>
+					<Tick className="inline w-3 h-3 me-1" />
+					<span>{props.values.username} is available</span>
+				</p>
+			);
+		}
 	};
 
 	return (
@@ -64,8 +97,8 @@ function Signup() {
 								<Input className={inputStyle} autoFocus={true} labelStyle={labelStyle} label="Your Email" name="email" type="email" placeholder="domain@example.com" />
 							</div>
 							<div className="mb-2">
-								<Input debounce={debounceHandler} className={inputStyle} labelStyle={labelStyle} label="Username" name="username" type="text" placeholder="creative_man" />
-								{userIsTaken && <p className="text-start text-xs my-2 text-red">Username is already taken</p>}
+								<Input onChangeHook={debounceHandler} className={inputStyle} labelStyle={labelStyle} label="Username" name="username" type="text" placeholder="creative_man" />
+								{usernameValidityLinter(props)}
 							</div>
 							<div className="mb-2">
 								<Input className={inputStyle} labelStyle={labelStyle} label="Your Password" name="password" type="password" />
@@ -73,8 +106,9 @@ function Signup() {
 							<div className="mb-4">
 								<Input className={inputStyle} labelStyle={labelStyle} label="Confirm Password" name="confirmPassword" type="password" />
 							</div>
-							<button className={cx(submitBtnStyle, { "opacity-50": props.isSubmitting || isLoading })} disabled={props.isSubmitting || isLoading} type="submit">
-								Sign up
+							<button className={cx(submitBtnStyle, { "opacity-30": isLoading, "opacity-80 hover:opacity-100": !isLoading })} disabled={isLoading} type="submit">
+								<span>Sign up</span>
+								{isLoading && <Loader className="inline w-3 h-3 text-green" />}
 							</button>
 						</Form>
 					)}
@@ -82,7 +116,7 @@ function Signup() {
 
 				{error && errorElement(error)}
 
-				<p className="text-center text-text-light">
+				<p className="text-center text-text-light mt-4">
 					<span className="me-2">Already have an account?</span>
 					<Link to="/login" className="font-medium text-green">
 						Sign in
