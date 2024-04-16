@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { cap, cookies, fetchAPI } from "../utils";
-import { Await, defer, useLoaderData } from "react-router-dom";
+import { Await, defer, useLoaderData, useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { profilePic } from "../assets";
 import Modal from "../components/Modal";
@@ -8,6 +8,7 @@ import Ad from "../components/Ad";
 import { Form, Formik } from "formik";
 import { settingsEmailSchema, settingsUsernameSchema, settingsPasswordSchema } from "../schema";
 import Input from "../components/Input";
+import { useLogout } from "../hooks/useLogout";
 
 const inputStyle = "px-1 transition-all border rounded border-border-light";
 // todo: add delete account option
@@ -15,12 +16,16 @@ function Settings() {
 	const { userData } = useLoaderData() as { userData: any };
 	const [type, setType] = useState("");
 	const [modalTitle, setModalTitle] = useState("");
+	const [modalErrorMessage, setModalErrorMessage] = useState(null);
+	const [modalSuccessMessage, setModalSuccessMessage] = useState(null);
 	const [email, setEmail] = useState("");
 	const [username, setUsername] = useState("");
 	const [name, setName] = useState<string | null>(null);
 	const [bio, setBio] = useState<string | null>(null);
 	const [avatar, setAvatar] = useState<string | null>(null);
 	const dialogRef = useRef(null);
+	const { logout } = useLogout();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		(async () => {
@@ -58,44 +63,46 @@ function Settings() {
 		if (dialog.current) dialog.current.close();
 	};
 
-	const submit = (dialog: any) => {
-		if (dialog.current) {
-			// console.log({ name, username, email, password, bio, avatar });
-			// todo: fetch endpoint to update some user data
+	const updateHandler = async (route: string, values: any) => {
+		const response = await fetchAPI("/api/user/" + route, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(values), credentials: "include" });
+		const json = await response.json();
+		if (json.error) {
+			setModalErrorMessage(json.message);
+			setTimeout(() => setModalErrorMessage(null), 1000);
+			const error: any = new Error(json.message);
+			error.code = response.status;
+			throw error;
 		}
-	};
-
-	const updateEmailHandler = async (values: any) => {
-		console.log({ values });
-	};
-	const updatePasswordHandler = async (values: any) => {
-		console.log({ values });
-	};
-	const updateUsernameHandler = async (values: any) => {
-		console.log({ values });
+		setModalSuccessMessage(json.message);
+		setTimeout(() => {
+			hideModal(dialogRef);
+			logout(() => {
+				setTimeout(() => navigate("/"), 200);
+			});
+		}, 1000);
 	};
 
 	// todo: check how to handle submit button for formik without losing the layout of modal
 	return (
 		<>
-			<Modal title={modalTitle} hideModal={hideModal} submit={submit} ref={dialogRef}>
+			<Modal errorMessage={modalErrorMessage} successMessage={modalSuccessMessage} title={modalTitle} hideModal={hideModal} ref={dialogRef}>
 				{type == "email" && (
-					<Formik initialValues={{ email }} validationSchema={settingsEmailSchema} onSubmit={updateEmailHandler}>
-						<Form>
+					<Formik initialValues={{ email }} validationSchema={settingsEmailSchema} onSubmit={values => updateHandler("email", values)}>
+						<Form id="modalForm">
 							<Input className={inputStyle} name="email" type="email" />
 						</Form>
 					</Formik>
 				)}
 				{type == "password" && (
-					<Formik initialValues={{ password: "" }} validationSchema={settingsPasswordSchema} onSubmit={updatePasswordHandler}>
-						<Form>
+					<Formik initialValues={{ password: "" }} validationSchema={settingsPasswordSchema} onSubmit={values => updateHandler("password", values)}>
+						<Form id="modalForm">
 							<Input className={inputStyle} name="password" type="text" />
 						</Form>
 					</Formik>
 				)}
 				{type == "username" && (
-					<Formik initialValues={{ username }} validationSchema={settingsUsernameSchema} onSubmit={updateUsernameHandler}>
-						<Form>
+					<Formik initialValues={{ username }} validationSchema={settingsUsernameSchema} onSubmit={(values: any) => updateHandler("username", values)}>
+						<Form id="modalForm">
 							<Input className={inputStyle} name="username" type="text" />
 						</Form>
 					</Formik>
@@ -187,7 +194,7 @@ const loadUser = async (id: string) => {
 		error.code = response.status;
 		throw error;
 	}
-	console.log("loadUser:", json);
+	// console.log("loadUser:", json);
 	return json.data;
 };
 

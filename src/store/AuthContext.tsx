@@ -3,10 +3,10 @@ import { LOGIN, LOGOUT } from "../utils/types";
 import { cookies } from "../utils";
 
 type ContextType = {
-	state: { user: { email: ""; _id: ""; avatar: "" } };
+	state: { user: { email: ""; _id: ""; avatar: ""; username: "" } };
 	dispatch: React.Dispatch<any>;
 };
-export const AuthContext = createContext<ContextType>({ state: { user: { email: "", _id: "", avatar: "" } }, dispatch: () => {} });
+export const AuthContext = createContext<ContextType>({ state: { user: { email: "", _id: "", avatar: "", username: "" } }, dispatch: () => {} });
 
 const reducer = (state: any, action: any) => {
 	switch (action.type) {
@@ -21,7 +21,7 @@ const reducer = (state: any, action: any) => {
 
 const AuthContextProvier = ({ children }: { children: React.ReactNode }) => {
 	const [state, dispatch] = useReducer(reducer, { user: null });
-	// console.log("auth context", state);
+	console.log("auth context", state);
 
 	// make user auto login
 	useEffect(() => {

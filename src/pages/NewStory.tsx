@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cookies, fetchAPI } from "../utils";
 import Editor from "../components/Editor";
+
+// todo: handle validation using yup and formik
 function NewStory() {
 	const navigate = useNavigate();
 	const [title, setTitle] = useState("");
