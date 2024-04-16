@@ -269,3 +269,69 @@ export const getUserFollowing = async (req, res) => {
 		res.status(400).json({ error: true, message: err.message });
 	}
 };
+
+export const updateEmail = async (req, res) => {
+	const { email: newEmail } = req.body;
+	if (newEmail === req.user.email) return res.status(400).json({ error: true, message: "Email is not changed" });
+	try {
+		const user = await User.findOne({ email: req.user.email });
+		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist" });
+
+		await User.findOneAndUpdate({ _id: user._id }, { email: newEmail });
+
+		return res
+			.status(200)
+			.clearCookie("token")
+			.clearCookie("email")
+			.clearCookie("username")
+			.clearCookie("userId")
+			.json({ success: true, message: "Email updated successfully!", data: { email: newEmail } });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
+};
+
+export const updateUsername = async (req, res) => {
+	const { username: newUsername } = req.body;
+	if (newUsername === req.user.username) return res.status(400).json({ error: true, message: "Username is not changed" });
+	try {
+		const user = await User.findOne({ username: req.user.username });
+		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist" });
+
+		await User.findOneAndUpdate({ _id: user._id }, { username: newUsername });
+
+		return res
+			.status(200)
+			.clearCookie("token")
+			.clearCookie("email")
+			.clearCookie("username")
+			.clearCookie("userId")
+			.json({ success: true, message: "Username updated successfully!", data: { username: newUsername } });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
+};
+
+export const updatePassword = async (req, res) => {
+	const { password: newPassword } = req.body;
+	// todo: check password strength
+	// todo: compare old password by hash if so send an error (password not changed)
+	return res.status(200).json({ success: true, message: "test", data: { password: newPassword } });
+	// if (newEmail === req.user.email) return res.status(400).json({ error: true, message: "Email is not changed" });
+	// try {
+	// 	const user = await User.findOne({ email: req.user.email });
+	// 	if (!user) return res.status(404).json({ error: true, message: "User doesn't exist" });
+
+	// 	await User.findOneAndUpdate({ _id: user._id }, { email: newEmail });
+
+	// 	return res
+	// 		.status(200)
+	// 		.clearCookie("token")
+	// 		.clearCookie("email")
+	// 		.clearCookie("username")
+	// 		.clearCookie("userId")
+	// 		.json({ success: true, message: "Email updated successfully!", data: { email: newEmail } });
+	// } catch (err) {
+	// 	res.status(400).json({ error: true, message: err.message });
+	// }
+};
