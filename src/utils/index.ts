@@ -7,6 +7,7 @@ export const validator = {
 		// return /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(str);
 		return str.includes("@");
 	},
+	passwordHint: "Password is not strong enough,<br/>use capital and small letters + digits<br/>minimum is 6 characters",
 	isStrongPassword(str: string): boolean {
 		// return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(str); // for production
 		return str.length >= 6;

@@ -69,9 +69,7 @@ export const signupUser = async (req, res) => {
 	if (!validator.isEmail(email)) {
 		return res.status(400).json({ error: true, message: "Email is not valid" });
 	}
-	if (!validator.isStrongPassword(password)) {
-		return res.status(400).json({ error: true, message: "Password is not strong enough, Capital and small letters + number + special chars, min = 6 chars" });
-	}
+	if (!validator.isStrongPassword(password)) return res.status(400).json({ error: true, message: validator.passwordHint });
 
 	try {
 		const emailExists = await User.findOne({ email });
@@ -274,17 +272,18 @@ export const updateEmail = async (req, res) => {
 	const { email: newEmail } = req.body;
 	if (newEmail === req.user.email) return res.status(400).json({ error: true, message: "Email is not changed" });
 	try {
-		const user = await User.findOne({ email: req.user.email });
+		// fallback for invalid user -- alrady done in auth middleware
+		const user = await User.findById(req.user._id);
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist" });
+
+		const emailIsTaken = await User.findOne({ email: newEmail });
+		if (emailIsTaken) return res.status(400).json({ error: true, message: "Email is already taken" });
 
 		await User.findOneAndUpdate({ _id: user._id }, { email: newEmail });
 
-		return res
+		res
 			.status(200)
-			.clearCookie("token")
-			.clearCookie("email")
-			.clearCookie("username")
-			.clearCookie("userId")
+			.cookie("email", newEmail, cookieConfig({}))
 			.json({ success: true, message: "Email updated successfully!", data: { email: newEmail } });
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
@@ -295,17 +294,18 @@ export const updateUsername = async (req, res) => {
 	const { username: newUsername } = req.body;
 	if (newUsername === req.user.username) return res.status(400).json({ error: true, message: "Username is not changed" });
 	try {
-		const user = await User.findOne({ username: req.user.username });
+		// fallback for invalid user -- alrady done in auth middleware
+		const user = await User.findById(req.user._id);
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist" });
+
+		const usernameIsTaken = await User.findOne({ username: newUsername });
+		if (usernameIsTaken) return res.status(400).json({ error: true, message: "Username is already taken" });
 
 		await User.findOneAndUpdate({ _id: user._id }, { username: newUsername });
 
-		return res
+		res
 			.status(200)
-			.clearCookie("token")
-			.clearCookie("email")
-			.clearCookie("username")
-			.clearCookie("userId")
+			.cookie("username", newUsername, cookieConfig({}))
 			.json({ success: true, message: "Username updated successfully!", data: { username: newUsername } });
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
@@ -314,24 +314,24 @@ export const updateUsername = async (req, res) => {
 
 export const updatePassword = async (req, res) => {
 	const { password: newPassword } = req.body;
-	// todo: check password strength
-	// todo: compare old password by hash if so send an error (password not changed)
-	return res.status(200).json({ success: true, message: "test", data: { password: newPassword } });
-	// if (newEmail === req.user.email) return res.status(400).json({ error: true, message: "Email is not changed" });
-	// try {
-	// 	const user = await User.findOne({ email: req.user.email });
-	// 	if (!user) return res.status(404).json({ error: true, message: "User doesn't exist" });
 
-	// 	await User.findOneAndUpdate({ _id: user._id }, { email: newEmail });
+	const match = await bcrypt.compare(newPassword, req.user.password);
+	if (match) return res.status(400).json({ error: true, message: "Password is not changed" });
 
-	// 	return res
-	// 		.status(200)
-	// 		.clearCookie("token")
-	// 		.clearCookie("email")
-	// 		.clearCookie("username")
-	// 		.clearCookie("userId")
-	// 		.json({ success: true, message: "Email updated successfully!", data: { email: newEmail } });
-	// } catch (err) {
-	// 	res.status(400).json({ error: true, message: err.message });
-	// }
+	try {
+		// fallback for invalid user -- alrady done in auth middleware
+		const user = await User.findById(req.user._id);
+		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist" });
+
+		if (!validator.isStrongPassword(newPassword)) return res.status(400).json({ error: true, message: validator.passwordHint });
+
+		const salt = await bcrypt.genSalt(10);
+		const hash = await bcrypt.hash(newPassword, salt);
+
+		await User.findOneAndUpdate({ _id: user._id }, { password: hash });
+
+		res.status(200).json({ success: true, message: "Password updated successfully!" });
+	} catch (err) {
+		res.status(400).json({ error: true, message: err.message });
+	}
 };
