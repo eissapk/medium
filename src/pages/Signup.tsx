@@ -6,11 +6,10 @@ import { useSignup } from "../hooks/useSignup";
 import { Form, Formik } from "formik";
 import Input from "../components/Input";
 import { signupSchema } from "../schema";
-import { fetchAPI } from "../utils";
+import { checkUsername } from "../utils";
 import { useMutation } from "@tanstack/react-query";
 import { Tick, Warn, Loader } from "../assets/icons";
 
-const inputStyle = "px-1 mx-4 transition-all border rounded border-border-light";
 const labelStyle = "font-medium inline-block text-sm text-text-light min-w-[7rem]";
 const submitBtnStyle = "flex items-center gap-x-2 px-6 py-2 mx-auto block text-sm text-green transition-all rounded-full border-green border font-medium";
 const initialValues = { username: "", email: "", password: "", confirmPassword: "" };
@@ -26,7 +25,7 @@ function Signup() {
 	const { mutate, isPending: checkPending, data: checkData } = useMutation({ mutationFn: checkUsername });
 
 	const errorElement = (text: string | boolean, className = "") => (
-		<div className={`p-2.5 bg-red-light border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`}>{text}</div>
+		<div className={`p-2.5 bg-red-light border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`} dangerouslySetInnerHTML={{ __html: text }}></div>
 	);
 
 	useEffect(() => {
@@ -37,18 +36,6 @@ function Signup() {
 		// console.log({ values, actions });
 		if (values.password !== values.confirmPassword) return;
 		await signup(values.email, values.username, values.password);
-	}
-
-	async function checkUsername(text: string) {
-		// await new Promise(r => setTimeout(r, 500));
-		const response = await fetchAPI("/api/user/username/" + text, { headers: { "Content-Type": "application/json" } });
-		const json = await response.json();
-		if (json.error) {
-			const error: any = new Error(json.message);
-			error.code = response.status;
-			throw error;
-		}
-		return json.data;
 	}
 
 	const debounceHandler = (text: string) => {
@@ -86,7 +73,7 @@ function Signup() {
 	};
 
 	return (
-		<main className="flex justify-center">
+		<main className="flex justify-center max-w-96 mx-auto">
 			<div>
 				<h1 className="mt-5 mb-10 text-3xl text-center font-title text-black-200">Join Medium.</h1>
 
@@ -94,17 +81,17 @@ function Signup() {
 					{props => (
 						<Form>
 							<div className="mb-2">
-								<Input className={inputStyle} autoFocus={true} labelStyle={labelStyle} label="Your Email" name="email" type="email" placeholder="domain@example.com" />
+								<Input autoFocus={true} labelStyle={labelStyle} label="Your Email" name="email" type="email" placeholder="domain@example.com" />
 							</div>
 							<div className="mb-2">
-								<Input onChangeHook={debounceHandler} className={inputStyle} labelStyle={labelStyle} label="Username" name="username" type="text" placeholder="creative_man" />
+								<Input onChangeHook={debounceHandler} labelStyle={labelStyle} label="Username" name="username" type="text" placeholder="creative_man" />
 								{usernameValidityLinter(props)}
 							</div>
 							<div className="mb-2">
-								<Input className={inputStyle} labelStyle={labelStyle} label="Your Password" name="password" type="password" />
+								<Input labelStyle={labelStyle} label="Your Password" name="password" type="password" />
 							</div>
 							<div className="mb-4">
-								<Input className={inputStyle} labelStyle={labelStyle} label="Confirm Password" name="confirmPassword" type="password" />
+								<Input labelStyle={labelStyle} label="Confirm Password" name="confirmPassword" type="password" />
 							</div>
 							<button className={cx(submitBtnStyle, { "opacity-30": isLoading, "opacity-80 hover:opacity-100": !isLoading })} disabled={isLoading} type="submit">
 								<span>Sign up</span>

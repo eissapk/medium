@@ -49,3 +49,15 @@ export const fetchAPI = async (url: string, opts: object) => {
 	// url = mode == "dev" ? url : "https://meedium.onrender.com" + url;
 	return await fetch(url, opts);
 };
+
+export async function checkUsername(text: string) {
+	// await new Promise(r => setTimeout(r, 500));
+	const response = await fetchAPI("/api/user/username/" + text, { headers: { "Content-Type": "application/json" } });
+	const json = await response.json();
+	if (json.error) {
+		const error: any = new Error(json.message);
+		error.code = response.status;
+		throw error;
+	}
+	return json.data;
+}

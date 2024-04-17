@@ -8,7 +8,6 @@ import Input from "../components/Input";
 import { loginSchema } from "../schema";
 import { Loader } from "../assets/icons";
 
-const inputStyle = "px-1 mx-4 transition-all border rounded border-border-light";
 const labelStyle = "font-medium inline-block text-sm text-text-light min-w-[7rem]";
 const submitBtnStyle = "flex items-center gap-x-2 px-6 py-2 mx-auto block text-sm text-green transition-all rounded-full border-green border font-medium";
 const initialValues = { email: "", password: "" };
@@ -29,7 +28,7 @@ function Login() {
 		<div className={`p-2.5 bg-red-light border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`}>{text}</div>
 	);
 	return (
-		<main className="flex justify-center">
+		<main className="flex justify-center max-w-96 mx-auto">
 			<div>
 				<h1 className="mt-5 mb-10 text-3xl text-center font-title text-black-200">Welcome back.</h1>
 
@@ -37,10 +36,10 @@ function Login() {
 					{props => (
 						<Form>
 							<div className="mb-2">
-								<Input className={inputStyle} autoFocus={true} labelStyle={labelStyle} label="Your Email" name="email" type="email" placeholder="domain@example.com" />
+								<Input autoFocus={true} labelStyle={labelStyle} label="Your Email" name="email" type="email" placeholder="domain@example.com" />
 							</div>
 							<div className="mb-2">
-								<Input className={inputStyle} labelStyle={labelStyle} label="Your Password" name="password" type="password" />
+								<Input labelStyle={labelStyle} label="Your Password" name="password" type="password" />
 							</div>
 							<button className={cx(submitBtnStyle, { "opacity-30": isLoading, "opacity-80 hover:opacity-100": !isLoading })} disabled={isLoading || props.isSubmitting} type="submit">
 								<span>Sign in</span>

@@ -26,7 +26,7 @@ const Modal = forwardRef(function (
 	};
 
 	return (
-		<dialog ref={ref} className="p-6 rounded max-w-[40rem] bg-white shadow-search w-full md:w-[40rem]" onClick={clickHandler}>
+		<dialog ref={ref} className="p-6 rounded max-w-[40rem] bg-white shadow-search w-full md:w-[40rem] overflow-y-auto" onClick={clickHandler}>
 			<header className="grid grid-cols-[1fr_2rem] mb-4 items-center">
 				<h1 className="text-xl font-medium text-text-dark">{title}</h1>
 				<button type="button" className="w-full h-full py-6 flex justify-center items-center" onClick={hide}>
@@ -38,11 +38,11 @@ const Modal = forwardRef(function (
 			{errorMessage && <div className={"my-4 -mt-4 text-xs text-white inline-block py-1 px-2 rounded-sm bg-red font-medium text-center"}>{errorMessage}</div>}
 			{successMessage && <div className={"my-4 -mt-4 text-xs text-white inline-block py-1 px-2 rounded-sm bg-green font-medium text-center"}>{successMessage}</div>}
 
-			<div className="flex justify-between">
+			<div className="flex justify-end gap-x-4">
 				<button onClick={hide} className={cx("flex px-4 py-2 text-sm transition-all rounded-full border text-green border-green", {})} type="button">
 					Cancel
 				</button>
-
+				{/* todo: add change detector to enable save button or disable if it's not changed */}
 				<button onClick={save} className={cx("flex px-4 bg-green text-white py-2 text-sm transition-all rounded-full", {})} type="submit" form="modalForm">
 					Save
 				</button>

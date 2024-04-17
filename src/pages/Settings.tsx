@@ -1,16 +1,20 @@
 import { Suspense, useEffect, useRef, useState } from "react";
-import { cap, cookies, fetchAPI } from "../utils";
+import { cap, cookies, fetchAPI, checkUsername } from "../utils";
 import { Await, defer, useLoaderData, useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { profilePic } from "../assets";
 import Modal from "../components/Modal";
 import Ad from "../components/Ad";
 import { Form, Formik } from "formik";
-import { settingsEmailSchema, settingsUsernameSchema, settingsPasswordSchema } from "../schema";
+import { settingsEmailSchema, settingsUsernameSchema, settingsPasswordSchema, settingsInfoSchema } from "../schema";
 import Input from "../components/Input";
-import { useLogout } from "../hooks/useLogout";
+import TextArea from "../components/TextArea";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { LOGIN } from "../utils/types";
+import { Tick, Warn } from "../assets/icons";
+import { useMutation } from "@tanstack/react-query";
+import cx from "classnames";
 
-const inputStyle = "px-1 transition-all border rounded border-border-light";
 // todo: add delete account option
 function Settings() {
 	const { userData } = useLoaderData() as { userData: any };
@@ -22,12 +26,17 @@ function Settings() {
 	const [username, setUsername] = useState("");
 	const [name, setName] = useState<string | null>(null);
 	const [bio, setBio] = useState<string | null>(null);
+	const [title, setTitle] = useState<string | null>(null);
 	const [avatar, setAvatar] = useState<string | null>(null);
 	const dialogRef = useRef(null);
-	const { logout } = useLogout();
+	const { state, dispatch } = useAuthContext();
 	const navigate = useNavigate();
+	const { mutate, isPending: checkPending, data: checkData } = useMutation({ mutationFn: checkUsername });
+	const [t, setT] = useState<null | ReturnType<typeof setTimeout>>(null);
+	const [isTyping, setIsTyping] = useState(false);
 
 	useEffect(() => {
+		// if (state.user) console.log(state.user);
 		(async () => {
 			const email = cookies.get("email"); // set by server
 			const id = cookies.get("username") || cookies.get("userId"); // set by server
@@ -37,13 +46,14 @@ function Settings() {
 			setEmail(user.email);
 			setUsername(user.username);
 			setName(user.name);
+			setTitle(user.title);
 			setBio(user.bio);
 			setAvatar(user.avatar);
 		})();
-	}, [userData]);
+	}, [userData, state.user]);
 
 	const editProfile = (type: string, title: string) => {
-		console.log(type);
+		// console.log(type);
 		setType(type);
 		setModalTitle(title);
 		if (dialogRef.current) {
@@ -62,66 +72,137 @@ function Settings() {
 	const hideModal = (dialog: any) => {
 		if (dialog.current) dialog.current.close();
 	};
-
+	const debounceHandler = (text: string) => {
+		setIsTyping(true);
+		if (text?.trim() === "") return;
+		text = text.trim();
+		if (t) clearTimeout(t);
+		setT(
+			setTimeout(() => {
+				setIsTyping(false);
+				// console.log("debounce", text);
+				mutate(text);
+			}, 200)
+		);
+	};
+	const usernameValidityLinter = (props: any) => {
+		const fixedClasses = "text-start text-xs my-2";
+		if (checkPending) return <p className={cx(fixedClasses, "text-text-light")}>Checking availability...</p>;
+		if (checkData?.taken)
+			return (
+				<p className={cx(fixedClasses, "text-start text-xs my-2 text-red flex items-center")}>
+					<Warn className="inline w-3 h-3 me-1" />
+					<span>{props.values.username} already taken</span>
+				</p>
+			);
+		if (!props.errors.username && checkData && checkData?.hasOwnProperty("taken") && !checkData?.taken && !isTyping) {
+			return (
+				<p className={cx(fixedClasses, "text-green flex items-center")}>
+					<Tick className="inline w-3 h-3 me-1" />
+					<span>{props.values.username} is available</span>
+				</p>
+			);
+		}
+	};
 	const updateHandler = async (route: string, values: any) => {
+		if (route == "info") return console.log("info:", values);
+
+		const timeout = 1000; // time out is a must as we need to show the message to user before the modal closes
 		const response = await fetchAPI("/api/user/" + route, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(values), credentials: "include" });
 		const json = await response.json();
 		if (json.error) {
 			setModalErrorMessage(json.message);
-			setTimeout(() => setModalErrorMessage(null), 1000);
+			setTimeout(() => setModalErrorMessage(null), timeout - 100);
 			const error: any = new Error(json.message);
 			error.code = response.status;
 			throw error;
 		}
 		setModalSuccessMessage(json.message);
+		setTimeout(() => setModalSuccessMessage(null), timeout - 100);
 		setTimeout(() => {
 			hideModal(dialogRef);
-			logout(() => {
-				setTimeout(() => navigate("/"), 200);
-			});
-		}, 1000);
+			if (route == "password") return;
+
+			dispatch({ type: LOGIN, payload: { ...state.user, [route]: json.data[route] } });
+			const username = route === "username" ? json.data.username : state.user.username;
+
+			// console.log("navigate to /" + username + "/settings");
+
+			navigate("/" + username + "/settings");
+			setTimeout(() => location.reload(), 200); // time out is a must -- bugfix
+		}, timeout);
 	};
 
-	// todo: check how to handle submit button for formik without losing the layout of modal
+	// handle avatar validation
+	const info = (props: any) => {
+		return (
+			<>
+				{/* img */}
+				<div className="mb-4">
+					<p className="text-text-light">Photo</p>
+					<div className="flex gap-x-4 mt-2">
+						<img className="h-16 rounded-full" src={avatar || profilePic} alt="avatar" />
+						<div className="flex flex-col gap-y-4 items-start">
+							<button type="button" className="text-green">
+								Update
+								{/* <Input name="avatar" type="file" /> */}
+							</button>
+							<p className="text-text-light text-sm">Recommended: Square JPG, PNG, or GIF, max size 1MB</p>
+						</div>
+					</div>
+				</div>
+
+				{/* name */}
+				<div className="mb-4 flex flex-col">
+					<Input name="name" type="text" label="Name" labelStyle="text-text-light" />
+					<p className="text-text-light text-xs mt-2">Appears on your Profile page</p>
+				</div>
+				{/* title */}
+				<div className="mb-4 flex flex-col">
+					<Input name="title" type="text" label="Title" labelStyle="text-text-light" />
+					<p className="text-text-light text-xs mt-2">Appears on your Profile page - supports markdown</p>
+				</div>
+				{/* bio */}
+				<div className="mb-4 flex flex-col">
+					<TextArea name="bio" label="Bio" rows={1} labelStyle="text-text-light" />
+					<p className="text-text-light text-xs mt-2">Appears on your Profile page - supports markdown</p>
+				</div>
+			</>
+		);
+	};
+
 	return (
 		<>
 			<Modal errorMessage={modalErrorMessage} successMessage={modalSuccessMessage} title={modalTitle} hideModal={hideModal} ref={dialogRef}>
 				{type == "email" && (
 					<Formik initialValues={{ email }} validationSchema={settingsEmailSchema} onSubmit={values => updateHandler("email", values)}>
 						<Form id="modalForm">
-							<Input className={inputStyle} name="email" type="email" />
+							<Input name="email" type="email" />
 						</Form>
 					</Formik>
 				)}
 				{type == "password" && (
 					<Formik initialValues={{ password: "" }} validationSchema={settingsPasswordSchema} onSubmit={values => updateHandler("password", values)}>
 						<Form id="modalForm">
-							<Input className={inputStyle} name="password" type="text" />
+							<Input name="password" type="text" />
+							{/* todo: add show password button (eye icon) */}
 						</Form>
 					</Formik>
 				)}
 				{type == "username" && (
 					<Formik initialValues={{ username }} validationSchema={settingsUsernameSchema} onSubmit={(values: any) => updateHandler("username", values)}>
-						<Form id="modalForm">
-							<Input className={inputStyle} name="username" type="text" />
-						</Form>
+						{props => (
+							<Form id="modalForm">
+								<Input onChangeHook={debounceHandler} name="username" type="text" />
+								{usernameValidityLinter(props)}
+							</Form>
+						)}
 					</Formik>
 				)}
 				{type == "info" && (
-					<>
-						<div className="mb-2 ">
-							<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Photo</label>
-							<img className="h-6 rounded-full" src={avatar || profilePic} alt="avatar" />
-						</div>
-						<div className="mb-2">
-							<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Name</label>
-							<input className="w-1/2 px-2 py-1 transition-all border rounded-sm border-border-light" type="text" value={name || ""} onChange={e => setName(e.target.value)} />
-						</div>
-						<div className="">
-							<label className="font-medium inline-block text-sm text-text-light min-w-[7rem]">Bio</label>
-							<input className="w-1/2 px-2 py-1 transition-all border rounded-sm border-border-light" type="text" value={bio || ""} onChange={e => setBio(e.target.value)} />
-						</div>
-					</>
+					<Formik initialValues={{ avatar, name, title, bio }} validationSchema={settingsInfoSchema} onSubmit={(values: any) => updateHandler("info", values)}>
+						{props => <Form id="modalForm">{info(props)}</Form>}
+					</Formik>
 				)}
 			</Modal>
 
@@ -172,9 +253,7 @@ function Settings() {
 							</div>
 						</div>
 						<div className="pt-10 border-t border-border-light md:pt-0 md:px-10 md:border-t-0 md:border-s">
-							<Ad>
-								<h2 className="text-3xl font-bold text-center text-black-100">Imagine your ad here.</h2>
-							</Ad>
+							<Ad></Ad>
 						</div>
 					</div>
 				</div>

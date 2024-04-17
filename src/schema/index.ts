@@ -1,4 +1,5 @@
 import * as yup from "yup";
+
 // const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/; // for production
 const passwordRegex = /.*/; // for testing
 const usernameRegex = /^[0-9A-Za-z]{4,16}$/g;
@@ -47,4 +48,23 @@ export const settingsUsernameSchema = yup.object().shape({
 		.required("Username is required!"),
 });
 
-// todo : add validation for profile picture, name and bio
+export const settingsInfoSchema = yup.object().shape({
+	// avatar: yup
+	// 	.mixed()
+	// 	.test("fileSize", "The file is too large", value => {
+	// 		if (!value) return true;
+
+	// 		if (!["png", "jpg", "jpeg", "gif"].includes(value?.split(".").pop())) return false;
+	// 		console.log({ value });
+
+	// 		// @ts-expect-error -- handle null type later
+	// 		if (!value.length) return true; // attachment is optional
+	// 		// @ts-expect-error -- handle null type later
+	// 		return value[0].size <= 1 * 1024 * 1024 * 1024;
+	// 	})
+	// 	.nullable(),
+	// avatar: yup.string().nullable(),
+	name: yup.string().min(2).nullable(),
+	title: yup.string().min(6).nullable(),
+	bio: yup.string().min(6).nullable(),
+});

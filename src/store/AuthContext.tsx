@@ -27,9 +27,10 @@ const AuthContextProvier = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {
 		const email = cookies.get("email"); // set by server
 		const _id = cookies.get("username") || cookies.get("userId"); // set by server
+		const username = cookies.get("username"); // set by server
 		// todo: handle avatar url by server
 		if (email && _id) {
-			dispatch({ type: LOGIN, payload: { email, _id, avatar: "" } });
+			dispatch({ type: LOGIN, payload: { email, _id, username, avatar: "" } });
 		}
 	}, []);
 

@@ -11,6 +11,9 @@ export default {
 			"2xl": "1536px",
 		},
 		extend: {
+			transitionProperty: {
+				border: "border",
+			},
 			colors: {
 				yellow: "#ffc017",
 				green: "#1a8917",
