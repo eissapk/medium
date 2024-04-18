@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import cx from "classnames";
 import { Close } from "../assets/icons";
 
+// todo: handle bug when pressing enter or spcace in modal (the dialog closes)
 const Modal = forwardRef(function (
 	{
 		hideModal,
@@ -29,7 +30,7 @@ const Modal = forwardRef(function (
 		<dialog ref={ref} className="p-6 rounded max-w-[40rem] bg-white shadow-search w-full md:w-[40rem] overflow-y-auto" onClick={clickHandler}>
 			<header className="grid grid-cols-[1fr_2rem] mb-4 items-center">
 				<h1 className="text-xl font-medium text-text-dark">{title}</h1>
-				<button type="button" className="w-full h-full py-6 flex justify-center items-center" onClick={hide}>
+				<button type="button" className="flex items-center justify-center w-full h-full py-6" onClick={hide}>
 					<Close className="w-6 h-6 pointer-events-none" />
 				</button>
 			</header>

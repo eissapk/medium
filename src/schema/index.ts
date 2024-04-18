@@ -49,22 +49,8 @@ export const settingsUsernameSchema = yup.object().shape({
 });
 
 export const settingsInfoSchema = yup.object().shape({
-	// avatar: yup
-	// 	.mixed()
-	// 	.test("fileSize", "The file is too large", value => {
-	// 		if (!value) return true;
-
-	// 		if (!["png", "jpg", "jpeg", "gif"].includes(value?.split(".").pop())) return false;
-	// 		console.log({ value });
-
-	// 		// @ts-expect-error -- handle null type later
-	// 		if (!value.length) return true; // attachment is optional
-	// 		// @ts-expect-error -- handle null type later
-	// 		return value[0].size <= 1 * 1024 * 1024 * 1024;
-	// 	})
-	// 	.nullable(),
-	// avatar: yup.string().nullable(),
-	name: yup.string().min(2).nullable(),
-	title: yup.string().min(6).nullable(),
-	bio: yup.string().min(6).nullable(),
+	avatar: yup.mixed(),
+	name: yup.string().min(2),
+	title: yup.string().min(6),
+	bio: yup.string().min(6),
 });

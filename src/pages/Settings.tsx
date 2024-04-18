@@ -24,16 +24,23 @@ function Settings() {
 	const [modalSuccessMessage, setModalSuccessMessage] = useState(null);
 	const [email, setEmail] = useState("");
 	const [username, setUsername] = useState("");
-	const [name, setName] = useState<string | null>(null);
-	const [bio, setBio] = useState<string | null>(null);
-	const [title, setTitle] = useState<string | null>(null);
-	const [avatar, setAvatar] = useState<string | null>(null);
+
+	const [name, setName] = useState<string | null>("");
+	const [bio, setBio] = useState<string | null>("");
+	const [title, setTitle] = useState<string | null>("");
+	const [avatar, setAvatar] = useState<string | null>("");
+
 	const dialogRef = useRef(null);
 	const { state, dispatch } = useAuthContext();
 	const navigate = useNavigate();
 	const { mutate, isPending: checkPending, data: checkData } = useMutation({ mutationFn: checkUsername });
 	const [t, setT] = useState<null | ReturnType<typeof setTimeout>>(null);
 	const [isTyping, setIsTyping] = useState(false);
+
+	const avatarImage = useRef(null);
+	const [avatarErrorMessage, setAvatarErrorMessage] = useState("");
+	const [isAvatarError, setIsAvatarError] = useState(false);
+	const [avatarFileObj, setAvatarFileObj] = useState(null);
 
 	useEffect(() => {
 		// if (state.user) console.log(state.user);
@@ -45,20 +52,22 @@ function Settings() {
 			const user = await userData;
 			setEmail(user.email);
 			setUsername(user.username);
-			setName(user.name);
-			setTitle(user.title);
-			setBio(user.bio);
-			setAvatar(user.avatar);
+			setName(user.name || "");
+			setTitle(user.title || "");
+			setBio(user.bio || "");
+			setAvatar(user.avatar || "");
 		})();
 	}, [userData, state.user]);
 
 	const editProfile = (type: string, title: string) => {
 		// console.log(type);
+		setAvatarFileObj(null);
 		setType(type);
 		setModalTitle(title);
 		if (dialogRef.current) {
 			// @ts-expect-error -- handle it later
 			dialogRef.current.showModal();
+			if (avatarImage?.current) avatarImage.current.src = avatar || profilePic;
 
 			// auto focus 1st input
 			setTimeout(() => {
@@ -71,8 +80,10 @@ function Settings() {
 
 	const hideModal = (dialog: any) => {
 		if (dialog.current) dialog.current.close();
+		setAvatarFileObj(null);
 	};
-	const debounceHandler = (text: string) => {
+	const debounceHandler = (e: any) => {
+		let text = e.target.value;
 		setIsTyping(true);
 		if (text?.trim() === "") return;
 		text = text.trim();
@@ -104,8 +115,19 @@ function Settings() {
 			);
 		}
 	};
-	const updateHandler = async (route: string, values: any) => {
-		if (route == "info") return console.log("info:", values);
+	const updateHandler = async (route: string, values: any, actions: any) => {
+		setAvatarErrorMessage("");
+		setIsAvatarError(false);
+		if (route == "info") {
+			const infoObj: { name: null | string; title: null | string; bio: null | string; avatar: null | File } = { name: null, title: null, bio: null, avatar: null };
+			if (values.name) infoObj.name = values.name;
+			if (values.title) infoObj.title = values.title;
+			if (values.bio) infoObj.bio = values.bio;
+			if (avatarFileObj) infoObj.avatar = avatarFileObj;
+
+			console.log("info:", infoObj);
+			return;
+		}
 
 		const timeout = 1000; // time out is a must as we need to show the message to user before the modal closes
 		const response = await fetchAPI("/api/user/" + route, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(values), credentials: "include" });
@@ -120,8 +142,10 @@ function Settings() {
 		setModalSuccessMessage(json.message);
 		setTimeout(() => setModalSuccessMessage(null), timeout - 100);
 		setTimeout(() => {
+			actions.resetForm();
 			hideModal(dialogRef);
 			if (route == "password") return;
+			// todo: bind avatar only
 
 			dispatch({ type: LOGIN, payload: { ...state.user, [route]: json.data[route] } });
 			const username = route === "username" ? json.data.username : state.user.username;
@@ -133,39 +157,65 @@ function Settings() {
 		}, timeout);
 	};
 
+	const avatarHandler = (e: any) => {
+		setAvatarFileObj(null);
+		const file = e.target.files[0];
+		// console.log(file.size, file.type);
+		if (file.size > 1024 * 1024 * 1) {
+			setAvatarErrorMessage("Avatar must be less than 1MB");
+			setIsAvatarError(true);
+			return;
+		}
+		if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
+			setAvatarErrorMessage("Avatar must be an image file (JPG, PNG, or GIF)");
+			setIsAvatarError(true);
+			return;
+		}
+		setAvatarErrorMessage("");
+		setIsAvatarError(false);
+		setAvatarFileObj(file);
+
+		if (!avatarImage?.current) return;
+		const fr = new FileReader();
+		// @ts-expect-error -- handle it later
+		fr.onload = () => (avatarImage.current.src = fr.result);
+		fr.readAsDataURL(file);
+	};
+
 	// handle avatar validation
-	const info = (props: any) => {
+	const info = () => {
 		return (
 			<>
 				{/* img */}
 				<div className="mb-4">
 					<p className="text-text-light">Photo</p>
-					<div className="flex gap-x-4 mt-2">
-						<img className="h-16 rounded-full" src={avatar || profilePic} alt="avatar" />
-						<div className="flex flex-col gap-y-4 items-start">
-							<button type="button" className="text-green">
-								Update
-								{/* <Input name="avatar" type="file" /> */}
+					<div className="flex mt-2 gap-x-4">
+						<img ref={avatarImage} className="h-16 rounded-full" src={avatar || profilePic} alt="avatar" />
+						<div className="flex flex-col items-start gap-y-4">
+							<button type="button" className="relative text-green">
+								<span>Update</span>
+								<Input name="avatar" type="file" onChangeHook={avatarHandler} className="absolute top-0 left-0 w-full h-full opacity-0" />
 							</button>
-							<p className="text-text-light text-sm">Recommended: Square JPG, PNG, or GIF, max size 1MB</p>
+							<p className="text-sm text-text-light">Recommended: Square JPG, PNG, or GIF, max size 1MB</p>
+							{isAvatarError && <p className="my-2 text-xs text-start text-red">{avatarErrorMessage}</p>}
 						</div>
 					</div>
 				</div>
 
 				{/* name */}
-				<div className="mb-4 flex flex-col">
+				<div className="flex flex-col mb-4">
 					<Input name="name" type="text" label="Name" labelStyle="text-text-light" />
-					<p className="text-text-light text-xs mt-2">Appears on your Profile page</p>
+					<p className="mt-2 text-xs text-text-light">Appears on your Profile page</p>
 				</div>
 				{/* title */}
-				<div className="mb-4 flex flex-col">
+				<div className="flex flex-col mb-4">
 					<Input name="title" type="text" label="Title" labelStyle="text-text-light" />
-					<p className="text-text-light text-xs mt-2">Appears on your Profile page - supports markdown</p>
+					<p className="mt-2 text-xs text-text-light">Appears on your Profile page - supports markdown</p>
 				</div>
 				{/* bio */}
-				<div className="mb-4 flex flex-col">
+				<div className="flex flex-col mb-4">
 					<TextArea name="bio" label="Bio" rows={1} labelStyle="text-text-light" />
-					<p className="text-text-light text-xs mt-2">Appears on your Profile page - supports markdown</p>
+					<p className="mt-2 text-xs text-text-light">Appears on your Profile page - supports markdown</p>
 				</div>
 			</>
 		);
@@ -175,14 +225,14 @@ function Settings() {
 		<>
 			<Modal errorMessage={modalErrorMessage} successMessage={modalSuccessMessage} title={modalTitle} hideModal={hideModal} ref={dialogRef}>
 				{type == "email" && (
-					<Formik initialValues={{ email }} validationSchema={settingsEmailSchema} onSubmit={values => updateHandler("email", values)}>
+					<Formik initialValues={{ email }} validationSchema={settingsEmailSchema} onSubmit={(values: any, actions: any) => updateHandler("email", values, actions)}>
 						<Form id="modalForm">
 							<Input name="email" type="email" />
 						</Form>
 					</Formik>
 				)}
 				{type == "password" && (
-					<Formik initialValues={{ password: "" }} validationSchema={settingsPasswordSchema} onSubmit={values => updateHandler("password", values)}>
+					<Formik initialValues={{ password: "" }} validationSchema={settingsPasswordSchema} onSubmit={(values: any, actions: any) => updateHandler("password", values, actions)}>
 						<Form id="modalForm">
 							<Input name="password" type="text" />
 							{/* todo: add show password button (eye icon) */}
@@ -190,7 +240,7 @@ function Settings() {
 					</Formik>
 				)}
 				{type == "username" && (
-					<Formik initialValues={{ username }} validationSchema={settingsUsernameSchema} onSubmit={(values: any) => updateHandler("username", values)}>
+					<Formik initialValues={{ username }} validationSchema={settingsUsernameSchema} onSubmit={(values: any, actions: any) => updateHandler("username", values, actions)}>
 						{props => (
 							<Form id="modalForm">
 								<Input onChangeHook={debounceHandler} name="username" type="text" />
@@ -200,8 +250,9 @@ function Settings() {
 					</Formik>
 				)}
 				{type == "info" && (
-					<Formik initialValues={{ avatar, name, title, bio }} validationSchema={settingsInfoSchema} onSubmit={(values: any) => updateHandler("info", values)}>
-						{props => <Form id="modalForm">{info(props)}</Form>}
+					<Formik initialValues={{ avatar, name, title, bio }} validationSchema={settingsInfoSchema} onSubmit={(values: any, actions: any) => updateHandler("info", values, actions)}>
+						{/* {props => <Form id="modalForm">{info(props)}</Form>} */}
+						<Form id="modalForm">{info()}</Form>
 					</Formik>
 				)}
 			</Modal>
