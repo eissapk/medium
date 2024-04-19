@@ -119,12 +119,18 @@ body {
 	border-left: 1px solid var(--color-border);
 }
 #articlePage #editorjs .cdx-quote__caption,
-#editorjs .cdx-quote__caption {
+#editorjs .cdx-quote__caption,
+#articlePage #editorjs .image-tool__caption,
+#editorjs .image-tool__caption {
 	display: none;
 }
 
 #articlePage #editorjs .codex-editor__redactor > div.ce-block:first-of-type {
 	display: none !important;
+}
+
+.markdown a {
+	text-decoration: underline;
 }
 
 /* todo fix quote and <i> tag */

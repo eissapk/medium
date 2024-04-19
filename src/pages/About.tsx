@@ -1,7 +1,9 @@
 import { Link, useOutletContext } from "react-router-dom";
-import { Twitter } from "../assets/icons";
+import { Facebook, Linkedin, Twitter } from "../assets/icons";
 import { getLocalTime, cap } from "../utils";
 import { useEffect, useState } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const linksArr = [
 	{ url: "/{{userId}}/followers", label: "Followers", namespace: "followers" },
@@ -12,9 +14,14 @@ function Icon({ name, ...props }: any) {
 	switch (name) {
 		case "twitter":
 			return <Twitter {...props} />;
+		case "facebook":
+			return <Facebook {...props} />;
+		case "linkedin":
+			return <Linkedin {...props} />;
 	}
 }
 
+// todo add markdown pkg
 function About() {
 	const { user } = useOutletContext() as { user: any };
 	// user.bio = "Editor of INSURGE intelligence and Return of the Reich";
@@ -28,7 +35,13 @@ function About() {
 	return (
 		<div>
 			{/* bio */}
-			{user.bio ? <p className="text-sm text-text-light">{user.bio}</p> : <p className="text-sm text-text-light">Member since {getLocalTime(user.createdAt, "short")}</p>}
+			{user.bio ? (
+				<Markdown className={"markdown text-sm text-text-light"} remarkPlugins={[remarkGfm]}>
+					{user.bio}
+				</Markdown>
+			) : (
+				<p className="text-sm text-text-light">Member since {getLocalTime(user.createdAt, "short")}</p>
+			)}
 
 			{/* following/followers */}
 			<ul className="flex my-6">

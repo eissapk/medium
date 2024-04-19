@@ -9,6 +9,7 @@ import { profilePic } from "../assets";
 import Spinner from "./Spinner";
 // todo: split this into  components
 
+// todo: fix profile image
 function UserNav() {
 	const navigate = useNavigate();
 	const { state } = useAuthContext();

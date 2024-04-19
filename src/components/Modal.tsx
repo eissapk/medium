@@ -3,18 +3,19 @@ import cx from "classnames";
 import { Close } from "../assets/icons";
 
 // todo: handle bug when pressing enter or spcace in modal (the dialog closes)
-const Modal = forwardRef(function (
-	{
-		hideModal,
-		title,
-		children,
-		submit,
-		errorMessage = null,
-		successMessage = null,
-	}: { submit?: (dialog: any) => void; hideModal: (dialog: any) => void; title: string; children: any; errorMessage?: string | null; successMessage?: string | null },
-	ref: any
-) {
-	const hide = () => hideModal(ref);
+type ModalProps = {
+	submit?: (dialog: any) => void;
+	cancel?: (dialog: any) => void;
+	title: string;
+	children: any;
+	errorMessage?: string | null;
+	successMessage?: string | null;
+};
+const Modal = forwardRef(function ({ title, children, submit, cancel, errorMessage = null, successMessage = null }: ModalProps, ref: any) {
+	const hide = () => {
+		if (ref.current) ref.current.close();
+		if (cancel) cancel(ref);
+	};
 	const save = () => submit && submit(ref);
 
 	const isOutside = (event: any) => {

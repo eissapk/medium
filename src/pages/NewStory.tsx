@@ -28,7 +28,7 @@ function NewStory() {
 		const firstImage = content.find((block: any) => block.type === "image");
 		if (firstImage) thumbnail = firstImage.data.file.url;
 
-		console.log({ content, thumbnail, title, readTime, savedData });
+		// console.log({ content, thumbnail, title, readTime, savedData });
 
 		const response = await fetchAPI("/api/article/create", {
 			method: "POST",

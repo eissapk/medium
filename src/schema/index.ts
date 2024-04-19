@@ -49,8 +49,10 @@ export const settingsUsernameSchema = yup.object().shape({
 });
 
 export const settingsInfoSchema = yup.object().shape({
-	avatar: yup.mixed(),
 	name: yup.string().min(2),
 	title: yup.string().min(6),
 	bio: yup.string().min(6),
+	// twitter: yup.string(),
+	// facebook: yup.string(),
+	// linkedin: yup.string(),
 });

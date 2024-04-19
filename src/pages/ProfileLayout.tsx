@@ -6,6 +6,8 @@ import Spinner from "../components/Spinner";
 import { profilePic } from "../assets";
 import { useProfileContext } from "../hooks/useProfileContext";
 import { SET_LOGGED_PROFILE, SET_CURRENT_PROFILE } from "../utils/types";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const linksArr = [
 	{ url: "/{{userId}}", label: "Home" },
@@ -97,7 +99,11 @@ function ProfileLayout() {
 										{state?.profile?.current?.followers?.length || 0} Followers
 									</Link>
 									{/* title */}
-									{user?.title && <p className="mt-3 text-sm text-text-light">{user?.title}</p>}
+									{user?.title && (
+										<Markdown className={"markdown mt-3 text-sm text-text-light"} remarkPlugins={[remarkGfm]}>
+											{user?.title}
+										</Markdown>
+									)}
 									{/* cta */}
 									<FollowButton className="mt-2" relatedUser={user} loggedUser={loggedUser} profileUrl={location.pathname} />
 								</>

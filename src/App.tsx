@@ -16,9 +16,10 @@ import About from "./pages/About";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 
-import Settings, { loader as settingsLoader } from "./pages/Settings";
+import SettingsLayout, { loader as settingsLoader } from "./pages/SettingsLayout";
 import Article, { loader as ArticleLoader } from "./pages/Article";
 import NewStory from "./pages/NewStory";
+import SettingsOptions from "./components/SettingsOptions";
 
 //todo add  notification route
 const router = createBrowserRouter([
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
 				],
 			},
 			{ path: ":userId/:articleId", element: <Article />, loader: ArticleLoader },
-			{ path: ":userId/settings", element: <Settings />, loader: settingsLoader },
+			{ path: ":userId/settings", element: <SettingsLayout />, loader: settingsLoader, children: [{ index: true, element: <SettingsOptions /> }] },
 			{ path: "/new-story", element: <NewStory /> },
 		],
 	},

@@ -15,6 +15,7 @@ function Input({
 	name: string;
 	type: string;
 	placeholder?: string;
+	autoComplete?: string;
 }) {
 	const [field, meta] = useField(props);
 

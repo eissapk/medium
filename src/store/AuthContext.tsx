@@ -21,16 +21,17 @@ const reducer = (state: any, action: any) => {
 
 const AuthContextProvier = ({ children }: { children: React.ReactNode }) => {
 	const [state, dispatch] = useReducer(reducer, { user: null });
-	console.log("auth context", state);
+	// console.log("auth context", state);
 
 	// make user auto login
 	useEffect(() => {
 		const email = cookies.get("email"); // set by server
 		const _id = cookies.get("username") || cookies.get("userId"); // set by server
 		const username = cookies.get("username"); // set by server
+		const avatar = cookies.get("avatar"); // set by server
 		// todo: handle avatar url by server
 		if (email && _id) {
-			dispatch({ type: LOGIN, payload: { email, _id, username, avatar: "" } });
+			dispatch({ type: LOGIN, payload: { email, _id, username, avatar } });
 		}
 	}, []);
 

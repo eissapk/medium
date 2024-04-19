@@ -38,7 +38,8 @@ function Signup() {
 		await signup(values.email, values.username, values.password);
 	}
 
-	const debounceHandler = (text: string) => {
+	const debounceHandler = (e: any) => {
+		let text = e.target.value;
 		setIsTyping(true);
 		if (text?.trim() === "") return;
 		text = text.trim();
