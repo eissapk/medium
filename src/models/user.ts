@@ -8,7 +8,7 @@ const userSchema = new Schema(
 		name: { type: String, default: null },
 		title: { type: String, default: null },
 		bio: { type: String, default: null },
-		socialLinks: [String],
+		socialLinks: [{ provider: { type: String }, url: { type: String } }],
 		articles: [{ type: Schema.Types.ObjectId, ref: "Article" }],
 		followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
 		following: [{ type: Schema.Types.ObjectId, ref: "User" }],

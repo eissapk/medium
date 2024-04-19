@@ -1,6 +1,6 @@
 import User from "../models/user";
 import bcrypt from "bcryptjs";
-import { createToken, expiresIn, validator } from "../utils";
+import { createToken, expiresIn, uploadBinaryFile, validator } from "../utils";
 import mongoose from "mongoose";
 // todo: try using distinct("email") if you want just values
 
@@ -49,6 +49,7 @@ export const loginUser = async (req, res) => {
 			.cookie("email", user.email, cookieConfig({}))
 			.cookie("username", user.username, cookieConfig({}))
 			.cookie("userId", user._id, cookieConfig({}))
+			.cookie("avatar", user.avatar, cookieConfig({}))
 			.json({
 				success: true,
 				message: "logged-in successfuly",
@@ -90,6 +91,7 @@ export const signupUser = async (req, res) => {
 			.cookie("email", email, cookieConfig({}))
 			.cookie("username", username, cookieConfig({}))
 			.cookie("userId", user._id, cookieConfig({}))
+			.cookie("avatar", user.avatar, cookieConfig({}))
 			.json({
 				success: true,
 				message: "signed up successfuly",
@@ -333,5 +335,32 @@ export const updatePassword = async (req, res) => {
 		res.status(200).json({ success: true, message: "Password updated successfully!" });
 	} catch (err) {
 		res.status(400).json({ error: true, message: err.message });
+	}
+};
+
+export const updateInfo = async (req, res) => {
+	// body has {title, name, bio}
+	const hasBinaryFile = req.files.length;
+	try {
+		const user = await User.findById(req.user._id);
+		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist" });
+
+		let response: any = null; // todo: extract type from uploadBinaryFile fucntion
+		if (hasBinaryFile) {
+			response = await uploadBinaryFile(req.files, user.id);
+			if (response.error) return res.status(response.status).json(response);
+		}
+
+		const updatedInfo = { ...req.body };
+		if (hasBinaryFile) updatedInfo.avatar = response.file.url;
+
+		await User.findOneAndUpdate({ _id: user.id }, updatedInfo);
+
+		if (hasBinaryFile) {
+			return res.status(200).cookie("avatar", response.file.url, cookieConfig({})).json({ success: true, message: "Info updated successfully!", data: updatedInfo });
+		}
+		res.status(200).json({ success: true, message: "Info updated successfully!", data: updatedInfo });
+	} catch (error) {
+		res.status(400).json({ error: true, message: error.message });
 	}
 };

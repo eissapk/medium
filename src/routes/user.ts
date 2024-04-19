@@ -12,6 +12,7 @@ import {
 	updateEmail,
 	updatePassword,
 	updateUsername,
+	updateInfo,
 } from "../controllers/user";
 import auth from "../middleware/auth";
 
@@ -34,5 +35,6 @@ router.get("/:id/unfollow/:user", unFollowUser);
 router.put("/email", updateEmail);
 router.put("/username", updateUsername);
 router.put("/password", updatePassword);
+router.put("/info", updateInfo);
 
 export default router;
