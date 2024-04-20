@@ -11,7 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Tick, Warn, Loader } from "../assets/icons";
 
 const labelStyle = "font-medium inline-block text-sm text-text-light min-w-[7rem]";
-const submitBtnStyle = "flex items-center gap-x-2 px-6 py-2 mx-auto block text-sm text-green transition-all rounded-full border-green border font-medium";
+const submitBtnStyle = "flex items-center gap-x-2 px-6 py-2 mx-auto block text-sm mt-4 text-green transition-all rounded-full border-green border font-medium";
 const initialValues = { username: "", email: "", password: "", confirmPassword: "" };
 
 // todo: add email provider like sendgrid to check if email is real and for sending confirmation emails
@@ -25,7 +25,7 @@ function Signup() {
 	const { mutate, isPending: checkPending, data: checkData } = useMutation({ mutationFn: checkUsername });
 
 	const errorElement = (text: string | boolean, className = "") => (
-		<div className={`p-2.5 bg-red-light border border-border-light rounded my-4 text-center text-sm text-text-light ${className}`} dangerouslySetInnerHTML={{ __html: text }}></div>
+		<div className={`p-2.5 bg-red-light border border-border-light rounded mt-4 text-center text-sm text-text-light ${className}`} dangerouslySetInnerHTML={{ __html: text }}></div>
 	);
 
 	useEffect(() => {
@@ -82,17 +82,17 @@ function Signup() {
 					{props => (
 						<Form>
 							<div className="mb-2">
-								<Input autoFocus={true} labelStyle={labelStyle} label="Your Email" name="email" type="email" placeholder="domain@example.com" />
+								<Input className="ms-2" autoFocus={true} labelStyle={labelStyle} label="Your Email" name="email" type="email" placeholder="domain@example.com" />
 							</div>
 							<div className="mb-2">
-								<Input onChangeHook={debounceHandler} labelStyle={labelStyle} label="Username" name="username" type="text" placeholder="creative_man" />
+								<Input className="ms-2" onChangeHook={debounceHandler} labelStyle={labelStyle} label="Username" name="username" type="text" placeholder="creative_man" />
 								{usernameValidityLinter(props)}
 							</div>
 							<div className="mb-2">
-								<Input labelStyle={labelStyle} label="Your Password" name="password" type="password" />
+								<Input className="ms-2" labelStyle={labelStyle} label="Your Password" name="password" type="password" />
 							</div>
 							<div className="mb-4">
-								<Input labelStyle={labelStyle} label="Confirm Password" name="confirmPassword" type="password" />
+								<Input className="ms-2" labelStyle={labelStyle} label="Confirm Password" name="confirmPassword" type="password" />
 							</div>
 							<button className={cx(submitBtnStyle, { "opacity-30": isLoading, "opacity-80 hover:opacity-100": !isLoading })} disabled={isLoading} type="submit">
 								<span>Sign up</span>

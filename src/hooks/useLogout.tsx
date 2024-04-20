@@ -12,10 +12,12 @@ export const useLogout = () => {
 		cookies.remove("username");
 		cookies.remove("userId");
 		cookies.remove("email");
+		cookies.remove("avatar");
 		// fallback -- if it didn't work then clear cookies from server via logout endpoint
 		document.cookie = "username=;" + expires;
 		document.cookie = "userId=;" + expires;
 		document.cookie = "email=;" + expires;
+		document.cookie = "avatar=;" + expires;
 
 		// memory
 		dispatch({ type: LOGOUT });

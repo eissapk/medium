@@ -3,11 +3,13 @@ import ArticleItem from "../components/ArticleItem";
 import { Suspense } from "react";
 import Spinner from "../components/Spinner";
 import { fetchAPI } from "../utils";
+import { useAuthContext } from "../hooks/useAuthContext";
 
+// todo check if current profile is own by logged user (if so then add delete,update buttons for each article)
 function Profile() {
+	const { state } = useAuthContext();
 	const { user } = useOutletContext() as { user: any };
 	const { userArticles } = useLoaderData() as { userArticles: any };
-	// todo check if current profile is own by logged user (if so then add delete,update buttons for each article)
 
 	if (!user.articles.length) return <p className="text-xs text-center text-text-light">No articles yet</p>;
 
@@ -17,7 +19,7 @@ function Profile() {
 				{json => (
 					<div className="grid grid-cols-1 mb-10 gap-y-10">
 						{json.data.map((item: any, index: number) => (
-							<ArticleItem key={index} article={{ ...item, user }} isProfile={true} />
+							<ArticleItem key={index} article={{ ...item, user }} isProfile={true} loggedUser={state.user} />
 						))}
 					</div>
 				)}

@@ -24,6 +24,7 @@ function SettingsLayout() {
 	const [name, setName] = useState<string | null>("");
 	const [title, setTitle] = useState<string | null>("");
 	const [bio, setBio] = useState<string | null>("");
+	const [socialLinks, setSocialLinks] = useState<any[]>([]);
 
 	const dialogRef = useRef(null);
 	const avatarRef = useRef(null);
@@ -45,7 +46,15 @@ function SettingsLayout() {
 			setName(user.name || "");
 			setTitle(user.title || "");
 			setBio(user.bio || "");
-			// todo : add social links
+			setSocialLinks(
+				user.socialLinks.length
+					? user.socialLinks
+					: [
+							{ url: "", namespace: "twitter" },
+							{ url: "", namespace: "linkedin" },
+							{ url: "", namespace: "facebook" },
+					  ]
+			);
 		})();
 	}, [userData]);
 
@@ -85,6 +94,7 @@ function SettingsLayout() {
 					name={name}
 					title={title}
 					bio={bio}
+					socialLinks={socialLinks}
 					avatarFileObj={avatarFileObj}
 					setAvatarFileObj={setAvatarFileObj}
 					ref={avatarRef}

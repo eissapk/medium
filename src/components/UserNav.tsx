@@ -155,6 +155,7 @@ function UserNav() {
 
 				{isNewStoryRoute && (
 					<li>
+						{/* todo: disable button if the buttons is clicked and make opacity 30% */}
 						<button type="submit" form="publishNewStory" className=" hover:bg-opacity-90 transition-all text-sm rounded-[1em] px-4 py-1 font-normal text-white bg-green">
 							Publish
 						</button>

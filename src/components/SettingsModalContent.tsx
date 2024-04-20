@@ -1,5 +1,5 @@
 import { useState, forwardRef } from "react";
-import { fetchAPI, checkUsername } from "../utils";
+import { fetchAPI, checkUsername, cap } from "../utils";
 import { profilePic } from "../assets";
 import { Form, Formik } from "formik";
 import { settingsEmailSchema, settingsUsernameSchema, settingsPasswordSchema, settingsInfoSchema } from "../schema";
@@ -24,10 +24,11 @@ type Props = {
 	dialogRef: any;
 	avatarFileObj: null | File;
 	setAvatarFileObj: any;
+	socialLinks: any[];
 };
 
 const SettingsModalContent = forwardRef(function (
-	{ type, email, username, name, bio, title, avatar, avatarFileObj, setAvatarFileObj, dialogRef, setModalErrorMessage, setModalSuccessMessage }: Props,
+	{ type, socialLinks, email, username, name, bio, title, avatar, avatarFileObj, setAvatarFileObj, dialogRef, setModalErrorMessage, setModalSuccessMessage }: Props,
 	ref: any
 ) {
 	const { state, dispatch } = useAuthContext();
@@ -74,7 +75,6 @@ const SettingsModalContent = forwardRef(function (
 	};
 
 	const updateHandler = async (route: string, values: any, actions: any) => {
-		// todo add validation to check if old value = new value then return message "No changes detected"
 		// reset
 		setAvatarErrorMessage("");
 		setIsAvatarError(false);
@@ -85,26 +85,35 @@ const SettingsModalContent = forwardRef(function (
 			title: null | string;
 			bio: null | string;
 			avatar: null | File;
+			socialLinks: string[];
 		};
 		// @ts-expect-error -- handle it later
-		const infoObj: INFO = {};
+		const infoObj: INFO = { name: "", title: "", bio: "", socialLinks: [] }; // avatar must not exist here as we don't want to wipe it out in db (in other words, don't bind avatar prop in this object)
 		const formData = new FormData();
 		if (route == "info") {
 			if (values.name) infoObj.name = values.name;
 			if (values.title) infoObj.title = values.title;
 			if (values.bio) infoObj.bio = values.bio;
 			if (avatarFileObj) infoObj.avatar = avatarFileObj;
+			if (values.socialLinks) infoObj.socialLinks = values.socialLinks;
 
+			// todo add validation to check if old value = new value then return message "No changes detected"
 			if (!Object.keys(infoObj).length) {
 				setModalErrorMessage("No changes detected");
 				setTimeout(() => setModalErrorMessage(null), timeout - 100);
 				return;
 			}
 
-			// @ts-expect-error -- handle it later
-			Object.keys(infoObj).forEach(key => formData.append(key, infoObj[key]));
+			Object.keys(infoObj).forEach(key => {
+				if (key == "socialLinks") {
+					infoObj[key].forEach((link: any, index: number) => formData.append("socialLinks[" + index + "]", JSON.stringify(link)));
+				} else {
+					// @ts-expect-error -- handle it later
+					formData.append(key, infoObj[key]);
+				}
+			});
 
-			// console.log("info:", infoObj);
+			// return console.log("info:", infoObj);
 		}
 
 		const responseConfig = {
@@ -179,6 +188,7 @@ const SettingsModalContent = forwardRef(function (
 					<Form id="modalForm">
 						<Input name="password" type="text" autoComplete="off" />
 						{/* todo: add show password button (eye icon) */}
+						{/* todo: add confirm password and old password -- for avoiding accidental password changes by others */}
 					</Form>
 				</Formik>
 			)}
@@ -195,53 +205,66 @@ const SettingsModalContent = forwardRef(function (
 			)}
 
 			{type == "info" && (
-				<Formik initialValues={{ name, title, bio }} validationSchema={settingsInfoSchema} onSubmit={(values: any, actions: any) => updateHandler("info", values, actions)}>
-					<Form id="modalForm">
-						{/* img */}
-						<div className="mb-4">
-							<p className="text-text-light">Photo</p>
-							<div className="flex mt-2 gap-x-4">
-								<img ref={ref} className="h-16 rounded-full" src={avatar || profilePic} alt="avatar" />
-								<div className="flex flex-col items-start gap-y-4">
-									<button type="button" className="relative text-green">
-										<span>Update</span>
-										<input type="file" onChange={avatarHandler} className="absolute top-0 left-0 w-full h-full opacity-0" />
-									</button>
-									<p className="text-sm text-text-light">Recommended: Square JPG, PNG, or GIF, max size 1MB</p>
-									{isAvatarError && <p className="my-2 text-xs text-start text-red">{avatarErrorMessage}</p>}
+				<Formik
+					initialValues={{
+						name,
+						title,
+						bio,
+						socialLinks,
+					}}
+					validationSchema={settingsInfoSchema}
+					onSubmit={(values: any, actions: any) => updateHandler("info", values, actions)}>
+					{props => (
+						<Form id="modalForm">
+							{/* img */}
+							<div className="mb-4">
+								<p className="text-text-light">Photo</p>
+								<div className="flex mt-2 gap-x-4">
+									<img ref={ref} className="h-16 rounded-full" src={avatar || profilePic} alt="avatar" />
+									<div className="flex flex-col items-start gap-y-4">
+										<button type="button" className="relative text-green">
+											<span>Update</span>
+											<input type="file" onChange={avatarHandler} className="absolute top-0 left-0 w-full h-full opacity-0" />
+										</button>
+										<p className="text-sm text-text-light">Recommended: Square JPG, PNG, or GIF, max size 1MB</p>
+										{isAvatarError && <p className="my-2 text-xs text-start text-red">{avatarErrorMessage}</p>}
+									</div>
 								</div>
 							</div>
-						</div>
 
-						{/* name */}
-						<div className="flex flex-col mb-4">
-							<Input name="name" type="text" label="Name" labelStyle="text-text-light" autoComplete="off" />
-							<p className="mt-2 text-xs text-text-light">Appears on your Profile page</p>
-						</div>
-						{/* title */}
-						<div className="flex flex-col mb-4">
-							<Input name="title" type="text" label="Title" labelStyle="text-text-light" autoComplete="off" />
-							<p className="mt-2 text-xs text-text-light">Appears on your Profile page - supports markdown</p>
-						</div>
-						{/* bio */}
-						<div className="flex flex-col mb-4">
-							<TextArea name="bio" label="Bio" rows={1} labelStyle="text-text-light" />
-							<p className="mt-2 text-xs text-text-light">Appears on your Profile page - supports markdown</p>
-						</div>
-						{/* social links */}
-						{/* <div className="flex flex-col mb-4">
-							<Input name="twitter" type="url" label="Twitter" placeholder="https://twitter.com/username" labelStyle="text-text-light" autoComplete="off" />
-						</div>
-						<div className="flex flex-col mb-4">
-							<Input name="linkedin" type="url" label="Linkedin" placeholder="https://linkedin.com/username" labelStyle="text-text-light" autoComplete="off" />
-						</div>
-						<div className="flex flex-col mb-4">
-							<Input name="facebook" type="url" label="Facebook" placeholder="https://facebook.com/username" labelStyle="text-text-light" autoComplete="off" />
-						</div> */}
-					</Form>
+							{/* name */}
+							<div className="flex flex-col mb-4">
+								<Input wrapperClassName="flex flex-col" name="name" type="text" label="Name" labelStyle="text-text-light" autoComplete="off" />
+								<p className="mt-2 text-xs text-text-light">Appears on your Profile page</p>
+							</div>
+							{/* title */}
+							<div className="flex flex-col mb-4">
+								<Input wrapperClassName="flex flex-col" name="title" type="text" label="Title" labelStyle="text-text-light" autoComplete="off" />
+								<p className="mt-2 text-xs text-text-light">Appears on your Profile page - supports markdown</p>
+							</div>
+							{/* bio */}
+							<div className="flex flex-col mb-4">
+								<TextArea name="bio" label="Bio" rows={5} labelStyle="text-text-light" />
+								<p className="mt-2 text-xs text-text-light">Appears on your About page - supports markdown</p>
+							</div>
+							{/* social links */}
+							{props.values.socialLinks.map((item, index) => (
+								<div className="flex flex-col mb-4" key={index}>
+									<Input
+										wrapperClassName="flex flex-col"
+										name={`socialLinks[${index}].url`}
+										type="url"
+										label={cap(item.namespace)}
+										placeholder={`https://${item.namespace}.com/username`}
+										labelStyle="text-text-light"
+										autoComplete="off"
+									/>
+								</div>
+							))}
+						</Form>
+					)}
 				</Formik>
 			)}
-			{/* todo: add social links */}
 		</>
 	);
 });

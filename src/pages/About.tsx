@@ -3,7 +3,7 @@ import { Facebook, Linkedin, Twitter } from "../assets/icons";
 import { getLocalTime, cap } from "../utils";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 const linksArr = [
 	{ url: "/{{userId}}/followers", label: "Followers", namespace: "followers" },
@@ -21,7 +21,15 @@ function Icon({ name, ...props }: any) {
 	}
 }
 
-// todo add markdown pkg
+// filter only items with actual url
+const getCleanSocialLinks = (arr: any[]): any[] => {
+	const newArr: any[] = [];
+	arr.forEach((item: any) => {
+		if (item.url !== "") newArr.push(item);
+	});
+	return newArr;
+};
+
 function About() {
 	const { user } = useOutletContext() as { user: any };
 	// user.bio = "Editor of INSURGE intelligence and Return of the Reich";
@@ -36,7 +44,7 @@ function About() {
 		<div>
 			{/* bio */}
 			{user.bio ? (
-				<Markdown className={"markdown text-sm text-text-light"} remarkPlugins={[remarkGfm]}>
+				<Markdown className={"markdown text-sm text-text-light"} rehypePlugins={[rehypeRaw]}>
 					{user.bio}
 				</Markdown>
 			) : (
@@ -56,13 +64,13 @@ function About() {
 			</ul>
 
 			{/* social links */}
-			{user.socialLinks.length ? (
+			{getCleanSocialLinks(user.socialLinks).length ? (
 				<ul className="flex gap-x-4">
 					<li className="text-sm text-text-dark">Connect with {cap(user.name || user.username)}</li>
-					{user.socialLinks.map((item: any, index: number) => (
+					{getCleanSocialLinks(user.socialLinks).map((item: any, index: number) => (
 						<li key={index}>
 							<a href={item.url} target="_blank" className="text-black-900">
-								<Icon name={item.namespace} className="w-6 h-6 pointer-events-none fill-black-900" />
+								<Icon name={item.namespace} className="w-6 h-6 pointer-events-none fill-black-100 text-black-100" />
 							</a>
 						</li>
 					))}

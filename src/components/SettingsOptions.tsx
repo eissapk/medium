@@ -4,6 +4,9 @@ import { profilePic } from "../assets";
 
 function SettingsOptions() {
 	const { user, editProfile } = useOutletContext() as { user: any; editProfile: (type: string, title: string) => void };
+	const deleteAccount = async () => {
+		console.log("deleteAccount");
+	};
 
 	return (
 		<>
@@ -37,6 +40,20 @@ function SettingsOptions() {
 					</span>
 				</button>
 			</div>
+			{/* todo handle delete account */}
+			{false && (
+				<>
+					<div className="border-t border-border-light"></div>
+					<div>
+						<button type="button" className="flex justify-between w-full py-2" onClick={() => deleteAccount()}>
+							<span className="flex flex-col gap-y-2 text-start">
+								<span className="text-sm text-red">Delete account</span>
+								<span className="text-xs text-text-light">Permanently delete your account and all of your content.</span>
+							</span>
+						</button>
+					</div>
+				</>
+			)}
 		</>
 	);
 }

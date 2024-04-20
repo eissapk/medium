@@ -54,7 +54,7 @@ function Article() {
 	};
 	// todo check if current profile is own by logged user (if so then add delete,update buttons for each article)
 	return (
-		<div className="pb-80" id="articlePage">
+		<div className="pb-80 px-4" id="articlePage">
 			<Suspense
 				fallback={
 					<div className="px-4 py-10 max-w-[40.625rem] mx-auto">

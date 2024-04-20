@@ -52,7 +52,10 @@ export const settingsInfoSchema = yup.object().shape({
 	name: yup.string().min(2),
 	title: yup.string().min(6),
 	bio: yup.string().min(6),
-	// twitter: yup.string(),
-	// facebook: yup.string(),
-	// linkedin: yup.string(),
+	socialLinks: yup.array().of(yup.object().shape({ namespace: yup.string(), url: yup.string().url() })),
+});
+
+export const newStorySchema = yup.object().shape({
+	title: yup.string().min(4).required("Title is required!"),
+	readTime: yup.number().min(1).max(60).required("Read time is required"),
 });
