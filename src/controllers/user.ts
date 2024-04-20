@@ -339,7 +339,7 @@ export const updatePassword = async (req, res) => {
 };
 
 export const updateInfo = async (req, res) => {
-	// body has {title, name, bio}
+	// body has {title, name, bio, socialLinks}
 	const hasBinaryFile = req.files.length;
 	try {
 		const user = await User.findById(req.user._id);
@@ -347,14 +347,20 @@ export const updateInfo = async (req, res) => {
 
 		let response: any = null; // todo: extract type from uploadBinaryFile fucntion
 		if (hasBinaryFile) {
-			response = await uploadBinaryFile(req.files, user.id);
+			response = await uploadBinaryFile(req.files, req.user._id);
 			if (response.error) return res.status(response.status).json(response);
 		}
 
 		const updatedInfo = { ...req.body };
+
+		const socialLinks = [];
+		// @ts-expect-error -- handle type later
+		if (req.body.socialLinks) req.body.socialLinks.forEach((link: any) => socialLinks.push(JSON.parse(link)));
+		updatedInfo.socialLinks = socialLinks;
+
 		if (hasBinaryFile) updatedInfo.avatar = response.file.url;
 
-		await User.findOneAndUpdate({ _id: user.id }, updatedInfo);
+		await User.findOneAndUpdate({ _id: req.user._id }, updatedInfo);
 
 		if (hasBinaryFile) {
 			return res.status(200).cookie("avatar", response.file.url, cookieConfig({})).json({ success: true, message: "Info updated successfully!", data: updatedInfo });
