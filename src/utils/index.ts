@@ -90,3 +90,11 @@ export const uploadBinaryFile = (files: any[], id: string, isFirebase = true): P
 		}
 	});
 };
+
+export const slugify = (str: string) => {
+	return str
+		.replace(/[&\\/\\#,+()$~%.'":*?<>{}]/g, "")
+		.split(" ")
+		.join("-")
+		.toLowerCase(); // todo: test arabic chars with تشكيل
+};

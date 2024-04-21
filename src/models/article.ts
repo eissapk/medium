@@ -7,6 +7,13 @@ const userSchema = new Schema(
 		content: { type: Array, required: true },
 		ownedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
 		likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
+		comments: [
+			{
+				ownedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+				content: { type: String, required: true },
+				likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
+			},
+		],
 		readTime: { type: Number, required: true },
 	},
 	{ timestamps: true }

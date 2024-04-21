@@ -1,11 +1,12 @@
 import express from "express";
-import { createArticle, getArticles, getUserArticles, getUserFeeds, updateArticle, removeArticle, getArticle, likeArticle } from "../controllers/article";
+import { createArticle, getArticles, getUserArticles, getUserFeeds, updateArticle, removeArticle, getArticle, likeArticle, getTrendingArticles } from "../controllers/article";
 import auth from "../middleware/auth";
 
 const router = express.Router();
 
-router.get("/:articleId/of/:userId", getArticle);
+router.get("/:articleId/of/:userId", getArticle); // you can ignore :userId and pass article id only like so: /api/article/:articleId/of/dummyString -- the same concept is used for other below routes with /of/
 router.get("/user/:id", getUserArticles); // /api/article/user/:id
+router.get("/trending", getTrendingArticles);
 
 router.use(auth); // protect below routes
 
