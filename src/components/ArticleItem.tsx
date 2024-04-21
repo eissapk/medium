@@ -59,7 +59,7 @@ function ArticleItem({ article, isProfile, loggedUser }: { article: ARTICLE; isP
 					)}
 
 					<a href={`/${article.user.username || article.ownedBy}/${article?.slug || article?._id}`} className="flex justify-between gap-x-5">
-						<div className="max-w-lg min-w-[65%]">
+						<div className="max-w-lg min-w-[auto] sm:min-w-[65%]">
 							<h1 className="mb-1 text-xl font-bold text-text-dark">{article?.title}</h1>
 							<p className="mb-2 text-text-light">{getShortArticleDesc(getTextFromEditorBlocks(article?.content))}</p>
 							<span className="text-[0.8rem] text-text-light">

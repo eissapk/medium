@@ -78,7 +78,7 @@ function Stats() {
 			if (item.geo?.country?.toLowerCase()?.includes(query?.toLowerCase()) || item.timeZone.toLowerCase().includes(query.toLowerCase())) return item;
 		});
 		setFilteredList(result);
-		console.log("filter", result);
+		// console.log("filter", result);
 	};
 	const handleOnChange = (e: any) => {
 		filter(e.target.value);
