@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
-// const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/; // for production
-const passwordRegex = /.*/; // for testing
+const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/; // for production
+// const passwordRegex = /.*/; // for testing
 const usernameRegex = /^[0-9A-Za-z]{4,16}$/g;
 
 export const signupSchema = yup.object().shape({
