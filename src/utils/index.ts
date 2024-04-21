@@ -1,3 +1,4 @@
+import timeZoneCityToCountry from "../utils/tz-cities-to-countries";
 import Cookies from "universal-cookie";
 export const cookies = new Cookies();
 import { QueryClient } from "@tanstack/react-query";
@@ -73,4 +74,33 @@ export const deleteArticle = async ({ userId, articleId }: { userId: string; art
 	}
 	// console.log(json);
 	return json.data;
+};
+
+declare global {
+	interface Window {
+		UAParser?: any;
+	}
+}
+export const getUserInfo = () => {
+	if (typeof window.UAParser == "undefined") return;
+	if (!Intl) return;
+	const userInfo = new window.UAParser().getResult();
+	userInfo.time = new Date().getTime();
+
+	const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const tzArr = userTimeZone.split("/");
+	const userRegion = tzArr[0];
+	const userCity = tzArr[tzArr.length - 1];
+	// @ts-expect-error -- TODO handle this case with suitable type
+	const userCountry = timeZoneCityToCountry[userCity];
+
+	userInfo.geo = {
+		region: userRegion,
+		city: userCity,
+		country: userCountry,
+	};
+	if (userRegion?.toLowerCase() === "utc") userInfo.robot = true;
+	if (userInfo?.browser?.name?.toLowerCase()?.includes("headless")) userInfo.scraper = true;
+	userInfo.timeZone = userTimeZone;
+	return userInfo;
 };

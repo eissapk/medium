@@ -1,6 +1,7 @@
+import { useEffect } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryCLient } from "./utils";
+import { queryCLient, getUserInfo, fetchAPI } from "./utils";
 import ProfileContextProvier from "./store/ProfileContext";
 
 // pages
@@ -21,6 +22,7 @@ import Article, { loader as ArticleLoader } from "./pages/Article";
 import NewStory from "./pages/NewStory";
 import SettingsOptions from "./components/SettingsOptions";
 import UpdateStory, { loader as updateStoryLoader } from "./pages/UpdateStory";
+import Stats, { loader as statsLoader } from "./pages/Stats";
 
 const router = createBrowserRouter([
 	{
@@ -50,11 +52,26 @@ const router = createBrowserRouter([
 			{ path: ":userId/settings", element: <SettingsLayout />, loader: settingsLoader, children: [{ index: true, element: <SettingsOptions /> }] },
 			{ path: "/new-story", element: <NewStory /> },
 			{ path: "/update-story/:articleId/of/:userId", element: <UpdateStory />, loader: updateStoryLoader },
+			{ path: "/stats", element: <Stats />, loader: statsLoader },
 		],
 	},
 ]);
 
 export default function App() {
+	const postUserData = async (userInfo: object) => {
+		// console.log("postUserData", userInfo);
+		await fetchAPI("https://meedium-clone-default-rtdb.firebaseio.com/stats.json", { method: "POST", body: JSON.stringify(userInfo) });
+	};
+	useEffect(() => {
+		const elm = document.getElementById("uaParser");
+		if (!elm) {
+			const script = document.createElement("script");
+			script.id = "uaParser";
+			script.src = "/libs/ua-parser.min.js";
+			document.body.append(script);
+			script.onload = () => postUserData(getUserInfo());
+		}
+	}, []);
 	return (
 		<QueryClientProvider client={queryCLient}>
 			<RouterProvider router={router} />
