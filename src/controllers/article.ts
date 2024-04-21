@@ -106,7 +106,6 @@ export const createArticle = async (req, res) => {
 	}
 };
 
-// todo: test this
 export const removeArticle = async (req, res) => {
 	const { articleId, userId } = req.params;
 	let article: any = null;

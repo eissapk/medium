@@ -6,9 +6,9 @@ const { JWT_SECRET, JWT_EXPIRATION } = process.env;
 
 export const validator = {
 	isEmail: (str: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/g.test(str),
-	// isStrongPassword: (str: string): boolean => /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(str), // for production
+	isStrongPassword: (str: string): boolean => /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(str), // for production
 	passwordHint: "Password is not strong enough,<br/>use capital and small letters + digits<br/>minimum is 6 characters",
-	isStrongPassword: (str: string): boolean => str.length >= 6, // for development
+	// isStrongPassword: (str: string): boolean => str.length >= 6, // for development
 };
 export const createToken = (_id: string) => {
 	return jwt.sign({ _id }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });

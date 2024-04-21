@@ -345,7 +345,7 @@ export const updateInfo = async (req, res) => {
 		const user = await User.findById(req.user._id);
 		if (!user) return res.status(404).json({ error: true, message: "User doesn't exist" });
 
-		let response: any = null; // todo: extract type from uploadBinaryFile fucntion
+		let response: any = null; // todo: extract type (ts) from uploadBinaryFile fucntion
 		if (hasBinaryFile) {
 			response = await uploadBinaryFile(req.files, req.user._id);
 			if (response.error) return res.status(response.status).json(response);
