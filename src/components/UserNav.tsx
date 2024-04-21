@@ -9,7 +9,6 @@ import { profilePic } from "../assets";
 import Spinner from "./Spinner";
 // todo: split this into  components
 
-// todo: fix profile image
 function UserNav() {
 	const navigate = useNavigate();
 	const { state } = useAuthContext();
@@ -21,7 +20,8 @@ function UserNav() {
 	const [searchData, setSearchData] = useState({ users: [], articles: [] });
 	const [isMenuShown, setIsMenuShown] = useState(false);
 	const [isSearchShown, setIsSearchShown] = useState(false);
-	const [isNewStoryRoute, setIsNewStoryRoute] = useState(false);
+	const [isStoryRoute, setIsStoryRoute] = useState(false);
+	const [isNewStory, setIsNewStory] = useState(false);
 	const [isSearchError, setIsSearchError] = useState(false);
 	const [isSearchPending, setIsSearchPending] = useState(true);
 	const [searchError, setSearchError] = useState("");
@@ -40,8 +40,10 @@ function UserNav() {
 	};
 
 	useEffect(() => {
-		if (pathname === "/new-story") setIsNewStoryRoute(true);
-		else setIsNewStoryRoute(false);
+		if (pathname === "/new-story") setIsNewStory(true);
+		const routeFragment = "/" + pathname.split("/")[1];
+		if (["/new-story", "/update-story"].includes(routeFragment)) setIsStoryRoute(true);
+		else setIsStoryRoute(false);
 		document.body.addEventListener("click", handleClicks);
 		return () => document.body.removeEventListener("click", handleClicks);
 	}, [pathname, handleClicks]);
@@ -62,7 +64,7 @@ function UserNav() {
 		setIsSearchPending(true);
 		setIsSearchShown(true);
 		// todo fix error handler -- unexpected token | json
-		// todo: check if we are in home page or user page
+		// todo: check if we are in home page or user page -- if user page then search in his articles if home then search in all articles and users
 		const response = await fetchAPI(`/api/search/${text}`, { headers: { "Content-Type": "application/json" } });
 		const json = await response.json();
 		console.log(json);
@@ -89,7 +91,7 @@ function UserNav() {
 						<LogoMini className="h-6 " />
 					</a>
 				</li>
-				{!isNewStoryRoute && (
+				{!isStoryRoute && (
 					<li className="rounded-[1.25rem] bg-input flex relative items-center justify-items-center">
 						<Search className="absolute w-6 h-6 pointer-events-none ms-4 text-text-light" />
 						<input
@@ -144,7 +146,7 @@ function UserNav() {
 			</ul>
 
 			<ul className="relative flex items-center gap-x-6">
-				{!isNewStoryRoute && (
+				{!isStoryRoute && (
 					<li>
 						<Link to="/new-story" className="flex items-center gap-x-2 group/write">
 							<Edit className="w-6 h-6 transition-all text-text-light group-hover/write:text-text-dark" />
@@ -153,11 +155,11 @@ function UserNav() {
 					</li>
 				)}
 
-				{isNewStoryRoute && (
+				{isStoryRoute && (
 					<li>
 						{/* todo: disable button if the buttons is clicked and make opacity 30% */}
-						<button type="submit" form="publishNewStory" className=" hover:bg-opacity-90 transition-all text-sm rounded-[1em] px-4 py-1 font-normal text-white bg-green">
-							Publish
+						<button type="submit" form="publishNewStory" className="hover:bg-opacity-90 transition-all text-sm rounded-[1em] px-4 py-1 font-normal text-white bg-green">
+							{isNewStory ? "Publish" : "Update"}
 						</button>
 					</li>
 				)}
@@ -169,13 +171,13 @@ function UserNav() {
 				</li>
 
 				{isMenuShown && (
-					<div className="absolute right-0 bg-white rounded top-[calc(100%+0.5em)] border-line shadow-menu text-sm min-w-60 py-2 z-[1]">
+					<div className="absolute right-0 bg-white rounded top-[calc(100%+0.5em)] border-line shadow-menu text-sm min-w-60 py-2 z-[9]">
 						<ul>
 							<li>
-								<Link to={"/" + (state.user.username || state.user._id)} className="flex items-center px-6 py-2 gap-x-4 group/profile">
+								<a href={"/" + (state.user.username || state.user._id)} className="flex items-center px-6 py-2 gap-x-4 group/profile">
 									<Profile className="w-6 h-6 transition-all text-text-light group-hover/profile:text-text-dark" />
 									<span className="text-sm transition-all text-text-light group-hover/profile:text-text-dark">Profile</span>
-								</Link>
+								</a>
 							</li>
 						</ul>
 						<hr className="h-[1px] pt-2 bg-transparent border-t-border-light" />

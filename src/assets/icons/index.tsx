@@ -15,3 +15,5 @@ export { default as Tick } from "./Tick";
 export { default as Warn } from "./Warn";
 export { default as Loader } from "./Loader";
 export { default as Close } from "./Close";
+export { default as Dots } from "./Dots";
+export { default as Trash } from "./Trash";

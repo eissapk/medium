@@ -5,7 +5,6 @@ import Spinner from "../components/Spinner";
 import { fetchAPI } from "../utils";
 import { useAuthContext } from "../hooks/useAuthContext";
 
-// todo check if current profile is own by logged user (if so then add delete,update buttons for each article)
 function Profile() {
 	const { state } = useAuthContext();
 	const { user } = useOutletContext() as { user: any };

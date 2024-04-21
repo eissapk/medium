@@ -8,7 +8,10 @@ import Ad from "./Ad";
 function Feeds() {
 	const { logout } = useLogout();
 	const userId = cookies.get("username") || cookies.get("userId");
-	if (!userId) logout();
+	if (!userId) {
+		logout();
+		return "";
+	}
 
 	const {
 		data: feeds,

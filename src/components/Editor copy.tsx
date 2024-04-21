@@ -10,7 +10,6 @@ const defaultBlocks = [
 ];
 
 // todo: handle focus on each new block made by enter key
-// todo handle image upload, etc (link it to firestorage)
 function Editor({ onInitialize, blocks = defaultBlocks, readOnly = false }: { onInitialize?: (editor: any) => void; blocks?: any[]; readOnly?: boolean }) {
 	const ReactEditor = createReactEditorJS();
 	return <ReactEditor tools={EDITOR_JS_TOOLS} readOnly={readOnly} onInitialize={onInitialize} defaultValue={{ blocks }} placeholder="Your story goes here" />;

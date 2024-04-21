@@ -1,7 +1,7 @@
 import Header from "../components/Header";
-import LatestArticles from "../components/LatestArticles";
+import TrendingArticles from "../components/TrendingArticles";
 import Feeds from "../components/Feeds";
-import Footer from "../components/Footer";
+// import Footer from "../components/Footer";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 function Home() {
@@ -9,9 +9,9 @@ function Home() {
 	return (
 		<>
 			{!state.user && <Header />}
-			{!state.user && <LatestArticles />}
+			{!state.user && <TrendingArticles />}
 			{state.user && <Feeds />}
-			<Footer />
+			{/* <Footer /> */}
 		</>
 	);
 }

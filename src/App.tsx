@@ -20,8 +20,8 @@ import SettingsLayout, { loader as settingsLoader } from "./pages/SettingsLayout
 import Article, { loader as ArticleLoader } from "./pages/Article";
 import NewStory from "./pages/NewStory";
 import SettingsOptions from "./components/SettingsOptions";
+import UpdateStory, { loader as updateStoryLoader } from "./pages/UpdateStory";
 
-//todo add  notification route
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -49,6 +49,7 @@ const router = createBrowserRouter([
 			{ path: ":userId/:articleId", element: <Article />, loader: ArticleLoader },
 			{ path: ":userId/settings", element: <SettingsLayout />, loader: settingsLoader, children: [{ index: true, element: <SettingsOptions /> }] },
 			{ path: "/new-story", element: <NewStory /> },
+			{ path: "/update-story/:articleId/of/:userId", element: <UpdateStory />, loader: updateStoryLoader },
 		],
 	},
 ]);

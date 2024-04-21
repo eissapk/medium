@@ -61,3 +61,16 @@ export async function checkUsername(text: string) {
 	}
 	return json.data;
 }
+
+export const deleteArticle = async ({ userId, articleId }: { userId: string; articleId: string }) => {
+	// console.log({ userId, articleId });
+	const response = await fetchAPI(`/api/article/${articleId}/of/${userId}`, { method: "DELETE", headers: { "Content-Type": "application/json" }, credentials: "include" });
+	const json = await response.json();
+	if (json.error) {
+		const error: any = new Error(json.message);
+		error.code = response.status;
+		throw error;
+	}
+	// console.log(json);
+	return json.data;
+};

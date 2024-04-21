@@ -52,7 +52,6 @@ function Article() {
 			else setIsBottomArticleActionsShown(false);
 		}
 	};
-	// todo check if current profile is own by logged user (if so then add delete,update buttons for each article)
 	return (
 		<div className="pb-80 px-4" id="articlePage">
 			<Suspense

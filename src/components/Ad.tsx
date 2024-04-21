@@ -9,16 +9,16 @@ const defaultAd = {
 
 function Ad({ data = defaultAd }: { data?: AdProps }) {
 	return (
-		<div className="w-full items-center flex flex-col">
+		<div className="w-full max-w-80 justify-center mx-auto items-center flex flex-col">
 			{/* hint */}
 			{/* <h2 className="text-2xl font-bold text-center text-text-light mb-2">Imagine your ad here.</h2> */}
 			{/* image */}
-			<a href={data.link}>
+			<a href={data.link} className="w-full">
 				<img className="border border-zinc-100 rounded w-full h-auto block" src={data.img} alt={data?.description || "Advertisement"} />
 			</a>
 			{/* description */}
 			{data.description && (
-				<a href={data.link} className="text-xs mt-2 text-text-light">
+				<a href={data.link} className="w-full text-xs mt-2 text-text-light">
 					{data.description}
 				</a>
 			)}

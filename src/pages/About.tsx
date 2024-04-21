@@ -37,7 +37,7 @@ function About() {
 	const [links, setLinks] = useState(linksArr);
 
 	useEffect(() => {
-		setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, user._id) })));
+		setLinks(linksArr.map(link => ({ ...link, url: link.url.replace(/{{userId}}/g, user.username || user._id) })));
 	}, [user]);
 
 	return (

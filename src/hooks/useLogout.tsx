@@ -6,7 +6,7 @@ const expires = "expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;";
 export const useLogout = () => {
 	const { dispatch } = useAuthContext();
 
-	// todo: fix when use logs out and reloads the page the cookies gets back again or not cleared at all
+	// todo: fix when user logs out and reloads the page the cookies gets back again or not cleared at all (i think the bug because of cookies.remove npm pkg)
 	const logout = (cb?: () => void) => {
 		// cookies
 		cookies.remove("username");
