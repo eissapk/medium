@@ -70,7 +70,7 @@ function ArticleItem({ article, isProfile, loggedUser }: { article: ARTICLE; isP
 							<img className="block object-cover w-28 h-28 max-w-[initial]" src={article?.thumbnail || articleThumbnail} alt="Article thumbnail" />
 							{/* action menu */}
 							{isProfile && loggedUser && article.ownedBy == loggedUser.userId && (
-								<button type="button" className="relative" onClick={toggleMenu} onBlur={() => setTimeout(() => setIsOpened(false), 150)}>
+								<button type="button" className="relative" onClick={toggleMenu} onBlur={() => setTimeout(() => setIsOpened(false), 250)}>
 									<Dots className="w-6 h-6 pointer-events-none text-text-light fill-text-light" />
 
 									{isOpened && (
