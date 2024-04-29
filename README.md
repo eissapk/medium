@@ -1,4 +1,4 @@
-# medium clone frontend
+# medium clone
 
 ### Note
 
@@ -14,6 +14,8 @@ npm run dev
 
 ## Todo List
 
-[ ] Add comments
-[ ] Add notifications
-[ ] Delete account
+- [ ] Add comments
+
+- [ ] Add notifications
+
+- [ ] Delete account
