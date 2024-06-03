@@ -1,14 +1,14 @@
 # medium clone
 
-### Note
+> A MERN stack application which replicates Medium's core functionality, allowing users to create accounts, follow each other, and like articles. Users can write and publish their own content, while a personalized feed displays updates from followed authors
 
-> User collection: all logic checks for username 1st and fallbacks to userId
-> Article collection: all logic checks for slug 1st and fallbacks to articleId
-
-## Installation
+## Get started
 
 ```
 npm install
+```
+
+```
 npm run dev
 ```
 
@@ -19,3 +19,9 @@ npm run dev
 - [ ] Add notifications
 
 - [ ] Delete account
+
+### Note
+
+> `User collection:` all logic checks for username 1st and fallbacks to userId
+
+> `Article collection:` all logic checks for slug 1st and fallbacks to articleId
