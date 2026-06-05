@@ -2,7 +2,7 @@ import { uploadBinaryFile } from "../utils";
 
 export const uploadByFile = async (req, res) => {
 	try {
-		const response = await uploadBinaryFile(req.files, req.user._id);
+		const response = await uploadBinaryFile(req.files, req.user._id, false);
 		res.status(response.status).json(response);
 	} catch (error) {
 		res.status(400).json({ error: true, message: error.message });
