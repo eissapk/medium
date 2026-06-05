@@ -12,5 +12,7 @@ export const uploadByFile = async (req, res) => {
 export const uploadByUrl = (req, res) => {
 	console.log("upload file", req.files);
 	console.log("upload body", req.body);
-	res.status(200).json({ success: true, message: "uploaded by url" });
+	const url = req.body.url;
+	res.status(200).json({ success: 1, message: `uploaded ${url}`, file: { url }, status: 200 });
+
 };
