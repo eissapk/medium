@@ -1,8 +1,9 @@
-import { uploadBinaryFile } from "../utils";
+import { uploadFileToDisk } from "../utils";
 
 export const uploadByFile = async (req, res) => {
 	try {
-		const response = await uploadBinaryFile(req.files, req.user._id, false);
+		// const response = await uploadBinaryFile(req.files, req.user._id, false);
+		const response = await uploadFileToDisk(req.files, req.user._id);
 		res.status(response.status).json(response);
 	} catch (error) {
 		res.status(400).json({ error: true, message: error.message });

@@ -91,6 +91,28 @@ export const uploadBinaryFile = (files: any[], id: string, isFirebase = true): P
 	});
 };
 
+export const uploadFileToDisk = (files: any[], id: string): Promise<Upload> => {
+	return new Promise((resolve, reject) => {
+		const file = files[0];
+		if (file.size > 1 * 1024 * 1024) return reject({ error: true, message: "File size is greater than 1MB", status: 400 });
+
+		if (!["image/jpeg", "image/png", "image/gif", "image/jpg"].includes(file.mimetype)) {
+			return reject({ error: true, message: "Invalid file type, only JPEG, PNG, GIF and JPG are allowed", status: 400 });
+		}
+
+		try {
+			const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+			const filename = `${uniqueSuffix}-${file.originalname}`;
+			const uploadsDir = path.resolve(__dirname, "../uploads", id);
+			fs.mkdirSync(uploadsDir, { recursive: true });
+			fs.writeFileSync(path.join(uploadsDir, filename), file.buffer);
+			return resolve({ success: 1, message: `Uploaded ${file.originalname}`, file: { url: `/api/uploads/${id}/${filename}` }, status: 200 });
+		} catch (error) {
+			return reject({ error: true, message: error.message, status: 400 });
+		}
+	});
+};
+
 export const slugify = (str: string) => {
 	return str
 		.replace(/[&\\/\\#,+()$~%.'":*?<>{}]/g, "")

@@ -37,12 +37,13 @@ app.use("/api/user", userRoute);
 app.use("/api/article", articleRoute);
 app.use("/api/search", searchRoute);
 app.use("/api/upload", uploadRoute);
+
+// static files (must be before the frontend catch-all)
+app.use("/api/assets/images", express.static(path.resolve(__dirname, "./assets/images")));
+app.use("/api/uploads", express.static(path.resolve(__dirname, "./uploads")));
+
 // had to serve frontend from here due to cookies issue with different domains -- if you want to reveert delete this line and client folder
 app.get("*", (req, res) => res.sendFile(path.resolve(__dirname, "../client/index.html"))); // for production -- comment if you use frontend seperatly
-
-// static files
-app.use("/api/assets/images", express.static(path.resolve(__dirname, "./assets/images")));
-// app.use("/api/uploads", express.static(path.resolve(__dirname, "./uploads"))); // todo: fix this (doesn't work on production)
 
 // db
 connectDB();
