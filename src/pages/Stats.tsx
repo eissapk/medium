@@ -1,37 +1,105 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchAPI } from "../utils";
 import { defer, useLoaderData } from "react-router-dom";
 import cx from "classnames";
+import Spinner from "../components/Spinner";
+import { Search } from "../assets/icons";
 
-const StatsLoader = () => (
-	<button type="button" className="inline-flex items-center px-4 py-2 text-sm font-semibold leading-6 text-white transition duration-150 ease-in-out rounded-md shadow cursor-not-allowed bg-green">
-		<svg className="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-			<circle className="opacity-25" cx={12} cy={12} r={10} stroke="currentColor" strokeWidth={4} />
-			<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-		</svg>
-		Fetching...
-	</button>
-);
 const getKeys = (json: object, shouldReverse: boolean = true) => {
-	if (shouldReverse) return Object.keys(json).reverse(); // from the most recent to the oldest
+	if (shouldReverse) return Object.keys(json).reverse();
 	return Object.keys(json);
 };
 
+function StatCard({ label, value }: { label: string; value: number }) {
+	return (
+		<div className="px-5 py-4 border rounded-lg border-border-light bg-input">
+			<p className="mb-1 text-xs font-medium tracking-widest uppercase text-text-light">{label}</p>
+			<p className="text-2xl font-medium text-text-dark">{value.toLocaleString()}</p>
+		</div>
+	);
+}
+
+function MetaItem({ label, children }: { label: string; children: React.ReactNode }) {
+	return (
+		<span className="inline-flex flex-col gap-0.5 px-3 py-2 text-xs rounded-md bg-white border border-border-light sm:min-w-[7rem]">
+			<span className="font-medium tracking-wide uppercase text-text-light">{label}</span>
+			<span className="text-sm text-text-dark">{children}</span>
+		</span>
+	);
+}
+
+function VisitorRow({ item }: { item: any }) {
+	const deviceLabel = item.device ? (
+		<>
+			<span className="text-green">{item.device?.type}</span>
+			{item.device?.model || item.device?.vendor ? ` ${[item.device?.model, item.device?.vendor].filter(Boolean).join(" ")}` : ""}
+		</>
+	) : (
+		<span className="text-green">Desktop</span>
+	);
+
+	return (
+		<li className="py-5 border-b border-border-light last:border-none">
+			<div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+				<time className="shrink-0 text-sm text-text-light" dateTime={new Date(item.time).toISOString()}>
+					{new Date(item.time).toLocaleString("en-AU", {
+						day: "numeric",
+						month: "short",
+						year: "numeric",
+						hour: "2-digit",
+						minute: "2-digit",
+					})}
+				</time>
+
+				<div className="flex flex-wrap gap-2">
+					{item.browser && (
+						<MetaItem label="Browser">
+							{item.browser?.name} {item.browser?.major}
+						</MetaItem>
+					)}
+					{item.os && (
+						<MetaItem label="OS">
+							{item.os?.name} {item.os?.version}
+						</MetaItem>
+					)}
+					{item.cpu && <MetaItem label="CPU">{item.cpu?.architecture}</MetaItem>}
+					<MetaItem label="Device">{deviceLabel}</MetaItem>
+					{item.geo && (
+						<MetaItem label="Location">
+							{item.geo?.city}, {item.geo?.country}
+							{item.geo?.region ? ` · ${item.geo.region}` : ""}
+						</MetaItem>
+					)}
+				</div>
+			</div>
+
+			{(item.robot || item.scraper) && (
+				<div className="flex flex-wrap gap-2 mt-3">
+					{item.robot && <span className="px-2 py-0.5 text-xs font-medium rounded-full text-green bg-red-light">Bot</span>}
+					{item.scraper && <span className="px-2 py-0.5 text-xs font-medium rounded-full text-green bg-red-light">Scraper</span>}
+				</div>
+			)}
+		</li>
+	);
+}
+
 function Stats() {
 	const { data } = useLoaderData() as { data: any };
-	const [countries, setCountries] = useState([]);
+	const [countries, setCountries] = useState<string[]>([]);
 	const [isLoading, setIsloading] = useState(true);
 	const [isError, setIsError] = useState(false);
-	const [list, setList] = useState([]);
-	const [filteredList, setFilteredList] = useState([]);
+	const [list, setList] = useState<any[]>([]);
+	const [filteredList, setFilteredList] = useState<any[]>([]);
+	const [query, setQuery] = useState("");
 
 	const getCountries = (res: object): string[] => {
 		if (!res) return [];
 		const keys = getKeys(res, false);
-		const obj = {};
+		const obj: Record<string, string> = {};
 		keys.forEach((key: string) => {
 			// @ts-expect-error -- TODO handle this case with suitable type
-			if (!obj[res[key].geo.country]) obj[res[key].geo.country || res[key].geo.city] = key;
+			const country = res[key].geo.country || res[key].geo.city;
+			if (!obj[country]) obj[country] = key;
 		});
 		return getKeys(obj, false);
 	};
@@ -39,32 +107,22 @@ function Stats() {
 	useEffect(() => {
 		data
 			.then((res: any) => {
-				const obj = {};
-				let finalArr: any = [];
+				const obj: Record<string, any> = {};
+				let finalArr: any[] = [];
 				const keys = getKeys(res);
 
-				// rmeove duplicates and bind unique keys only in obj variable
 				keys.forEach((key: string) => {
 					// @ts-expect-error -- TODO handle this case with suitable type
 					if (!obj[res[key].ua + "_" + res[key].timeZone]) obj[res[key].ua + "_" + res[key].timeZone] = res[key];
 				});
 
-				// @ts-expect-error -- TODO handle this case with suitable type
 				getKeys(obj).forEach((key: string) => finalArr.push(obj[key]));
-				// console.log(obj);
-
-				// sort final Arr from recent time to old one
 				finalArr = finalArr.sort((a: any, b: any) => b.time - a.time);
 
 				setList(finalArr);
-
 				setFilteredList(finalArr);
-
 				setIsloading(false);
-
-				const result = getCountries(res);
-				// @ts-expect-error -- TODO handle this case with suitable type
-				setCountries(result);
+				setCountries(getCountries(res));
 			})
 			.catch(() => {
 				setIsloading(false);
@@ -72,125 +130,109 @@ function Stats() {
 			});
 	}, [data]);
 
-	const filter = (query: string) => {
+	const summary = useMemo(() => {
+		const bots = list.filter(item => item.robot || item.scraper).length;
+		const mobile = list.filter(item => item.device?.type && item.device.type !== "desktop").length;
+		return {
+			visitors: list.length,
+			countries: countries.length,
+			bots,
+			mobile,
+		};
+	}, [list, countries]);
+
+	const filter = (searchQuery: string) => {
+		setQuery(searchQuery);
 		const result = list.filter((item: any) => {
-			if (query === "") return item;
-			if (item.geo?.country?.toLowerCase()?.includes(query?.toLowerCase()) || item.timeZone.toLowerCase().includes(query.toLowerCase())) return item;
+			if (searchQuery === "") return item;
+			const normalized = searchQuery.toLowerCase();
+			return item.geo?.country?.toLowerCase()?.includes(normalized) || item.timeZone.toLowerCase().includes(normalized);
 		});
 		setFilteredList(result);
-		// console.log("filter", result);
-	};
-	const handleOnChange = (e: any) => {
-		filter(e.target.value);
 	};
 
 	return (
-		<div className="flex flex-col lg:items-center lg:justify-center my-4">
-			{isLoading && !isError && <StatsLoader />}
+		<main className="px-4 py-10 mx-auto max-w-max">
+			<header className="mb-10">
+				<h1 className="font-title text-[2.6rem] text-text-dark mb-3">Site stats</h1>
+				<p className="max-w-2xl font-desc text-sm leading-relaxed text-text-light">
+					Anonymous visitor analytics — browser, device, and location data collected on each visit.
+				</p>
+			</header>
+
+			{isLoading && !isError && (
+				<div className="flex flex-col gap-4 max-w-3xl">
+					<Spinner isLine />
+					<Spinner isLine />
+					<Spinner isLine />
+				</div>
+			)}
+
+			{!isLoading && isError && (
+				<div className="max-w-xl p-4 text-sm text-center border rounded text-text-light bg-red-light border-border-light">
+					Couldn&apos;t fetch visitor data. Please try again later.
+				</div>
+			)}
+
+			{!isLoading && !isError && !list.length && (
+				<div className="max-w-xl p-8 text-center border rounded border-border-light bg-input">
+					<p className="mb-1 font-medium text-text-dark">No visits recorded yet</p>
+					<p className="text-sm text-text-light">Stats will appear here once readers start browsing the site.</p>
+				</div>
+			)}
+
 			{!isLoading && !isError && !!list.length && (
 				<>
-					<h1 className="mb-2 text-sm text-center text-black-light">Countries count: {countries.length}</h1>
-					<form className="flex justify-center w-full">
-						<div className="w-[50%] mx-auto relative">
+					<div className="grid grid-cols-2 gap-4 mb-10 md:grid-cols-4">
+						<StatCard label="Unique visitors" value={summary.visitors} />
+						<StatCard label="Countries" value={summary.countries} />
+						<StatCard label="Mobile visits" value={summary.mobile} />
+						<StatCard label="Bots detected" value={summary.bots} />
+					</div>
+
+					<div className="mb-8">
+						<label htmlFor="country" className="block mb-2 text-xs font-medium tracking-widest uppercase text-text-light">
+							Filter by country or timezone
+						</label>
+						<div className="relative flex items-center rounded-[1.25rem] bg-input max-w-md">
+							<Search className="absolute w-5 h-5 pointer-events-none ms-4 text-text-light" />
 							<input
-								onChange={e => handleOnChange(e)}
+								onChange={e => filter(e.target.value)}
+								value={query}
 								list="countries"
 								name="country"
 								id="country"
 								type="text"
 								autoFocus
-								className="w-full px-2 py-1 mx-auto mb-4 text-sm border rounded border-zinc-200"
-								placeholder="Search by country.."
+								className="w-full py-2.5 text-sm bg-transparent border-none outline-none ps-12 pe-4 placeholder:text-text-light"
+								placeholder="Search by country or timezone..."
 							/>
-							<span className="absolute w-5 h-5 bg-white right-1 top-1"></span>
 						</div>
 						<datalist id="countries">
 							{countries.map((c: string) => (
 								<option key={c} value={c} />
 							))}
 						</datalist>
-					</form>
+						<p className="mt-3 text-xs text-text-light">
+							Showing {filteredList.length.toLocaleString()} of {list.length.toLocaleString()} visitors
+						</p>
+					</div>
 
-					<ul className="w-full lg:w-fit">
-						{filteredList.map((item: any, index: number, arr: any) => (
-							<li
-								key={item.time}
-								className={cx("flex flex-col w-full gap-2 pb-2 mb-2 text-sm border-b lg:flex-row text-start text-zinc-400 border-zinc-200 ", { "border-none": index === arr.length - 1 })}>
-								<div className="min-w-40">
-									<span>{new Date(item.time).toLocaleString("en-AU")}</span>
-								</div>
-
-								<div className="flex flex-col items-center justify-between gap-2 lg:flex-row">
-									{/* browser */}
-									{item.browser && (
-										<span className=" min-w-44 lg:text-center">
-											<span className="me-1 text-black-dark">Browser</span>
-											<span>
-												{item.browser?.name} {item.browser?.major}
-											</span>
-										</span>
-									)}
-									{/* os */}
-									{item.os && (
-										<span className="min-w-32 lg:text-center">
-											<span className="me-1 text-black-dark">OS</span>
-											<span>
-												{item.os?.name} {item.os?.version}
-											</span>
-										</span>
-									)}
-									{/* cpu */}
-									{item.cpu && (
-										<span className="min-w-32 lg:text-center">
-											<span className="me-1 text-black-dark">CPU</span>
-											<span>{item.cpu?.architecture}</span>
-										</span>
-									)}
-									{/* device */}
-									{item.device && (
-										<span className="min-w-32 lg:text-center">
-											<span className="me-1 text-black-dark">Device</span>
-											<span>
-												<span className="text-green">{item.device?.type}</span> {item.device?.model} {item.device?.vendor}
-											</span>
-										</span>
-									)}
-									{!item.device && (
-										<span className="min-w-32 lg:text-center">
-											<span className="me-1 text-black-dark">Device</span>
-											<span className="text-green">Desktop</span>
-										</span>
-									)}
-								</div>
-								{/* geo */}
-								{item.geo && (
-									<div className="flex items-center lg:text-center min-w-32">
-										<span className="me-1 text-black-dark">State</span>
-										<span>
-											{item.geo?.city}, {item.geo?.country} | {item.geo?.region}
-										</span>
-									</div>
-								)}
-								{/* robot */}
-								{item.robot && (
-									<div className="flex items-center lg:text-center">
-										<span className="text-xs me-1 text-green">Robot</span>
-									</div>
-								)}
-								{/* web scraper */}
-								{item.scraper && (
-									<div className="flex items-center text-xs lg:text-center">
-										<span className="me-1 text-green">scraper</span>
-									</div>
-								)}
-							</li>
-						))}
-					</ul>
+					{!!filteredList.length ? (
+						<ul className="border-t border-border-light">
+							{filteredList.map((item: any) => (
+								<VisitorRow key={item.time} item={item} />
+							))}
+						</ul>
+					) : (
+						<div className={cx("p-8 text-center border rounded border-border-light bg-input")}>
+							<p className="mb-1 font-medium text-text-dark">No matches found</p>
+							<p className="text-sm text-text-light">Try a different country or timezone.</p>
+						</div>
+					)}
 				</>
 			)}
-			{!isLoading && !isError && !list.length && <p className="text-center text-black-light">No data yet</p>}
-			{!isLoading && isError && <p className="text-center text-black-light">Couldn't fetch data</p>}
-		</div>
+		</main>
 	);
 }
 

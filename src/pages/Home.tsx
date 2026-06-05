@@ -1,7 +1,6 @@
 import Header from "../components/Header";
 import TrendingArticles from "../components/TrendingArticles";
 import Feeds from "../components/Feeds";
-// import Footer from "../components/Footer";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 function Home() {
@@ -11,7 +10,6 @@ function Home() {
 			{!state.user && <Header />}
 			{!state.user && <TrendingArticles />}
 			{state.user && <Feeds />}
-			{/* <Footer /> */}
 		</>
 	);
 }

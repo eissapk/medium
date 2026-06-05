@@ -1,4 +1,4 @@
-# medium clone
+# Medium
 
 > A MERN stack application which replicates Medium's core functionality, allowing users to create accounts, follow each other, and like articles. Users can write and publish their own content, while a personalized feed displays updates from followed authors
 

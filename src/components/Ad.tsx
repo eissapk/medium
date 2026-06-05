@@ -2,7 +2,7 @@ import adImg from "../assets/ad.png";
 type AdProps = { link: string; img: string; description?: string };
 
 const defaultAd = {
-	link: "https://eissa.xyz",
+	link: "https://eissawebdev.top/hire",
 	img: adImg, // image must be a square
 	description: "MERN your next project? We can help. Let's chat!",
 };
