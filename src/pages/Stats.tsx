@@ -112,7 +112,6 @@ function Stats() {
 				const keys = getKeys(res);
 
 				keys.forEach((key: string) => {
-					// @ts-expect-error -- TODO handle this case with suitable type
 					if (!obj[res[key].ua + "_" + res[key].timeZone]) obj[res[key].ua + "_" + res[key].timeZone] = res[key];
 				});
 
@@ -218,7 +217,7 @@ function Stats() {
 						</p>
 					</div>
 
-					{!!filteredList.length ? (
+					{filteredList.length ? (
 						<ul className="border-t border-border-light">
 							{filteredList.map((item: any) => (
 								<VisitorRow key={item.time} item={item} />
