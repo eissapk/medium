@@ -67,7 +67,9 @@ function ArticleItem({ article, isProfile, loggedUser }: { article: ARTICLE; isP
 							</span>
 						</div>
 						<div className="max-w-52 flex gap-x-4 items-start">
-							<img className="block object-cover w-28 h-28 max-w-[initial]" src={article?.thumbnail || articleThumbnail} alt="Article thumbnail" />
+							<div className="flex w-28 h-28 shrink-0 items-center justify-center overflow-hidden bg-input">
+								<img className="block object-contain w-full h-full max-w-[initial]" src={article?.thumbnail || articleThumbnail} alt="Article thumbnail" />
+							</div>
 							{/* action menu */}
 							{isProfile && loggedUser && article.ownedBy == loggedUser.userId && (
 								<button type="button" className="relative" onClick={toggleMenu} onBlur={() => setTimeout(() => setIsOpened(false), 250)}>
