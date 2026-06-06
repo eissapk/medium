@@ -111,8 +111,61 @@ body {
 	padding-bottom: 0 !important;
 }
 
-#articlePage #editorjs .ce-code textarea {
-	resize: vertical;
+#editorjs .ce-code__textarea {
+	min-height: unset;
+	overflow: hidden;
+	resize: none;
+}
+
+#articlePage #editorjs .article-code-wrapper {
+	position: relative;
+}
+
+#articlePage #editorjs .article-code-copy {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 1;
+	padding: 0.25rem 0.625rem;
+	font-size: 0.75rem;
+	font-family: theme("fontFamily.main");
+	color: #6b6b6b;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+#articlePage #editorjs .article-code-wrapper:hover .article-code-copy,
+#articlePage #editorjs .article-code-copy:focus-visible {
+	opacity: 1;
+}
+
+#articlePage #editorjs .article-code-copy:hover {
+	color: #242424;
+	border-color: #c0c0c0;
+}
+
+#articlePage #editorjs .article-code-block {
+	font-family: theme("fontFamily.code");
+	font-size: 0.875rem;
+	line-height: 1.6;
+	background: #f8f7fa;
+	border: 1px solid #f1f1f4;
+	border-radius: 0.25rem;
+	overflow-x: auto;
+	margin: 0;
+	padding: 2.25rem 1rem 1rem;
+}
+
+#articlePage #editorjs .article-code-block code {
+	display: block;
+	font-family: inherit;
+	background: transparent;
+	padding: 0;
+	white-space: pre;
 }
 #articlePage #editorjs .tc-table,
 #editorjs .tc-table {
@@ -134,4 +187,3 @@ body {
 }
 
 /* todo fix quote and <i> tag */
-/* todo: add systax highlighter for code */

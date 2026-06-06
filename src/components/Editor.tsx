@@ -1,6 +1,7 @@
 import EditorJS from "@editorjs/editorjs";
 import { useEffect, useRef } from "react";
 import { EDITOR_JS_TOOLS } from "../utils/editorTools";
+import { highlightCodeBlocks, resizeCodeTextareas } from "../utils/highlightCodeBlocks";
 
 function Editor({ onReady, blocks = [], readOnly = false }: { onReady?: (editor: any) => void; blocks?: any; readOnly?: boolean }) {
 	const ejInstance = useRef<HTMLElement | null>(null);
@@ -12,6 +13,11 @@ function Editor({ onReady, blocks = [], readOnly = false }: { onReady?: (editor:
 			onReady: () => {
 				// @ts-expect-error
 				ejInstance.current = editor;
+				const holder = document.getElementById("editorjs");
+				if (holder) {
+					if (readOnly) highlightCodeBlocks(holder);
+					else resizeCodeTextareas(holder);
+				}
 				if (onReady) onReady(editor);
 			},
 			readOnly,
